@@ -258,8 +258,9 @@
             box-shadow: var(--shadow-light);
             overflow: hidden;
             text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease, margin-bottom 0.3s ease;
             border: 1px solid var(--medium-gray);
+            cursor: pointer; 
         }
         
         .fair-card:hover {
@@ -299,7 +300,8 @@
             text-align: center;
         }
 
-        .initial-message, .loading-message, .error-message {
+        .initial-message, .loading-message, .error-message, .info-message {
+            grid-column: 1 / -1; /* Ocupa toda a largura do grid */
             text-align: center;
             font-size: 1.2em;
             color: #666;
@@ -349,6 +351,224 @@
             .hero-section h1 { font-size: 1.6em; }
             .hero-section p { font-size: 1em; }
         }
+
+        /* --- CSS para Filtros --- */
+        .filtros-container {
+            padding: 40px 20px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .filtros-wrapper {
+            display: flex;
+            justify-content: center; /* Centraliza o filtro de bairro */
+            gap: 20px;
+        }
+        .filtro-grupo {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            align-items: center;
+        }
+        .filtro-label {
+            font-weight: 500;
+            color: var(--dark-gray);
+            margin-right: 10px;
+        }
+        .filtro-select {
+            background-color: var(--white);
+            border: 1px solid var(--medium-gray);
+            padding: 8px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9em;
+            min-width: 300px;
+            font-family: 'Roboto', sans-serif;
+        }
+        .filtro-select:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+        }
+
+        /* --- CSS para Seletor de Visualização --- */
+        .view-switcher-container {
+            display: flex;
+            justify-content: flex-end;
+            padding: 20px 20px 0;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .view-btn {
+            background-color: var(--white);
+            border: 1px solid var(--medium-gray);
+            padding: 8px 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: var(--text-color);
+            font-size: 0.9em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .view-btn:first-of-type {
+            border-top-left-radius: 8px;
+            border-bottom-left-radius: 8px;
+            border-right-width: 0.5px;
+        }
+        .view-btn:last-of-type {
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-left-width: 0.5px;
+        }
+        .view-btn.active {
+            background-color: var(--primary-green);
+            color: var(--white);
+            border-color: var(--primary-green);
+        }
+        #resultados-feiras .container.results-carousel {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 20px;
+            padding-bottom: 20px; 
+            grid-template-columns: none;
+        }
+        #resultados-feiras .container.results-carousel .fair-card {
+            flex: 0 0 80%; 
+            max-width: 320px; 
+            scroll-snap-align: start;
+        }
+        
+        #resultados-feiras .container.results-carousel::-webkit-scrollbar {
+            height: 8px;
+        }
+        #resultados-feiras .container.results-carousel::-webkit-scrollbar-track {
+            background: #f1f1f1; 
+            border-radius: 10px;
+        }
+        #resultados-feiras .container.results-carousel::-webkit-scrollbar-thumb {
+            background: var(--medium-gray); 
+            border-radius: 10px;
+        }
+        #resultados-feiras .container.results-carousel::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gray); 
+        }
+        #resultados-feiras .container.results-carousel {
+            scrollbar-width: thin; 
+            scrollbar-color: var(--medium-gray) #f1f1f1;
+        }
+
+        /* --- CSS para o Modal --- */
+        .modal-overlay-hidden {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+        }
+        .modal-overlay-visible {
+            display: flex;
+        }
+        #modal-content {
+            background-color: var(--white);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            animation: slide-down 0.3s ease-out;
+        }
+        @keyframes slide-down {
+            from {
+                transform: translateY(-30px);
+                opacity: 0;
+            }
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+        .modal-close-btn {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            background: none;
+            border: none;
+            font-size: 2.5em;
+            color: var(--medium-gray);
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+        .modal-close-btn:hover {
+            color: var(--dark-gray);
+        }
+        #modal-body h2 {
+            margin-top: 0;
+            color: var(--primary-green);
+            border-bottom: 2px solid var(--light-green);
+            padding-bottom: 10px;
+            font-size: 1.8em;
+        }
+        #modal-body p {
+            margin: 15px 0;
+            font-size: 1.1em;
+            line-height: 1.7;
+            color: var(--text-color);
+        }
+        #modal-body p strong {
+            color: var(--dark-gray);
+            margin-right: 8px;
+            display: inline-block;
+            min-width: 150px;
+        }
+
+        /* --- INÍCIO: CSS para Detalhes do Card Expandido --- */
+        .fair-card-details {
+            background-color: #fdfdfd;
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
+            border-top: 1px solid transparent;
+        }
+
+        .fair-card-details.expanded {
+            padding: 20px;
+            max-height: 300px; /* Valor suficiente para o conteúdo */
+            border-top: 1px solid var(--medium-gray);
+        }
+
+        .fair-card-details p {
+            margin: 10px 0;
+            font-size: 0.95em;
+            display: flex;
+            align-items: center;
+        }
+
+        .fair-card-details p strong {
+            color: var(--dark-gray);
+            margin-right: 8px;
+            min-width: 150px; /* Alinha os valores */
+        }
+
+        /* NOVO: Força a expansão dos detalhes na visualização em carrossel */
+        .results-carousel .fair-card .fair-card-details {
+            padding: 20px;
+            max-height: 300px;
+            border-top: 1px solid var(--medium-gray);
+        }
+        /* --- FIM: CSS para Detalhes do Card Expandido --- */
+
     </style>
 </head>
 <body>
@@ -406,6 +626,26 @@
                 </div>
             </div>
         </section>
+        
+        <!-- --- Filtro de Bairro --- -->
+        <div class="filtros-container">
+            <div class="filtros-wrapper">
+                <div class="filtro-grupo" id="filtro-bairro-container">
+                    <span class="filtro-label">Bairro:</span>
+                    <select id="filtro-bairro-select" class="filtro-select">
+                        <option value="todos">Todos os Bairros</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+        <!-- --- Fim do Filtro --- -->
+
+        <!-- --- Seletor de Visualização --- -->
+        <div class="view-switcher-container">
+            <button id="view-carousel-btn" class="view-btn"><i class="fas fa-stream"></i> Carrossel</button>
+            <button id="view-grid-btn" class="view-btn"><i class="fas fa-th-large"></i> Grade</button>
+        </div>
+        <!-- --- Fim do Seletor --- -->
 
         <section id="resultados-feiras">
             <div class="container">
@@ -413,6 +653,17 @@
                 <!-- Resultados serão inseridos aqui pelo JavaScript -->
             </div>
         </section>
+
+        <!-- --- Modal --- -->
+        <div id="modal-overlay" class="modal-overlay-hidden">
+            <div id="modal-content">
+                <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+                <div id="modal-body">
+                    <!-- Conteúdo da feira será inserido aqui -->
+                </div>
+            </div>
+        </div>
+        <!-- --- Fim do Modal --- -->
 
     </main>
 
@@ -444,102 +695,240 @@
             };
             closeMobileMenu.addEventListener('click', closeMenu);
             mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
-
-            // --- Lógica da Busca de Feiras ---
-            const btnMeuLocal = document.getElementById('btn-meu-local');
+            
+            // --- Lógica dos Filtros e Busca ---
+            const API_URL = 'http://127.0.0.1:5000/api/feiras';
+            const API_FILTROS_URL = 'http://127.0.0.1:5000/api/filtros';
+            const filtroBairroSelect = document.getElementById('filtro-bairro-select');
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
+            
+            let todasAsFeiras = [];
+            let feirasExibidas = [];
 
-            // Dados fictícios das feiras
-            const feirasData = [
-                { nome: "FEIRA LIVRE DE ORGANICOS CERET", endereco: "RUA ELEONORA CINTRA", bairro: "JD ANALIA FRANCO", dia: "Terça-feira", lat: -23.551820, lon: -46.565340 },
-                { nome: "FEIRA LIVRE VILA PRUDENTE", endereco: "RUA JOSE ZAPPI", bairro: "VILA PRUDENTE", dia: "Sábado", lat: -23.585500, lon: -46.579080 },
-                { nome: "FEIRA LIVRE VILA ALPINA", endereco: "RUA COSTA BARROS", bairro: "VILA ALPINA", dia: "Domingo", lat: -23.597650, lon: -46.568400 },
-                { nome: "FEIRA LIVRE MOOCA", endereco: "RUA BIXIRA", bairro: "MOOCA", dia: "Quarta-feira", lat: -23.557460, lon: -46.595690 },
-                { nome: "FEIRA LIVRE TATUAPE", endereco: "RUA SERRA DE BOTUCATU", bairro: "TATUAPE", dia: "Quinta-feira", lat: -23.539550, lon: -46.570250 },
-                { nome: "FEIRA LIVRE IPIRANGA", endereco: "RUA DO MANIFESTO", bairro: "IPIRANGA", dia: "Sexta-feira", lat: -23.593000, lon: -46.604850 },
-                { nome: "FEIRA LIVRE ACLIMACAO", endereco: "RUA CASTRO ALVES", bairro: "ACLIMACAO", dia: "Domingo", lat: -23.571440, lon: -46.635810 },
-                { nome: "FEIRA LIVRE JARDINS", endereco: "ALAMEDA LORENA", bairro: "JARDIM PAULISTA", dia: "Terça-feira", lat: -23.565150, lon: -46.666750 },
-                { nome: "FEIRA LIVRE HIGIENOPOLIS", endereco: "RUA MATO GROSSO", bairro: "HIGIENOPOLIS", dia: "Sábado", lat: -23.550180, lon: -46.661070 }
-            ];
-            
-            // Função para calcular a distância (Fórmula de Haversine)
-            function getDistancia(lat1, lon1, lat2, lon2) {
-                const R = 6371; // Raio da Terra em km
-                const dLat = (lat2 - lat1) * Math.PI / 180;
-                const dLon = (lon2 - lon1) * Math.PI / 180;
-                const a =
-                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
-                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
-                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-                return R * c; // Distância em km
-            }
-            
-            // Função para renderizar os cards das feiras
-            function renderizarFeiras(feiras) {
-                resultadosDiv.innerHTML = ''; // Limpa a div de resultados
-                if (feiras.length === 0) {
-                     resultadosDiv.innerHTML = '<p class="initial-message">Nenhuma feira encontrada perto de você.</p>';
-                     return;
+            // --- INÍCIO: Lógica de Busca por Localização ---
+            const btnMeuLocal = document.getElementById('btn-meu-local');
+            const btnBuscaEndereco = document.querySelector('.busca-endereco button');
+            const inputEndereco = document.getElementById('input-endereco');
+
+            // Função para buscar feiras por geolocalização (lat/lon)
+            async function buscarFeirasPorGeolocalizacao(lat, lon) {
+                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras próximas...</p>`;
+                try {
+                    const response = await fetch(`${API_URL}?lat=${lat}&lon=${lon}`, { cache: 'no-cache' });
+                    if (!response.ok) throw new Error('Erro ao buscar feiras por geolocalização.');
+                    feirasExibidas = await response.json();
+                    console.log('DEBUG: Resposta da API para busca por geolocalização:', feirasExibidas); // Adicionado para depuração
+                    if (feirasExibidas.length > 0) {
+                        filtroBairroSelect.value = 'todos'; // Reseta o filtro de bairro
+                    }
+                    renderizarFeiras(feirasExibidas);
+                } catch (error) {
+                    console.error('Falha ao buscar feiras por geolocalização:', error);
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar as feiras próximas.</p>';
                 }
-
-                feiras.forEach(feira => {
-                    const card = document.createElement('div');
-                    card.className = 'fair-card';
-                    card.innerHTML = `
-                        <div class="fair-card-header">
-                            <h3>${feira.nome}</h3>
-                        </div>
-                        <div class="fair-card-content">
-                            <p><i class="fas fa-map-pin"></i> ${feira.endereco}</p>
-                            <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro}</p>
-                            <p><i class="fas fa-calendar-day"></i> ${feira.dia}</p>
-                            <p><i class="fas fa-clock"></i> Das 7h às 13h</p>
-                            <p><i class="fas fa-route"></i> Aprox. ${feira.distancia.toFixed(1)} km de você</p>
-                        </div>
-                    `;
-                    resultadosDiv.appendChild(card);
-                });
             }
 
-            // Evento de clique no botão "Usar Meu Local"
-            btnMeuLocal.addEventListener('click', () => {
-                resultadosDiv.innerHTML = '<p class="loading-message">Obtendo sua localização...</p>';
-
-                if (!navigator.geolocation) {
-                    resultadosDiv.innerHTML = '<p class="error-message">Geolocalização não é suportada pelo seu navegador.</p>';
+            // Função para buscar feiras por endereço
+            async function buscarFeirasPorEndereco(endereco) {
+                if (!endereco.trim()) {
                     return;
                 }
-
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const userLat = position.coords.latitude;
-                        const userLon = position.coords.longitude;
-
-                        // Calcula a distância para cada feira
-                        const feirasComDistancia = feirasData.map(feira => {
-                            const distancia = getDistancia(userLat, userLon, feira.lat, feira.lon);
-                            return { ...feira, distancia };
-                        });
-                        
-                        // Ordena as feiras pela distância
-                        feirasComDistancia.sort((a, b) => a.distancia - b.distancia);
-
-                        // Pega as 5 mais próximas
-                        const feirasProximas = feirasComDistancia.slice(0, 5);
-                        
-                        // Renderiza os resultados
-                        renderizarFeiras(feirasProximas);
-                    },
-                    () => {
-                        resultadosDiv.innerHTML = '<p class="error-message">Não foi possível obter sua localização. Por favor, permita o acesso e tente novamente.</p>';
+                const enderecoCompleto = `${endereco}, São Paulo`;
+                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras perto de ${endereco}...</p>`;
+                try {
+                    const response = await fetch(`${API_URL}?endereco=${encodeURIComponent(enderecoCompleto)}`, { cache: 'no-cache' });
+                    if (!response.ok) throw new Error('Erro ao buscar feiras por endereço.');
+                    feirasExibidas = await response.json();
+                    console.log('DEBUG: Resposta da API para busca por endereço:', feirasExibidas); // Adicionado para depuração
+                     if (feirasExibidas.length > 0) {
+                        filtroBairroSelect.value = 'todos'; // Reseta o filtro de bairro
                     }
-                );
+                    renderizarFeiras(feirasExibidas);
+                } catch (error) {
+                    console.error('Falha ao buscar feiras por endereço:', error);
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível encontrar feiras para o endereço informado. Tente ser mais específico.</p>';
+                }
+            }
+
+            // Event listener para o botão "Usar Meu Local"
+            btnMeuLocal.addEventListener('click', () => {
+                if ('geolocation' in navigator) {
+                    resultadosDiv.innerHTML = '<p class="loading-message">Obtendo sua localização...</p>';
+                    navigator.geolocation.getCurrentPosition(async (position) => {
+                        const { latitude, longitude } = position.coords;
+                        await buscarFeirasPorGeolocalizacao(latitude, longitude);
+                    }, (error) => {
+                        console.error('Erro ao obter geolocalização:', error);
+                        resultadosDiv.innerHTML = '<p class="error-message">Não foi possível obter sua localização. Verifique as permissões do navegador.</p>';
+                    });
+                } else {
+                    resultadosDiv.innerHTML = '<p class="error-message">Geolocalização não é suportada pelo seu navegador.</p>';
+                }
             });
+
+            // Event listener para o botão de busca por endereço
+            btnBuscaEndereco.addEventListener('click', () => {
+                buscarFeirasPorEndereco(inputEndereco.value);
+            });
+
+            // Event listener para a tecla Enter no campo de endereço
+            inputEndereco.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter') {
+                    buscarFeirasPorEndereco(inputEndereco.value);
+                }
+            });
+            // --- FIM: Lógica de Busca por Localização ---
+
+
+            // Função para buscar feiras de um bairro específico
+            async function carregarFeirasPorBairro(bairro) {
+                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras em ${bairro}...</p>`;
+                try {
+                    const response = await fetch(`${API_URL}?bairro=${encodeURIComponent(bairro)}`, { cache: 'no-cache' });
+                    if (!response.ok) throw new Error('Erro ao buscar feiras por bairro.');
+                    feirasExibidas = await response.json();
+                    renderizarFeiras(feirasExibidas);
+                } catch (error) {
+                    console.error('Falha ao buscar feiras por bairro:', error);
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar as feiras do bairro selecionado.</p>';
+                }
+            }
+
+            // Adiciona o listener para o seletor de bairros
+            filtroBairroSelect.addEventListener('change', () => {
+                const bairroSelecionado = filtroBairroSelect.value;
+                if (bairroSelecionado === 'todos') {
+                    carregarDadosIniciais(true); // Recarrega a lista inicial
+                } else {
+                    carregarFeirasPorBairro(bairroSelecionado);
+                }
+            });
+
+            // --- Lógica de clique no card ---
+            resultadosDiv.addEventListener('click', (e) => {
+                const card = e.target.closest('.fair-card');
+                if (!card) return;
+
+                if (!resultadosDiv.classList.contains('results-carousel')) {
+                    const detailsDiv = card.querySelector('.fair-card-details');
+                    if (!detailsDiv) return;
+                    const isAlreadyOpen = detailsDiv.classList.contains('expanded');
+                    document.querySelectorAll('.fair-card-details.expanded').forEach(openDetail => {
+                        openDetail.classList.remove('expanded');
+                    });
+                    if (!isAlreadyOpen) {
+                        detailsDiv.classList.add('expanded');
+                        setTimeout(() => {
+                            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                        }, 400);
+                    }
+                }
+            });
+
+            // --- Lógica do Seletor de Visualização ---
+            const viewCarouselBtn = document.getElementById('view-carousel-btn');
+            const viewGridBtn = document.getElementById('view-grid-btn');
+            
+            resultadosDiv.classList.add('results-carousel');
+            viewCarouselBtn.classList.add('active');
+            viewGridBtn.classList.remove('active');
+
+            viewCarouselBtn.addEventListener('click', () => {
+                document.querySelectorAll('.fair-card-details.expanded').forEach(openDetail => {
+                    openDetail.classList.remove('expanded');
+                });
+                resultadosDiv.classList.add('results-carousel');
+                viewCarouselBtn.classList.add('active');
+                viewGridBtn.classList.remove('active');
+            });
+
+            viewGridBtn.addEventListener('click', () => {
+                resultadosDiv.classList.remove('results-carousel');
+                viewGridBtn.classList.add('active');
+                viewCarouselBtn.classList.remove('active');
+            });
+
+            // --- Funções de Renderização ---
+            function criarCardFeira(feira) {
+                return `
+                    <div class="fair-card" data-feira-id="${feira.id}">
+                        <div class="fair-card-header">
+                            <h3>${feira.nome_feira ?? 'Nome não informado'}</h3>
+                        </div>
+                        <div class="fair-card-content">
+                            <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro ?? 'Bairro não informado'}</p>
+                            <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
+                            <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
+                            <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
+                        </div>
+                        <div class="fair-card-details">
+                            <p><strong>Endereço:</strong> <span>${feira.endereco || 'Endereço não informado'}</span></p>
+                            <p><strong>Bairro:</strong> <span>${feira.bairro || 'Não informado'}</span></p>
+                            <p><strong>Dia da Feira:</strong> <span>${feira.dia_feira || 'Não informado'}</span></p>
+                            <p><strong>Horário:</strong> <span>8:00h - 14:00h</span></p>
+                            <p><strong>Quantidade de Feirantes:</strong> <span>${feira.qnt_feirantes || 'Não informado'}</span></p>
+                        </div>
+                    </div>
+                `;
+            }
+
+            function renderizarFeiras(listaDeFeiras) {
+                resultadosDiv.innerHTML = ''; 
+                if (!listaDeFeiras || listaDeFeiras.length === 0) {
+                    resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira encontrada para os critérios selecionados.</p>';
+                    return;
+                }
+                resultadosDiv.innerHTML = listaDeFeiras.map(criarCardFeira).join('');
+            }
+
+            // --- Carregamento Inicial ---
+            async function carregarDadosIniciais(apenasFeiras = false) {
+                if (!apenasFeiras) {
+                    resultadosDiv.innerHTML = '<p class="loading-message">Buscando feiras e bairros...</p>';
+                }
+                try {
+                    const fetchOptions = { cache: 'no-cache' };
+                    const feirasPromise = fetch(API_URL, fetchOptions);
+                    const filtrosPromise = apenasFeiras ? Promise.resolve() : fetch(API_FILTROS_URL, fetchOptions);
+
+                    const [feirasResponse, filtrosResponse] = await Promise.all([
+                        feirasPromise,
+                        filtrosPromise
+                    ]);
+
+                    if (!feirasResponse.ok) throw new Error(`Erro na rede (feiras): ${feirasResponse.statusText}`);
+                    
+                    todasAsFeiras = await feirasResponse.json();
+                    console.log('DEBUG: Feiras carregadas inicialmente:', todasAsFeiras); // Adicionado para depuração
+                    feirasExibidas = todasAsFeiras;
+                    renderizarFeiras(feirasExibidas);
+                    
+                    if (filtrosResponse && filtrosResponse.ok) {
+                        const filtrosData = await filtrosResponse.json();
+                        const todosOsBairros = Object.values(filtrosData).flat();
+                        const bairrosUnicos = [...new Set(todosOsBairros)].filter(b => b).sort();
+                        
+                        while (filtroBairroSelect.options.length > 1) {
+                            filtroBairroSelect.remove(1);
+                        }
+
+                        bairrosUnicos.forEach(bairro => {
+                            const option = document.createElement('option');
+                            option.value = bairro;
+                            option.textContent = bairro;
+                            filtroBairroSelect.appendChild(option);
+                        });
+                    }
+
+                } catch (error) {
+                    console.error('Falha ao carregar dados iniciais:', error);
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados. O "cérebro" (backend) está rodando?</p>';
+                }
+            }
+            
+            carregarDadosIniciais();
         });
     </script>
 </body>
 </html>
-
-
 

@@ -102,30 +102,10 @@ def get_feiras():
         cur.close()
         conn.close()
 
-        # Padroniza os nomes das chaves para minúsculo
-        feiras_padronizadas = []
-        for f in feiras:
-            feiras_padronizadas.append({
-                "id": f.get("id") or f.get("ID"),
-                "nome_feira": f.get("nome_feira") or f.get("NOME_FEIRA"),
-                "bairro": f.get("bairro") or f.get("BAIRRO"),
-                "dia_feira": f.get("dia_feira") or f.get("DIA_FEIRA"),
-                "qnt_feirantes": f.get("qnt_feirantes") or f.get("QNT_FEIRANTES"),
-                "logradouro": f.get("logradouro") or f.get("LOGRADOURO"),
-                "numero": f.get("numero") or f.get("NUMERO"),
-                "referencia": f.get("referencia") or f.get("REFERENCIA"),
-                "latitude": f.get("latitude") or f.get("LATITUDE"),
-                "longitude": f.get("longitude") or f.get("LONGITUDE"),
-                "subprefeitura": f.get("subprefeitura") or f.get("SUBPREFEITURA"),
-                "regiao8": f.get("regiao8") or f.get("REGIAO8"),
-                "horario_func": f.get("horario_func") or f.get("HORARIO_FUNC"),
-                "registro": f.get("registro") or f.get("REGISTRO"),
-    })
-        return jsonify(feiras_padronizadas)
+        return jsonify(feiras)
 
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
-
