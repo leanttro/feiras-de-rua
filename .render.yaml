@@ -1,0 +1,12 @@
+# Este arquivo força o Render a usar a raiz do seu repositório
+# e a rodar os comandos de forma explícita.
+
+services:
+  - type: web
+    name: feiras-de-rua
+    env: python
+    buildCommand: "pip install -r requirements.txt"
+    startCommand: "gunicorn --bind 0.0.0.0:$PORT app:app"
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.8
