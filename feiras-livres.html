@@ -689,6 +689,11 @@
                 mobileNavOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Fecha o menu mobile e reabilita o scroll da página.
+
+/*******  946806c8-386e-4647-95c3-e4c3e91610ce  *******/
             const closeMenu = () => {
                 mobileNavOverlay.classList.remove('active');
                 document.body.style.overflow = '';
@@ -697,8 +702,8 @@
             mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
             
             // --- Lógica dos Filtros e Busca ---
-            const API_URL = '/api/feiras';
-            const API_FILTROS_URL = '/api/filtros';
+            const API_URL = 'https://feiras-de-rua.onrender.com/api/feiras';
+            const API_FILTROS_URL = 'https://feiras-de-rua.onrender.com/api/filtros';
             const filtroBairroSelect = document.getElementById('filtro-bairro-select');
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             
