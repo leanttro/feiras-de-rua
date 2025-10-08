@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Feiras Livres em São Paulo - Encontre a mais próxima</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Estilos reaproveitados do index.html para consistência */
+        :root {
+            --primary-green: #4CAF50;
+            --dark-green: #388E3C;
+            --light-green: #DCEDC8;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #343a40;
+            --text-color: #495057;
+            --white: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --accent-gold: #FFC107;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* --- Cabeçalho --- */
+        header {
+            background-color: var(--primary-green);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+
+        header .logo {
+            display: flex;
+            align-items: center;
+            padding-left: 20px;
+        }
+
+        header .logo img {
+            height: 60px;
+            margin-right: 10px;
+        }
+
+        header nav.desktop-nav ul {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            padding-right: 20px;
+        }
+
+        header nav.desktop-nav ul li {
+            margin-left: 35px;
+        }
+
+        header nav.desktop-nav ul li a {
+            text-decoration: none;
+            color: var(--white);
+            font-weight: 500;
+            transition: color 0.3s ease;
+            position: relative;
+            padding-bottom: 5px;
+        }
+        
+        /* Estilo para o link ativo */
+        header nav.desktop-nav ul li a.active {
+            font-weight: 700;
+            border-bottom: 2px solid var(--white);
+        }
+
+        header nav.desktop-nav ul li a:not(.active):hover {
+            color: var(--light-green);
+        }
+
+        .hamburger-menu {
+            display: none;
+            font-size: 1.8em;
+            color: var(--white);
+            cursor: pointer;
+            padding: 10px 20px;
+            z-index: 1001;
+        }
+
+        .mobile-nav-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        .mobile-nav-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .mobile-nav-overlay nav ul {
+            list-style: none;
+            flex-direction: column;
+            text-align: center;
+            padding: 0;
+        }
+
+        .mobile-nav-overlay nav ul li {
+            margin: 20px 0;
+        }
+
+        .mobile-nav-overlay nav ul li a {
+            color: var(--white);
+            text-decoration: none;
+            font-size: 1.8em;
+            font-weight: 700;
+            padding: 10px 0;
+            display: block;
+        }
+
+        /* --- Seção Hero Estática --- */
+        .hero-section {
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 450px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('fundofeiras.jpg');
+            background-size: cover;
+            background-position: center;
+        }
+
+        .hero-section > .container {
+            transform: translateY(-40px);
+        }
+
+        .hero-section h1 {
+            font-size: 2.8em;
+            margin: 0 0 15px 0;
+            font-weight: 700;
+            text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
+            line-height: 1.2;
+            max-width: 900px;
+        }
+
+        .hero-section p {
+            font-size: 1.3em;
+            max-width: 900px;
+            margin: 0 auto;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* --- Seção de Busca --- */
+        #busca-local {
+            padding: 50px 0;
+            background-color: var(--white);
+            margin-top: -80px;
+            position: relative;
+            z-index: 10;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            max-width: 900px;
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+        }
+
+        #busca-local h2 {
+            font-size: 2em;
+            color: var(--dark-gray);
+            margin-top: 0;
+            margin-bottom: 30px;
+        }
+        
+        .busca-opcoes {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        #btn-meu-local, .busca-endereco button {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 15px 30px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1em;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+        #btn-meu-local:hover, .busca-endereco button:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+        
+        .busca-endereco {
+            display: flex;
+            gap: 10px;
+        }
+
+        #input-endereco {
+            padding: 15px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 1em;
+            min-width: 300px;
+        }
+        
+        #input-endereco:focus {
+             outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+        }
+
+        /* --- Seção de Resultados --- */
+        #resultados-feiras {
+            padding: 60px 20px;
+            min-height: 300px;
+        }
+
+        #resultados-feiras .container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 30px;
+        }
+
+        #resultados-feiras .fair-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: var(--shadow-light);
+            overflow: hidden;
+            text-align: left;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            border: 1px solid var(--medium-gray);
+        }
+        
+        .fair-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--shadow-medium);
+        }
+
+        .fair-card-header {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 15px 20px;
+        }
+
+        .fair-card-header h3 {
+            margin: 0;
+            font-size: 1.4em;
+        }
+
+        .fair-card-content {
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .fair-card-content p {
+            margin: 0;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .fair-card-content p i {
+            color: var(--primary-green);
+            width: 20px;
+            text-align: center;
+        }
+
+        .initial-message, .loading-message, .error-message {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            width: 100%;
+        }
+
+        /* --- Rodapé --- */
+        footer {
+            background-color: #212529;
+            color: var(--medium-gray);
+            text-align: center;
+            padding: 25px;
+            font-size: 0.9em;
+        }
+
+        footer a {
+            color: var(--primary-green);
+            text-decoration: none;
+            margin: 0 8px;
+            transition: color 0.3s ease;
+        }
+
+        footer a:hover {
+            color: var(--light-green);
+            text-decoration: underline;
+        }
+
+        /* --- Responsividade --- */
+        @media (max-width: 992px) {
+            nav.desktop-nav { display: none; }
+            .hamburger-menu { display: block; padding-right: 20px; }
+            .hero-section h1 { font-size: 2.4em; }
+            .hero-section p { font-size: 1.1em; }
+        }
+
+        @media (max-width: 768px) {
+            .hero-section { height: 400px; }
+            .hero-section h1 { font-size: 2em; }
+            #busca-local { margin-top: -60px; padding: 40px 20px; }
+            .busca-opcoes { flex-direction: column; }
+            .busca-endereco { flex-direction: column; width: 100%; padding: 0 20px; }
+            #input-endereco { min-width: auto; width: 100%; }
+        }
+
+        @media (max-width: 480px) {
+            header .logo img { height: 50px; }
+            .hero-section h1 { font-size: 1.6em; }
+            .hero-section p { font-size: 1em; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="assets/logo.png" alt="Logo FeirasSP"></a>
+        </div>
+        <nav class="desktop-nav">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="#">Gastronômicas</a></li>
+                <li><a href="feiras-livres.html" class="active">Feiras Livres</a></li>
+                <li><a href="#">Artesanais</a></li>
+                <li><a href="#">Sobre</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="mobile-nav-overlay" id="mobileNavOverlay">
+            <div class="hamburger-menu" id="closeMobileMenu"><i class="fas fa-times"></i></div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="#">Gastronômicas</a></li>
+                    <li><a href="feiras-livres.html">Feiras Livres</a></li>
+                    <li><a href="#">Artesanais</a></li>
+                    <li><a href="#">Sobre</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <h1>+1000 Feiras-Livres em São Paulo!<br>Encontre a mais próxima de você.</h1>
+                <p>Produtos frescos, orgânicos e artesanais pertinho de você.</p>
+            </div>
+        </section>
+
+        <section id="busca-local">
+            <div class="container">
+                <h2>Encontre sua feira</h2>
+                <div class="busca-opcoes">
+                    <button id="btn-meu-local">
+                        <i class="fas fa-map-marker-alt"></i> Usar Meu Local
+                    </button>
+                    <div class="busca-endereco">
+                        <input type="text" id="input-endereco" placeholder="Digite um endereço em São Paulo...">
+                        <button>Buscar</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section id="resultados-feiras">
+            <div class="container">
+                <p class="initial-message">Use a busca acima para encontrar as feiras mais próximas.</p>
+                <!-- Resultados serão inseridos aqui pelo JavaScript -->
+            </div>
+        </section>
+
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 FeirasSP.com.br - Todos os direitos reservados.</p>
+            <div>
+                <a href="#">Política de Privacidade</a> |
+                <a href="#">Termos de Uso</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Lógica do Menu Mobile ---
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            const closeMobileMenu = document.getElementById('closeMobileMenu');
+            const mobileNavLinks = document.querySelectorAll('.mobile-nav-overlay nav ul li a');
+
+            hamburgerMenu.addEventListener('click', () => {
+                mobileNavOverlay.classList.add('active');
+                document.body.style.overflow = 'hidden';
+            });
+            const closeMenu = () => {
+                mobileNavOverlay.classList.remove('active');
+                document.body.style.overflow = '';
+            };
+            closeMobileMenu.addEventListener('click', closeMenu);
+            mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
+
+            // --- Lógica da Busca de Feiras ---
+            const btnMeuLocal = document.getElementById('btn-meu-local');
+            const resultadosDiv = document.querySelector('#resultados-feiras .container');
+
+            // Dados fictícios das feiras
+            const feirasData = [
+                { nome: "FEIRA LIVRE DE ORGANICOS CERET", endereco: "RUA ELEONORA CINTRA", bairro: "JD ANALIA FRANCO", dia: "Terça-feira", lat: -23.551820, lon: -46.565340 },
+                { nome: "FEIRA LIVRE VILA PRUDENTE", endereco: "RUA JOSE ZAPPI", bairro: "VILA PRUDENTE", dia: "Sábado", lat: -23.585500, lon: -46.579080 },
+                { nome: "FEIRA LIVRE VILA ALPINA", endereco: "RUA COSTA BARROS", bairro: "VILA ALPINA", dia: "Domingo", lat: -23.597650, lon: -46.568400 },
+                { nome: "FEIRA LIVRE MOOCA", endereco: "RUA BIXIRA", bairro: "MOOCA", dia: "Quarta-feira", lat: -23.557460, lon: -46.595690 },
+                { nome: "FEIRA LIVRE TATUAPE", endereco: "RUA SERRA DE BOTUCATU", bairro: "TATUAPE", dia: "Quinta-feira", lat: -23.539550, lon: -46.570250 },
+                { nome: "FEIRA LIVRE IPIRANGA", endereco: "RUA DO MANIFESTO", bairro: "IPIRANGA", dia: "Sexta-feira", lat: -23.593000, lon: -46.604850 },
+                { nome: "FEIRA LIVRE ACLIMACAO", endereco: "RUA CASTRO ALVES", bairro: "ACLIMACAO", dia: "Domingo", lat: -23.571440, lon: -46.635810 },
+                { nome: "FEIRA LIVRE JARDINS", endereco: "ALAMEDA LORENA", bairro: "JARDIM PAULISTA", dia: "Terça-feira", lat: -23.565150, lon: -46.666750 },
+                { nome: "FEIRA LIVRE HIGIENOPOLIS", endereco: "RUA MATO GROSSO", bairro: "HIGIENOPOLIS", dia: "Sábado", lat: -23.550180, lon: -46.661070 }
+            ];
+            
+            // Função para calcular a distância (Fórmula de Haversine)
+            function getDistancia(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Raio da Terra em km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c; // Distância em km
+            }
+            
+            // Função para renderizar os cards das feiras
+            function renderizarFeiras(feiras) {
+                resultadosDiv.innerHTML = ''; // Limpa a div de resultados
+                if (feiras.length === 0) {
+                     resultadosDiv.innerHTML = '<p class="initial-message">Nenhuma feira encontrada perto de você.</p>';
+                     return;
+                }
+
+                feiras.forEach(feira => {
+                    const card = document.createElement('div');
+                    card.className = 'fair-card';
+                    card.innerHTML = `
+                        <div class="fair-card-header">
+                            <h3>${feira.nome}</h3>
+                        </div>
+                        <div class="fair-card-content">
+                            <p><i class="fas fa-map-pin"></i> ${feira.endereco}</p>
+                            <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro}</p>
+                            <p><i class="fas fa-calendar-day"></i> ${feira.dia}</p>
+                            <p><i class="fas fa-clock"></i> Das 7h às 13h</p>
+                            <p><i class="fas fa-route"></i> Aprox. ${feira.distancia.toFixed(1)} km de você</p>
+                        </div>
+                    `;
+                    resultadosDiv.appendChild(card);
+                });
+            }
+
+            // Evento de clique no botão "Usar Meu Local"
+            btnMeuLocal.addEventListener('click', () => {
+                resultadosDiv.innerHTML = '<p class="loading-message">Obtendo sua localização...</p>';
+
+                if (!navigator.geolocation) {
+                    resultadosDiv.innerHTML = '<p class="error-message">Geolocalização não é suportada pelo seu navegador.</p>';
+                    return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userLat = position.coords.latitude;
+                        const userLon = position.coords.longitude;
+
+                        // Calcula a distância para cada feira
+                        const feirasComDistancia = feirasData.map(feira => {
+                            const distancia = getDistancia(userLat, userLon, feira.lat, feira.lon);
+                            return { ...feira, distancia };
+                        });
+                        
+                        // Ordena as feiras pela distância
+                        feirasComDistancia.sort((a, b) => a.distancia - b.distancia);
+
+                        // Pega as 5 mais próximas
+                        const feirasProximas = feirasComDistancia.slice(0, 5);
+                        
+                        // Renderiza os resultados
+                        renderizarFeiras(feirasProximas);
+                    },
+                    () => {
+                        resultadosDiv.innerHTML = '<p class="error-message">Não foi possível obter sua localização. Por favor, permita o acesso e tente novamente.</p>';
+                    }
+                );
+            });
+        });
+    </script>
+</body>
+</html>
+
+
+
