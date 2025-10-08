@@ -72,10 +72,13 @@ def get_filtros():
 
 
 # Endpoint principal - apenas para saber que a API está no ar
-@app.route("/")
-def hello_world():
-    return "<p>Olá! O cérebro da aplicação está no ar e pronto para receber requisições!</p>"
+from flask import send_from_directory
 
+# ... seu código atual ...
+
+@app.route("/")
+def serve_frontend():
+    return send_from_directory('.', 'feiras-livres.html')
 # --- NOSSO PRIMEIRO ENDPOINT DE VERDADE ---
 # Este endpoint vai buscar e retornar os dados das feiras
 @app.route('/api/feiras')
