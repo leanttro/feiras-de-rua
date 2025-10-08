@@ -1,7 +1,7 @@
 import os
 import psycopg2
 import psycopg2.extras
-from flask import Flask, jsonify, request # <<< --- ADICIONE 'request' ---
+from flask import Flask, jsonify, request, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
 
@@ -71,14 +71,11 @@ def get_filtros():
 # --- FIM DO CÓDIGO ADICIONADO ---
 
 
-# Endpoint principal - apenas para saber que a API está no ar
-from flask import send_from_directory
-
-# ... seu código atual ...
-
+# Endpoint principal para servir o frontend
 @app.route("/")
 def serve_frontend():
     return send_from_directory('.', 'feiras-livres.html')
+
 # --- NOSSO PRIMEIRO ENDPOINT DE VERDADE ---
 # Este endpoint vai buscar e retornar os dados das feiras
 @app.route('/api/feiras')
