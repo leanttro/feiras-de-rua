@@ -110,12 +110,4 @@ def get_feiras():
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
 
-    from flask import send_from_directory
-
-@app.route('/')
-def home():
-    return send_from_directory('../frontend', 'index.html')
-
-@app.route('/<path:path>')
-def static_files(path):
-    return send_from_directory('../frontend', path)
+    
