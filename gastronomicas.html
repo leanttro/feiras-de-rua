@@ -392,7 +392,7 @@
         }
         .filtros-wrapper {
             display: flex;
-            justify-content: center; /* Centraliza o filtro de bairro */
+            justify-content: center; /* Centraliza o filtro de Região */
             gap: 20px;
             flex-wrap: wrap; /* Para responsividade */
         }
@@ -555,13 +555,13 @@
             </div>
         </section>
         
-        <!-- --- NOVO: Filtro de Bairro --- -->
+        <!-- --- ATUALIZADO: Filtro de Região --- -->
         <div class="filtros-container">
             <div class="filtros-wrapper">
-                <div class="filtro-grupo" id="filtro-bairro-container">
-                    <span class="filtro-label">Bairro:</span>
-                    <select id="filtro-bairro-select" class="filtro-select">
-                        <option value="todos">Todos os Bairros</option>
+                <div class="filtro-grupo" id="filtro-regiao-container">
+                    <span class="filtro-label">Região:</span>
+                    <select id="filtro-regiao-select" class="filtro-select">
+                        <option value="todos">Todas as Regiões</option>
                     </select>
                 </div>
             </div>
@@ -621,14 +621,13 @@
             // URL Base da sua API no Render
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
             
-            // --- CÓDIGO DO PROXY REMOVIDO AQUI ---
-            
             // URLs DIRETAS para a API (SÓ FUNCIONARÁ SE O CORS NO SEU BACKEND TIVER SIDO CORRIGIDO PARA "*")
             const API_URL = `${BASE_API_URL}/api/gastronomicas`;
             const API_FILTROS_URL = `${BASE_API_URL}/api/filtros`; 
             
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
-            const filtroBairroSelect = document.getElementById('filtro-bairro-select');
+            // ID ATUALIZADO: filtro-regiao-select
+            const filtroRegiaoSelect = document.getElementById('filtro-regiao-select'); 
             
             let todasAsFeiras = [];
             let feirasExibidas = []; // Lista de feiras após ordenação por proximidade
@@ -653,7 +652,6 @@
                         }
                         // Espera (2^i) * 1000 milissegundos antes de tentar novamente (Ex: 1s, 2s, 4s, 8s, 16s)
                         const delay = Math.pow(2, i) * 1000;
-                        // Não logamos retentativas com sucesso para evitar poluir o console
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
@@ -698,8 +696,8 @@
                 
                 feirasExibidas = feirasComDistancia.filter(feira => feira.distancia !== Infinity);
 
-                // Ao ordenar por localização, resetamos o filtro de bairro
-                filtroBairroSelect.value = 'todos'; 
+                // Ao ordenar por localização, resetamos o filtro de região
+                filtroRegiaoSelect.value = 'todos'; 
                 
                 if (feirasExibidas.length === 0) {
                      resultadosDiv.innerHTML = `<p class="error-message">Nenhuma feira encontrada perto do local. Verifique se as feiras no banco de dados possuem coordenadas válidas.</p>`;
@@ -801,17 +799,18 @@
             });
 
 
-            // --- NOVO: Lógica de Filtragem por Bairro ---
-            filtroBairroSelect.addEventListener('change', () => {
-                const bairroSelecionado = filtroBairroSelect.value;
+            // --- Lógica de Filtragem por REGIÃO (ATUALIZADA) ---
+            filtroRegiaoSelect.addEventListener('change', () => {
+                const regiaoSelecionada = filtroRegiaoSelect.value;
                 let listaFiltrada;
                 
-                if (bairroSelecionado === 'todos') {
-                    // Se o usuário já ordenou, mantém a ordenação. Se não, usa a lista inicial.
+                if (regiaoSelecionada === 'todos') {
+                    // Prioriza a lista já ordenada por proximidade, se houver
                     listaFiltrada = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
                 } else {
                     const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
-                    listaFiltrada = listaBase.filter(feira => feira.bairro === bairroSelecionado);
+                    // FILTRA PELA NOVA PROPRIEDADE: feira.regiao
+                    listaFiltrada = listaBase.filter(feira => feira.regiao === regiaoSelecionada);
                 }
                 renderizarFeiras(listaFiltrada);
             });
@@ -854,7 +853,7 @@
                             ${distanciaHtml}
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                            <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, ${feira.bairro || ''}</p>
+                            <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${feira.regiao || feira.bairro || ''}</strong></p>
                             <a href="#" class="button" onclick="event.preventDefault(); alert('Página de detalhes em construção!');">Ver mais</a>
                         </div>
                     </div>
@@ -863,7 +862,7 @@
 
             function renderizarFeiras(listaDeFeiras) {
                 resultadosDiv.innerHTML = ''; 
-                // Atualiza a lista exibida para que o filtro de bairro funcione corretamente
+                // Atualiza a lista exibida para que o filtro de região funcione corretamente
                 feirasExibidas = listaDeFeiras;
 
                 if (!listaDeFeiras || listaDeFeiras.length === 0) {
@@ -883,33 +882,68 @@
                     const [feirasResponse, filtrosResponse] = await Promise.all([feirasResponsePromise, filtrosResponsePromise]);
 
                     // Processa Feiras
-                    todasAsFeiras = await feirasResponse.json();
-                    feirasExibidas = [...todasAsFeiras]; // Inicializa a lista ordenada/filtrada com a lista completa
+                    let feirasRaw = await feirasResponse.json();
+                    
+                    // Processa Filtros de Região
+                    if (filtrosResponse.ok) {
+                        const filtrosData = await filtrosResponse.json();
+                        
+                        // 1. Criar mapa de Bairro -> Região a partir dos filtros
+                        const bairroRegiaoMap = {};
+                        for (const [regiao, bairros] of Object.entries(filtrosData)) {
+                            // Converte a chave (Região) para maiúsculas para correspondência consistente
+                            const regiaoUpper = regiao.toUpperCase();
+                            bairros.forEach(bairro => {
+                                if (bairro) {
+                                    bairroRegiaoMap[bairro.toUpperCase()] = regiaoUpper;
+                                }
+                            });
+                        }
+
+                        // 2. Aplicar a Região em cada feira
+                        feirasRaw = feirasRaw.map(feira => {
+                            if (feira.bairro) {
+                                // Mapeia o bairro para a Região, garantindo que o bairro está em maiúsculas
+                                feira.regiao = bairroRegiaoMap[feira.bairro.toUpperCase()] || 'OUTRAS';
+                            } else {
+                                feira.regiao = 'NÃO INFORMADO';
+                            }
+                            return feira;
+                        });
+
+                        // 3. Obter as Regiões únicas para o Dropdown
+                        // Usamos as chaves originais e garantimos que a opção "Outras" esteja incluída
+                        const regioesUnicas = [...Object.keys(filtrosData), 'OUTRAS'].map(r => r.toUpperCase()).filter((value, index, self) => self.indexOf(value) === index).sort();
+                        
+                        // 4. Popular o Dropdown
+                        while (filtroRegiaoSelect.options.length > 1) {
+                            filtroRegiaoSelect.remove(1);
+                        }
+
+                        regioesUnicas.forEach(regiao => {
+                            if (regiao !== 'OUTRAS') { // "Todas as Regiões" já existe
+                                const option = document.createElement('option');
+                                option.value = regiao;
+                                option.textContent = regiao.charAt(0).toUpperCase() + regiao.slice(1).toLowerCase(); // Formata para Título
+                                filtroRegiaoSelect.appendChild(option);
+                            }
+                        });
+
+                        // 5. Adicionar a opção "OUTRAS" (se houver necessidade ou se for interessante)
+                         const outrasOption = document.createElement('option');
+                         outrasOption.value = 'OUTRAS';
+                         outrasOption.textContent = 'Outras Regiões';
+                         filtroRegiaoSelect.appendChild(outrasOption);
+                    }
+                    
+                    // Finalmente, renderiza a lista completa e atualizada
+                    todasAsFeiras = feirasRaw;
+                    feirasExibidas = [...todasAsFeiras]; 
                     
                     if (todasAsFeiras.length > 0) {
                         renderizarFeiras(todasAsFeiras);
                     } else {
                          resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira gastronômica cadastrada. Adicione dados válidos (com latitude e longitude) no seu banco de dados.</p>';
-                    }
-                    
-                    // Processa Filtros de Bairro
-                    if (filtrosResponse.ok) {
-                        const filtrosData = await filtrosResponse.json();
-                        // O endpoint /api/filtros retorna bairros de TODAS as feiras (feiras-livres, gastronomicas, etc.). 
-                        // A lista de bairros será filtrada e ordenada.
-                        const todosOsBairros = Object.values(filtrosData).flat();
-                        const bairrosUnicos = [...new Set(todosOsBairros)].filter(b => b).sort();
-                        
-                        while (filtroBairroSelect.options.length > 1) {
-                            filtroBairroSelect.remove(1);
-                        }
-
-                        bairrosUnicos.forEach(bairro => {
-                            const option = document.createElement('option');
-                            option.value = bairro;
-                            option.textContent = bairro;
-                            filtroBairroSelect.appendChild(option);
-                        });
                     }
                     
                 } catch (error) {
