@@ -10,21 +10,14 @@ load_dotenv()
 
 # Cria a instância da aplicação Flask
 app = Flask(__name__)
-
-# --- CORREÇÃO DO CORS ---
-# Aqui dizemos explicitamente que o seu site no GitHub Pages tem permissão.
-CORS(app, origins=["https://leanttro.github.io"], methods=["GET", "POST"], supports_credentials=True)
+# Configuração de CORS mais específica para permitir seu site do GitHub Pages
+CORS(app, resources={r"/api/*": {"origins": "https://leanttro.github.io"}, r"/submit-fair": {"origins": "https://leanttro.github.io"}})
 
 # Função para obter a conexão com o banco de dados
 def get_db_connection():
-    # Garante que está usando a variável de ambiente para a URL do banco
-    db_url = os.getenv('DATABASE_URL')
-    if not db_url:
-        raise ValueError("DATABASE_URL não foi definida nas variáveis de ambiente!")
-    conn = psycopg2.connect(db_url)
+    # A variável DATABASE_URL será lida do ambiente do Render
+    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
-
-# --- MAPEAMENTO DE BAIRROS E ENDPOINT DE FILTROS (CÓDIGO EXISTENTE) ---
 
 # Mapeamento de Bairros para Regiões
 BAIRRO_REGIAO_MAP = {
@@ -50,7 +43,7 @@ BAIRRO_REGIAO_MAP = {
     'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro'
 }
 
-# Endpoint para Filtros
+# Endpoint para Filtros (já existente)
 @app.route('/api/filtros')
 def get_filtros():
     try:
@@ -73,76 +66,82 @@ def get_filtros():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Endpoint principal para servir o frontend
+# Endpoint principal para servir o frontend (altere se desejar que outra página seja a principal)
 @app.route("/")
 def serve_frontend():
-    return send_from_directory('.', 'feiras-livres.html')
+    return send_from_directory('.', 'index.html') # Sugestão: servir o index.html
 
-# Endpoint para buscar e retornar os dados das feiras
+# Endpoint para Feiras Livres (já existente)
 @app.route('/api/feiras')
 def get_feiras():
     try:
-        bairro_query = request.args.get('bairro')
         limite_query = request.args.get('limite', default=1000, type=int) 
-
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-        if bairro_query:
-            cur.execute('SELECT * FROM feiras WHERE bairro = %s ORDER BY id;', (bairro_query,))
-        else:
-            cur.execute('SELECT * FROM feiras ORDER BY id LIMIT %s;', (limite_query,))
-            
+        cur.execute('SELECT * FROM feiras ORDER BY id LIMIT %s;', (limite_query,))
         feiras = cur.fetchall()
-
         cur.close()
         conn.close()
-
         return jsonify(feiras)
-
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Endpoint para receber dados do formulário de contato
+# --- NOVOS ENDPOINTS PARA AS NOVAS CATEGORIAS ---
+
+@app.route('/api/gastronomicas')
+def get_gastronomicas():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        # Busca todos os dados da tabela 'gastronomicas'
+        cur.execute('SELECT * FROM gastronomicas ORDER BY id;')
+        feiras_gastronomicas = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(feiras_gastronomicas)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/api/artesanais')
+def get_artesanais():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        # Busca todos os dados da tabela 'artesanais'
+        cur.execute('SELECT * FROM artesanais ORDER BY id;')
+        feiras_artesanais = cur.fetchall()
+        cur.close()
+        conn.close()
+        return jsonify(feiras_artesanais)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+# --- FIM DOS NOVOS ENDPOINTS ---
+
+# Endpoint para receber submissões do formulário (já existente)
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
-    conn = None # Inicia a variável de conexão como nula
     try:
-        nome_feira = request.form.get('fairName')
-        regiao = request.form.get('region')
-        endereco = request.form.get('address')
-        dias_funcionamento = request.form.get('days')
-        categoria = request.form.get('category')
-        nome_responsavel = request.form.get('responsibleName')
-        email_contato = request.form.get('contactEmail')
-        whatsapp = request.form.get('whatsapp')
-        descricao = request.form.get('description')
-
         conn = get_db_connection()
         cur = conn.cursor()
-
         sql = """
             INSERT INTO contato (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        data_tuple = (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
-
+        data_tuple = (
+            request.form.get('fairName'), request.form.get('region'), request.form.get('address'),
+            request.form.get('days'), request.form.get('category'), request.form.get('responsibleName'),
+            request.form.get('contactEmail'), request.form.get('whatsapp'), request.form.get('description')
+        )
         cur.execute(sql, data_tuple)
         conn.commit()
         cur.close()
-
         return jsonify({'message': 'Dados recebidos com sucesso!'}), 200
-
     except Exception as e:
-        if conn:
-            conn.rollback()
-        # Imprime o erro no log do Render para depuração
-        print(f"Erro no endpoint /submit-fair: {e}") 
+        if conn: conn.rollback()
         return jsonify({'error': str(e)}), 500
     finally:
-        if conn:
-            conn.close()
-
+        if conn: conn.close()
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
