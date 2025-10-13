@@ -357,7 +357,7 @@
         .fair-card p {
             font-size: 1em;
             line-height: 1.6;
-            margin: 0; /* Removido margin bottom */
+            margin: 0;
             color: var(--text-color);
             display: flex;
             align-items: center;
@@ -372,6 +372,7 @@
         /* NOVOS ESTILOS PARA DESCRIÇÃO */
         .description-wrapper {
             margin-bottom: 15px;
+            flex-grow: 1; /* Faz a descrição ocupar espaço disponível */
         }
         .description-wrapper p {
             margin: 0;
@@ -382,6 +383,7 @@
             -webkit-line-clamp: 3;
             overflow: hidden;
             text-overflow: ellipsis;
+            margin-bottom: 8px;
         }
         .card-description-text.expanded {
             -webkit-line-clamp: unset;
@@ -391,27 +393,12 @@
             color: var(--primary-green);
             font-weight: 600;
             cursor: pointer;
-            margin-top: 8px;
             font-size: 0.9em;
         }
         .read-more-btn:hover {
             text-decoration: underline;
         }
         
-        .fair-card .button {
-            display: inline-block;
-            background-color: var(--primary-green);
-            color: var(--white);
-            padding: 12px 22px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            transition: background-color 0.3s ease;
-            margin-top: auto;
-            align-self: flex-start;
-        }
-        .fair-card .button:hover { background-color: var(--dark-green); }
-
         .loading-message, .error-message, .info-message {
             width: 100%;
             text-align: center;
@@ -670,14 +657,11 @@
 
                 const nome = feira.nome_feira || 'Nome não disponível';
                 
-                // AJUSTE: Lógica para o placeholder da imagem
                 let placeholderText = nome.split(' ')[0];
                 if (tipo === 'feiras-livres') {
                     placeholderText = 'FEIRA-LIVRE';
                 }
                 const imagem = feira.imagem_url || `https://placehold.co/600x400/f8f9fa/343a40?text=${placeholderText}`;
-                
-                const linkPagina = pageLinks[tipo] || '#';
                 
                 let detalhesHtml = '';
                 if (tipo === 'feiras-livres') {
@@ -715,7 +699,6 @@
                     <div class="fair-card-content">
                         <h3>${nome}</h3>
                         ${detalhesHtml}
-                        <a href="${linkPagina}" class="button">Ver mais</a>
                     </div>
                 `;
                 return card;
