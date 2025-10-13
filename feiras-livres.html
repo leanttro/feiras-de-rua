@@ -677,7 +677,7 @@
 
         <section id="resultados-feiras">
             <div class="container">
-                <p class="initial-message">Use a busca acima para encontrar as feiras mais próximas.</p>
+                <p class="initial-message">Use a busca ou o botão "Usar Meu Local" para encontrar as feiras mais próximas.</p>
                 <!-- Resultados serão inseridos aqui pelo JavaScript -->
             </div>
         </section>
@@ -766,13 +766,12 @@
                 renderizarFeiras(feirasExibidas);
             }
 
-            // --- FUNÇÃO MODIFICADA ---
-            // Função para solicitar a geolocalização do usuário
+            // --- FUNÇÃO CORRIGIDA PARA MOBILE ---
             function solicitarLocalizacaoEOrdenar() {
+                // Fornece feedback imediato ao usuário que o clique foi registrado
+                resultadosDiv.innerHTML = `<p class="loading-message">Obtendo sua localização...</p>`;
+
                 if ('geolocation' in navigator) {
-                    if (document.querySelector('.initial-message')) {
-                       document.querySelector('.initial-message').textContent = 'Para mostrar as feiras mais próximas, por favor, permita o acesso à sua localização.';
-                    }
                     navigator.geolocation.getCurrentPosition((position) => {
                         const userLocation = {
                             latitude: position.coords.latitude,
@@ -780,12 +779,10 @@
                         };
                         ordenarEExibirFeiras(userLocation);
                     }, (error) => {
-                        // --- INÍCIO DA CORREÇÃO ---
                         let userMessage = 'Não foi possível obter sua localização.';
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
                                 userMessage = "Você negou o acesso à localização. Use a busca manual para encontrar feiras.";
-                                // Alterado para console.log para não parecer um erro crítico
                                 console.log('Acesso à localização negado pelo usuário.');
                                 break;
                             case error.POSITION_UNAVAILABLE:
@@ -800,18 +797,15 @@
                                 console.error('Ocorreu um erro desconhecido ao obter a geolocalização:', error);
                                 break;
                         }
-                        
-                        if (document.querySelector('.initial-message')) {
-                            document.querySelector('.initial-message').textContent = 'Use a busca acima para encontrar as feiras mais próximas.';
-                        }
-                        // Limpa a mensagem de "carregando" e exibe a mensagem de status
-                        const initialOrLoadingMessage = document.querySelector('.initial-message, .loading-message');
-                        if (initialOrLoadingMessage && initialOrLoadingMessage.parentNode === resultadosDiv) {
-                           renderizarFeiras(todasAsFeiras); // Mostra a lista padrão
-                        }
-                        // --- FIM DA CORREÇÃO ---
+                        // Em caso de erro, exibe a mensagem e volta para a lista padrão de feiras
+                        resultadosDiv.innerHTML = `<p class="info-message">${userMessage}</p>`;
+                        // Adiciona um pequeno delay antes de mostrar a lista completa para o usuário ler a mensagem
+                        setTimeout(() => {
+                           renderizarFeiras(todasAsFeiras);
+                        }, 2500);
                     });
                 } else {
+                    resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada por este navegador.</p>`;
                     console.log('Geolocalização não é suportada por este navegador.');
                 }
             }
@@ -821,7 +815,7 @@
             btnMeuLocal.addEventListener('click', solicitarLocalizacaoEOrdenar);
 
 
-            // --- INÍCIO: MODIFICAÇÃO PARA USAR NOMINATIM ---
+            // --- Lógica de busca de endereço com Nominatim ---
             function debounce(func, delay) {
                 let timeout;
                 return function(...args) {
@@ -838,10 +832,9 @@
                     return;
                 }
                 try {
-                    // URL trocada para Nominatim, com busca focada em São Paulo
                     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', São Paulo')}&limit=5`);
                     const data = await response.json();
-                    displaySuggestions(data); // Passa o array de dados diretamente
+                    displaySuggestions(data);
                 } catch (error) {
                     console.error('Erro ao buscar sugestões de endereço:', error);
                 }
@@ -853,18 +846,15 @@
                     suggestionsContainer.style.display = 'none';
                     return;
                 }
-                // O loop agora itera sobre 'results' do Nominatim
                 results.forEach(result => {
                     const item = document.createElement('div');
                     item.classList.add('suggestion-item');
-                    // Usa 'display_name' do Nominatim
                     item.textContent = result.display_name;
 
                     item.addEventListener('click', () => {
                         inputEndereco.value = item.textContent;
                         suggestionsContainer.innerHTML = '';
                         suggestionsContainer.style.display = 'none';
-                        // Pega lat e lon diretamente do objeto 'result'
                         const userLocation = { latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) };
                         ordenarEExibirFeiras(userLocation);
                     });
@@ -879,7 +869,6 @@
                     suggestionsContainer.style.display = 'none';
                 }
             });
-            // --- FIM: MODIFICAÇÃO PARA USAR NOMINATIM ---
             
             
             // Adiciona o listener para o seletor de bairros
@@ -887,10 +876,8 @@
                 const bairroSelecionado = filtroBairroSelect.value;
                 
                 if (bairroSelecionado === 'todos') {
-                    // Se 'Todos' for selecionado, apenas re-renderiza a lista principal (que já está ordenada e com distâncias)
                     renderizarFeiras(feirasExibidas);
                 } else {
-                    // Filtra a lista principal 'feirasExibidas' em vez de fazer uma nova chamada de API
                     const feirasFiltradas = feirasExibidas.filter(feira => feira.bairro === bairroSelecionado);
                     renderizarFeiras(feirasFiltradas);
                 }
@@ -1011,9 +998,7 @@
                         });
                     }
                     
-                    // --- CHAMADA DA NOVA FUNÇÃO ---
-                    // Pede a localização do usuário assim que os dados básicos são carregados
-                    solicitarLocalizacaoEOrdenar();
+                    // --- REMOVIDA A CHAMADA AUTOMÁTICA DAQUI ---
 
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
