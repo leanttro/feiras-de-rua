@@ -163,9 +163,26 @@
             margin: 0 0 15px 0;
             font-weight: 700;
             text-shadow: 2px 2px 5px rgba(0,0,0,0.6);
-            line-height: 1.2;
+            line-height: 1.4; /* Ajuste para melhor espaçamento */
             max-width: 900px;
         }
+        
+        /* --- INÍCIO DA MODIFICAÇÃO --- */
+        .hero-highlight {
+            background-color: rgba(76, 175, 80, 0.7); /* Cor #4caf50 com transparência */
+            padding: 5px 15px;
+            border-radius: 8px;
+            box-decoration-break: clone;
+            -webkit-box-decoration-break: clone;
+        }
+        
+        .hero-subtitle {
+            font-size: 0.7em; /* Reduz o tamanho relativo ao h1 */
+            font-weight: 400; /* Deixa a fonte mais leve */
+            display: inline-block;
+            margin-top: 15px;
+        }
+        /* --- FIM DA MODIFICAÇÃO --- */
 
         .hero-section p {
             font-size: 1.3em;
@@ -385,7 +402,7 @@
 
         @media (max-width: 480px) {
             header .logo img { height: 50px; }
-            .hero-section h1 { font-size: 1.6em; }
+            .hero-section h1 { font-size: 1.8em; } /* Leve ajuste no tamanho geral */
             .hero-section p { font-size: 1em; }
         }
 
@@ -644,8 +661,13 @@
     <main>
         <section class="hero-section">
             <div class="container">
-                <h1 class="desktop-title">+1000 Feiras-Livres em São Paulo!<br>Encontre a mais próxima de você.</h1>
-                <h1 class="mobile-title">+1000 Feiras-Livres<br>em São Paulo!<br>Encontre a mais<br>próxima de você.</h1>
+                <!-- --- INÍCIO DA MODIFICAÇÃO --- -->
+                <h1>
+                    <span class="hero-highlight">+1000 Feiras-Livres em São Paulo!</span>
+                    <br>
+                    <span class="hero-subtitle">Encontre a mais próxima de você.</span>
+                </h1>
+                <!-- --- FIM DA MODIFICAÇÃO --- -->
                 <p>Produtos frescos, orgânicos e artesanais pertinho de você.</p>
             </div>
         </section>
@@ -793,7 +815,6 @@
                         let userMessage;
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
-                                // --- INÍCIO DA MODIFICAÇÃO: Mensagem mais útil ---
                                 userMessage = `
                                     <strong>Você negou o acesso à localização.</strong>
                                     <br><br>
@@ -804,7 +825,6 @@
                                     Enquanto isso, use a busca manual para encontrar feiras.`;
                                 console.log('Acesso à localização negado pelo usuário.');
                                 break;
-                                // --- FIM DA MODIFICAÇÃO ---
                             case error.POSITION_UNAVAILABLE:
                                 userMessage = "Informações de localização não estão disponíveis no momento.";
                                 console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
