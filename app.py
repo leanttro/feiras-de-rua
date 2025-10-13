@@ -4,13 +4,14 @@ import psycopg2.extras
 from flask import Flask, jsonify, request, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
+import datetime # <-- Adicionado para lidar com datas e horas
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 # Cria a instância da aplicação Flask
 app = Flask(__name__)
-# Configuração de CORS mais específica para permitir seu site do GitHub Pages
+# Configuração de CORS para permitir seu site do GitHub Pages
 CORS(app, resources={r"/api/*": {"origins": "https://leanttro.github.io"}, r"/submit-fair": {"origins": "https://leanttro.github.io"}})
 
 # Função para obter a conexão com o banco de dados
@@ -19,7 +20,7 @@ def get_db_connection():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
 
-# Mapeamento de Bairros para Regiões
+# Mapeamento de Bairros para Regiões (pode ser expandido)
 BAIRRO_REGIAO_MAP = {
     'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
     'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
@@ -43,7 +44,6 @@ BAIRRO_REGIAO_MAP = {
     'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro'
 }
 
-# Endpoint para Filtros (já existente)
 @app.route('/api/filtros')
 def get_filtros():
     try:
@@ -66,12 +66,10 @@ def get_filtros():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# Endpoint principal para servir o frontend (altere se desejar que outra página seja a principal)
 @app.route("/")
 def serve_frontend():
-    return send_from_directory('.', 'index.html') # Sugestão: servir o index.html
+    return send_from_directory('.', 'index.html')
 
-# Endpoint para Feiras Livres (já existente)
 @app.route('/api/feiras')
 def get_feiras():
     try:
@@ -86,20 +84,32 @@ def get_feiras():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# --- NOVOS ENDPOINTS PARA AS NOVAS CATEGORIAS ---
+# --- ENDPOINTS ATUALIZADOS PARA LIDAR COM DATAS E HORAS ---
 
 @app.route('/api/gastronomicas')
 def get_gastronomicas():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Busca todos os dados da tabela 'gastronomicas'
         cur.execute('SELECT * FROM gastronomicas ORDER BY id;')
-        feiras_gastronomicas = cur.fetchall()
+        feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
-        return jsonify(feiras_gastronomicas)
+
+        # Converte os dados para um formato que o jsonify entende
+        feiras_processadas = []
+        for feira in feiras_raw:
+            feira_dict = dict(feira)
+            for key, value in feira_dict.items():
+                # Converte objetos date e time para string no formato ISO
+                if isinstance(value, (datetime.date, datetime.time)):
+                    feira_dict[key] = value.isoformat() if value else None
+            feiras_processadas.append(feira_dict)
+            
+        return jsonify(feiras_processadas)
     except Exception as e:
+        # Adiciona um print para vermos o erro exato nos logs do Render
+        print(f"Erro no endpoint /api/gastronomicas: {e}")
         return jsonify({'error': str(e)}), 500
 
 @app.route('/api/artesanais')
@@ -107,18 +117,29 @@ def get_artesanais():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Busca todos os dados da tabela 'artesanais'
         cur.execute('SELECT * FROM artesanais ORDER BY id;')
-        feiras_artesanais = cur.fetchall()
+        feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
-        return jsonify(feiras_artesanais)
+
+        # Converte os dados para um formato que o jsonify entende
+        feiras_processadas = []
+        for feira in feiras_raw:
+            feira_dict = dict(feira)
+            for key, value in feira_dict.items():
+                # Converte objetos date e time para string no formato ISO
+                if isinstance(value, (datetime.date, datetime.time)):
+                    feira_dict[key] = value.isoformat() if value else None
+            feiras_processadas.append(feira_dict)
+
+        return jsonify(feiras_processadas)
     except Exception as e:
+        # Adiciona um print para vermos o erro exato nos logs do Render
+        print(f"Erro no endpoint /api/artesanais: {e}")
         return jsonify({'error': str(e)}), 500
 
-# --- FIM DOS NOVOS ENDPOINTS ---
+# --- FIM DOS ENDPOINTS ATUALIZADOS ---
 
-# Endpoint para receber submissões do formulário (já existente)
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
     try:
@@ -139,6 +160,8 @@ def handle_submission():
         return jsonify({'message': 'Dados recebidos com sucesso!'}), 200
     except Exception as e:
         if conn: conn.rollback()
+        # Adiciona um print para vermos o erro exato nos logs do Render
+        print(f"Erro no endpoint /submit-fair: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
