@@ -18,9 +18,9 @@ def get_db_connection():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
 
-# --- INÍCIO DO CÓDIGO ADICIONADO ---
+# --- MAPEAMENTO DE BAIRROS E ENDPOINT DE FILTROS (CÓDIGO EXISTENTE) ---
 
-# 1. Mapeamento de Bairros para Regiões (pode ser expandido)
+# Mapeamento de Bairros para Regiões
 BAIRRO_REGIAO_MAP = {
     'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
     'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
@@ -44,7 +44,7 @@ BAIRRO_REGIAO_MAP = {
     'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro'
 }
 
-# 2. Novo Endpoint para Filtros
+# Endpoint para Filtros
 @app.route('/api/filtros')
 def get_filtros():
     try:
@@ -58,7 +58,6 @@ def get_filtros():
         filtros = {}
         for item in bairros_db:
             bairro = item['bairro']
-            # Usa 'get' para evitar erro se um bairro não estiver no mapa
             regiao = BAIRRO_REGIAO_MAP.get(bairro, 'Outras')
             if regiao not in filtros:
                 filtros[regiao] = []
@@ -68,36 +67,25 @@ def get_filtros():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# --- FIM DO CÓDIGO ADICIONADO ---
-
-
 # Endpoint principal para servir o frontend
 @app.route("/")
 def serve_frontend():
     return send_from_directory('.', 'feiras-livres.html')
 
-# --- NOSSO PRIMEIRO ENDPOINT DE VERDADE ---
-# Este endpoint vai buscar e retornar os dados das feiras
+# Endpoint para buscar e retornar os dados das feiras
 @app.route('/api/feiras')
 def get_feiras():
     try:
-        # --- INÍCIO DAS MODIFICAÇÕES ---
         bairro_query = request.args.get('bairro')
-        # Captura o parâmetro 'limite' da URL, com 1000 como valor padrão
         limite_query = request.args.get('limite', default=1000, type=int) 
-        # --- FIM DAS MODIFICAÇÕES ---
 
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # --- INÍCIO DO CÓDIGO MODIFICADO ---
         if bairro_query:
-            # Se um bairro foi passado, filtra a busca (sem limite)
             cur.execute('SELECT * FROM feiras WHERE bairro = %s ORDER BY id;', (bairro_query,))
         else:
-            # Senão, busca todos usando o limite dinâmico
             cur.execute('SELECT * FROM feiras ORDER BY id LIMIT %s;', (limite_query,))
-        # --- FIM DO CÓDIGO MODIFICADO ---
             
         feiras = cur.fetchall()
 
@@ -109,7 +97,48 @@ def get_feiras():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
+# --- NOVO ENDPOINT PARA RECEBER DADOS DO FORMULÁRIO DE CONTATO ---
+@app.route('/submit-fair', methods=['POST'])
+def handle_submission():
+    try:
+        # Pega os dados enviados pelo formulário
+        nome_feira = request.form.get('fairName')
+        regiao = request.form.get('region')
+        endereco = request.form.get('address')
+        dias_funcionamento = request.form.get('days')
+        categoria = request.form.get('category')
+        nome_responsavel = request.form.get('responsibleName')
+        email_contato = request.form.get('contactEmail')
+        whatsapp = request.form.get('whatsapp')
+        descricao = request.form.get('description')
+
+        conn = get_db_connection()
+        cur = conn.cursor()
+
+        # Comando SQL para inserir os dados na tabela 'contato'
+        sql = """
+            INSERT INTO contato (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
+        """
+        data_tuple = (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
+
+        cur.execute(sql, data_tuple)
+        conn.commit()
+        cur.close()
+
+        return jsonify({'message': 'Dados recebidos com sucesso!'}), 200
+
+    except Exception as e:
+        # Em caso de erro, desfaz a transação
+        if 'conn' in locals() and conn is not None:
+            conn.rollback()
+        return jsonify({'error': str(e)}), 500
+    finally:
+        # Garante que a conexão seja sempre fechada
+        if 'conn' in locals() and conn is not None:
+            conn.close()
+
+
 if __name__ == '__main__':
-    import os
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
