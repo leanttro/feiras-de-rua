@@ -508,7 +508,7 @@
         <section id="announcement-form" class="form-section">
             <div class="container">
                 <h2>Anuncie sua Feira</h2>
-                <!-- ADICIONADO ID AO FORMULÁRIO -->
+                <!-- ID adicionado ao formulário -->
                 <form id="contact-form" action="/submit-fair" method="POST" enctype="multipart/form-data">
                     <div class="form-grid">
                         <div class="form-group">
@@ -647,46 +647,39 @@
                 dot.addEventListener('click', () => { showHeroSlide(index); startHeroSlideShow(); });
             });
             
-            // --- NOVO CÓDIGO PARA O FORMULÁRIO ---
+            // --- CÓDIGO DO FORMULÁRIO COM A CORREÇÃO ---
             const form = document.getElementById('contact-form');
             if (form) {
                 form.addEventListener('submit', function(event) {
-                    // Impede o comportamento padrão de recarregar a página
                     event.preventDefault();
 
                     const submitButton = form.querySelector('.submit-button');
                     submitButton.textContent = 'Enviando...';
                     submitButton.disabled = true;
 
-                    // Pega todos os dados do formulário
                     const formData = new FormData(form);
 
-                    // Envia os dados para o backend
-                    // ATENÇÃO: Se você rodar o backend localmente, mude para 'http://127.0.0.1:5000/submit-fair'
-                    // Quando for para o Render, use apenas '/submit-fair'
-                    fetch('/submit-fair', {
+                    // ***** LINHA CORRIGIDA *****
+                    // Aponta para a URL completa do seu backend no Render
+                    fetch('https://feiras-de-rua.onrender.com/submit-fair', {
                         method: 'POST',
                         body: formData
                     })
                     .then(response => {
                         if (!response.ok) {
-                           // Se a resposta do servidor não for OK, lança um erro para ser pego pelo .catch
                            return response.json().then(err => { throw new Error(err.error || 'Erro no servidor') });
                         }
                         return response.json();
                     })
                     .then(data => {
-                        // Se o backend retornar sucesso...
                         alert('Cadastro enviado com sucesso! Entraremos em contato em breve.');
-                        form.reset(); // Limpa o formulário
+                        form.reset();
                     })
                     .catch(error => {
-                        // Se houver um erro de rede ou um erro lançado pelo then anterior
                         alert('Ocorreu um erro ao enviar o cadastro. Por favor, tente novamente.');
                         console.error('Erro no envio:', error);
                     })
                     .finally(() => {
-                        // Reabilita o botão, independentemente do resultado
                         submitButton.textContent = 'ENVIAR CADASTRO';
                         submitButton.disabled = false;
                     });
@@ -700,3 +693,4 @@
     </script>
 </body>
 </html>
+
