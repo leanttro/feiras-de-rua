@@ -5,17 +5,23 @@ from flask import Flask, jsonify, request, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
 
-
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
 # Cria a instância da aplicação Flask
 app = Flask(__name__)
-CORS(app) # Habilita o CORS para permitir que seu frontend acesse a API
+
+# --- CORREÇÃO DO CORS ---
+# Aqui dizemos explicitamente que o seu site no GitHub Pages tem permissão.
+CORS(app, origins=["https://leanttro.github.io"], methods=["GET", "POST"], supports_credentials=True)
 
 # Função para obter a conexão com o banco de dados
 def get_db_connection():
-    conn = psycopg2.connect(os.getenv('DATABASE_URL'))
+    # Garante que está usando a variável de ambiente para a URL do banco
+    db_url = os.getenv('DATABASE_URL')
+    if not db_url:
+        raise ValueError("DATABASE_URL não foi definida nas variáveis de ambiente!")
+    conn = psycopg2.connect(db_url)
     return conn
 
 # --- MAPEAMENTO DE BAIRROS E ENDPOINT DE FILTROS (CÓDIGO EXISTENTE) ---
@@ -97,11 +103,11 @@ def get_feiras():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# --- NOVO ENDPOINT PARA RECEBER DADOS DO FORMULÁRIO DE CONTATO ---
+# Endpoint para receber dados do formulário de contato
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
+    conn = None # Inicia a variável de conexão como nula
     try:
-        # Pega os dados enviados pelo formulário
         nome_feira = request.form.get('fairName')
         regiao = request.form.get('region')
         endereco = request.form.get('address')
@@ -115,7 +121,6 @@ def handle_submission():
         conn = get_db_connection()
         cur = conn.cursor()
 
-        # Comando SQL para inserir os dados na tabela 'contato'
         sql = """
             INSERT INTO contato (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -129,16 +134,17 @@ def handle_submission():
         return jsonify({'message': 'Dados recebidos com sucesso!'}), 200
 
     except Exception as e:
-        # Em caso de erro, desfaz a transação
-        if 'conn' in locals() and conn is not None:
+        if conn:
             conn.rollback()
+        # Imprime o erro no log do Render para depuração
+        print(f"Erro no endpoint /submit-fair: {e}") 
         return jsonify({'error': str(e)}), 500
     finally:
-        # Garante que a conexão seja sempre fechada
-        if 'conn' in locals() and conn is not None:
+        if conn:
             conn.close()
 
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
