@@ -321,7 +321,7 @@
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            width: 340px;
+            width: 320px; /* Reduzido */
             flex-shrink: 0;
             scroll-snap-align: start;
         }
@@ -357,7 +357,7 @@
         .fair-card p {
             font-size: 1em;
             line-height: 1.6;
-            margin: 0 0 15px 0;
+            margin: 0; /* Removido margin bottom */
             color: var(--text-color);
             display: flex;
             align-items: center;
@@ -368,6 +368,36 @@
             width: 20px;
             text-align: center;
         }
+        
+        /* NOVOS ESTILOS PARA DESCRIÇÃO */
+        .description-wrapper {
+            margin-bottom: 15px;
+        }
+        .description-wrapper p {
+            margin: 0;
+        }
+        .card-description-text {
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 3;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        .card-description-text.expanded {
+            -webkit-line-clamp: unset;
+        }
+        .read-more-btn {
+            display: inline-block;
+            color: var(--primary-green);
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 8px;
+            font-size: 0.9em;
+        }
+        .read-more-btn:hover {
+            text-decoration: underline;
+        }
+        
         .fair-card .button {
             display: inline-block;
             background-color: var(--primary-green);
@@ -519,6 +549,7 @@
                 <div class="filter-group">
                     <label for="tipoFeiraFilter">Selecione o tipo de feira que você procura:</label>
                     <select id="tipoFeiraFilter" class="filter-select">
+                        <option value="" disabled selected>Selecione uma categoria...</option>
                         <option value="feiras-livres">Feiras Livres</option>
                         <option value="gastronomicas">Gastronômicas</option>
                         <option value="artesanais">Artesanais</option>
@@ -638,7 +669,14 @@
                 card.classList.add('fair-card');
 
                 const nome = feira.nome_feira || 'Nome não disponível';
-                const imagem = feira.imagem_url || `https://placehold.co/600x400/f8f9fa/343a40?text=${nome.split(' ')[0]}`;
+                
+                // AJUSTE: Lógica para o placeholder da imagem
+                let placeholderText = nome.split(' ')[0];
+                if (tipo === 'feiras-livres') {
+                    placeholderText = 'FEIRA-LIVRE';
+                }
+                const imagem = feira.imagem_url || `https://placehold.co/600x400/f8f9fa/343a40?text=${placeholderText}`;
+                
                 const linkPagina = pageLinks[tipo] || '#';
                 
                 let detalhesHtml = '';
@@ -650,8 +688,20 @@
                     `;
                 } else { // Gastronômicas e Artesanais
                     const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
+                    const descricao = feira.descricao || 'Sem descrição';
+                    const limiteCaracteres = 100;
+
+                    const descriptionBlock = `
+                        <div class="description-wrapper">
+                            <p class="card-description-text">
+                                <i class="fas fa-info-circle"></i> ${descricao}
+                            </p>
+                            ${descricao.length > limiteCaracteres ? '<a href="#" class="read-more-btn">Ler mais</a>' : ''}
+                        </div>
+                    `;
+
                     detalhesHtml = `
-                        <p><i class="fas fa-info-circle"></i> ${feira.descricao || 'Sem descrição'}</p>
+                        ${descriptionBlock}
                         <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                         <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                         <p><i class="fas fa-map-pin"></i> ${feira.rua || 'Endereço não informado'}</p>
@@ -693,14 +743,35 @@
             }
 
             tipoFeiraFilter.addEventListener('change', (e) => {
-                loadFairs(e.target.value);
+                const selectedType = e.target.value;
+                if (selectedType) {
+                    loadFairs(selectedType);
+                }
+            });
+
+            carouselWrapper.addEventListener('click', (e) => {
+                if (e.target.classList.contains('read-more-btn')) {
+                    e.preventDefault();
+                    const btn = e.target;
+                    const wrapper = btn.closest('.description-wrapper');
+                    const descriptionP = wrapper.querySelector('.card-description-text');
+                    
+                    descriptionP.classList.toggle('expanded');
+                    
+                    if (descriptionP.classList.contains('expanded')) {
+                        btn.textContent = 'Ler menos';
+                    } else {
+                        btn.textContent = 'Ler mais';
+                    }
+                }
             });
 
             // --- Initial Page Load ---
             showHeroSlide(currentHeroSlide);
             startHeroSlideShow();
-            loadFairs(tipoFeiraFilter.value); // Carrega a seleção inicial (Feiras Livres)
+            carouselWrapper.innerHTML = `<p class="info-message">Selecione um tipo de feira acima para ver os destaques.</p>`;
         });
     </script>
 </body>
 </html>
+
