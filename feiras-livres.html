@@ -356,6 +356,10 @@
             text-decoration: underline;
         }
 
+        .mobile-title {
+            display: none;
+        }
+
         /* --- Responsividade --- */
         @media (max-width: 992px) {
             nav.desktop-nav { display: none; }
@@ -365,13 +369,17 @@
         }
 
         @media (max-width: 768px) {
+            .desktop-title {
+                display: none;
+            }
+            .mobile-title {
+                display: block;
+            }
             .hero-section { height: 400px; }
             .hero-section h1 { font-size: 2em; }
             #busca-local { margin-top: -60px; padding: 40px 20px; }
             .busca-opcoes { flex-direction: column; }
-            /* --- INÍCIO DA CORREÇÃO --- */
-            .busca-endereco { flex-direction: column; width: 100%; padding: 0; }
-            /* --- FIM DA CORREÇÃO --- */
+            .busca-endereco { flex-direction: column; width: 100%; }
             #input-endereco { min-width: auto; width: 100%; }
         }
 
@@ -636,7 +644,8 @@
     <main>
         <section class="hero-section">
             <div class="container">
-                <h1>+1000 Feiras-Livres em São Paulo!<br>Encontre a mais próxima de você.</h1>
+                <h1 class="desktop-title">+1000 Feiras-Livres em São Paulo!<br>Encontre a mais próxima de você.</h1>
+                <h1 class="mobile-title">+1000 Feiras-Livres<br>em São Paulo!<br>Encontre a mais<br>próxima de você.</h1>
                 <p>Produtos frescos, orgânicos e artesanais pertinho de você.</p>
             </div>
         </section>
@@ -934,9 +943,7 @@
                 viewGridBtn.classList.remove('active');
             });
 
-            // --- INÍCIO DA CORREÇÃO ---
             viewGridBtn.addEventListener('click', () => {
-            // --- FIM DA CORREÇÃO ---
                 resultadosDiv.classList.remove('results-carousel');
                 viewGridBtn.classList.add('active');
                 viewCarouselBtn.classList.remove('active');
