@@ -81,20 +81,22 @@ def serve_frontend():
 @app.route('/api/feiras')
 def get_feiras():
     try:
-        # --- INÍCIO DO CÓDIGO ADICIONADO ---
+        # --- INÍCIO DAS MODIFICAÇÕES ---
         bairro_query = request.args.get('bairro')
-        # --- FIM DO CÓDIGO ADICIONADO ---
+        # Captura o parâmetro 'limite' da URL, com 1000 como valor padrão
+        limite_query = request.args.get('limite', default=1000, type=int) 
+        # --- FIM DAS MODIFICAÇÕES ---
 
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
         # --- INÍCIO DO CÓDIGO MODIFICADO ---
         if bairro_query:
-            # Se um bairro foi passado, filtra a busca
+            # Se um bairro foi passado, filtra a busca (sem limite)
             cur.execute('SELECT * FROM feiras WHERE bairro = %s ORDER BY id;', (bairro_query,))
         else:
-            # Senão, busca todos (com o limite)
-            cur.execute('SELECT * FROM feiras ORDER BY id LIMIT 100;')
+            # Senão, busca todos usando o limite dinâmico
+            cur.execute('SELECT * FROM feiras ORDER BY id LIMIT %s;', (limite_query,))
         # --- FIM DO CÓDIGO MODIFICADO ---
             
         feiras = cur.fetchall()
