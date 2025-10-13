@@ -5,7 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feiras de São Paulo</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet"> <style>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
@@ -340,20 +341,137 @@
         }
         /* SLIDER STYLES END */
 
+        /* --- NEW: ADDRESS SEARCH SECTION --- */
+        .address-search-section {
+            padding: 50px 0;
+            background-color: var(--white);
+            margin-top: -60px;
+            position: relative;
+            z-index: 20;
+            border-radius: 12px;
+            box-shadow: var(--shadow-medium);
+            max-width: 900px; /* Adjusted width */
+            margin-left: auto;
+            margin-right: auto;
+            text-align: center;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: fadeInTop 0.8s forwards 0.5s;
+        }
+
+        .address-search-section h2 {
+            font-size: 2.2em;
+            color: var(--dark-gray);
+            margin-bottom: 30px;
+        }
+
+        .address-form-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .address-form-container button {
+            padding: 14px 25px;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        #useLocationBtn {
+            background-color: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+        #useLocationBtn:hover {
+            background-color: var(--light-green);
+        }
+
+        #searchAddressBtn {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
+        #searchAddressBtn:hover {
+            background-color: var(--dark-green);
+        }
+
+        .autocomplete-container {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        #addressInput {
+            width: 100%;
+            padding: 15px 20px;
+            border: 1px solid var(--medium-gray);
+            border-radius: 8px;
+            font-size: 1em;
+            color: var(--text-color);
+            box-sizing: border-box;
+        }
+        #addressInput:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+        }
+
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .suggestion-item:hover {
+            background-color: var(--light-gray);
+        }
+        
+        #search-status {
+            margin-top: 15px;
+            font-weight: 500;
+            color: var(--dark-green);
+            min-height: 20px; /* Reserve space */
+        }
+
+        .fair-card.highlight {
+            border: 3px solid var(--accent-gold);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5);
+            transform: translateY(-8px) scale(1.02);
+        }
+
         .filters-section {
             padding: 50px 0; /* More top/bottom padding */
-            background-color: var(--white);
-            margin-top: -60px; /* Overlap with hero section */
+            background-color: #f1f1f1; /* Changed background */
             position: relative;
             z-index: 10;
             border-radius: 12px; /* Softer edges */
             box-shadow: var(--shadow-medium);
             max-width: 1100px; /* Slightly narrower */
-            margin-left: auto;
-            margin-right: auto;
-            transform: translateY(-20px); /* Lift up slightly */
+            margin: 40px auto 0 auto; /* Adjusted margin-top */
             opacity: 0;
-            animation: fadeInTop 0.8s forwards 0.5s; /* Fade in and lift animation */
+            animation: fadeInTop 0.8s forwards 0.8s; /* Delayed animation */
         }
 
         @keyframes fadeInTop {
@@ -430,6 +548,12 @@
         }
         
         @media (max-width: 768px) {
+            .address-form-container {
+                flex-direction: column;
+            }
+            .autocomplete-container {
+                width: 100%;
+            }
             .filters-top-row, .filters-bottom-row {
                 grid-template-columns: 1fr; /* Stack on mobile */
                 width: 100%; /* Full width on mobile */
@@ -469,10 +593,10 @@
             box-shadow: var(--shadow-light);
             overflow: hidden;
             text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            border: 1px solid var(--medium-gray); /* Subtle border */
+            border: 3px solid transparent; /* Prepare for highlight */
         }
 
         .fair-card:hover {
@@ -691,7 +815,7 @@
             }
 
             .filters-section {
-                margin-top: -40px;
+                margin-top: 40px;
                 padding: 40px 20px;
             }
 
@@ -731,7 +855,7 @@
 
             .filters-section {
                 padding: 30px 15px;
-                margin-top: -30px;
+                margin-top: 30px;
             }
 
             .fair-cards-container {
@@ -873,7 +997,7 @@
                         <h1>A SUA FEIRA DE SÃO PAULO <span class="subtitle">a um clique de distância</span></h1>
                     </div>
                     <p>Explore, descubra e apaixone-se pelas feiras de rua da nossa cidade. Encontre produtos frescos, artesanato local e muito mais!</p>
-                    <a href="#filters" class="button">ENCONTRE MINHA FEIRA AGORA!</a>
+                    <a href="#address-search-section" class="button">ENCONTRE MINHA FEIRA AGORA!</a>
                 </div>
             </div>
             <div class="slide" id="slide-2">
@@ -882,7 +1006,7 @@
                         <h1>SABORES QUE ENCANTAM <span class="subtitle">uma experiência para o paladar</span></h1>
                     </div>
                     <p>Mergulhe em um universo de aromas e sabores. As feiras gastronômicas de São Paulo são um convite para novas experiências culinárias.</p>
-                    <a href="#filters" class="button">VER FEIRAS GASTRONÔMICAS</a>
+                    <a href="#address-search-section" class="button">VER FEIRAS GASTRONÔMICAS</a>
                 </div>
             </div>
             <div class="slide" id="slide-3">
@@ -891,7 +1015,7 @@
                          <h1>ARTE QUE PULSA NA CIDADE <span class="subtitle">criatividade e cultura local</span></h1>
                     </div>
                     <p>Encontre peças únicas, feitas à mão por artistas locais. Leve para casa um pedaço da cultura e da criatividade de São Paulo.</p>
-                    <a href="#filters" class="button">VER FEIRAS ARTESANAIS</a>
+                    <a href="#address-search-section" class="button">VER FEIRAS ARTESANAIS</a>
                 </div>
             </div>
 
@@ -902,6 +1026,22 @@
                 <span class="dot active"></span>
                 <span class="dot"></span>
                 <span class="dot"></span>
+            </div>
+        </section>
+        
+        <!-- NEW ADDRESS SEARCH SECTION -->
+        <section id="address-search-section" class="address-search-section">
+            <div class="container">
+                <h2>Encontre sua feira</h2>
+                <div class="address-form-container">
+                    <button id="useLocationBtn"><i class="fas fa-map-marker-alt"></i> Usar Meu Local</button>
+                    <div class="autocomplete-container">
+                        <input type="text" id="addressInput" placeholder="Digite um endereço em São Paulo...">
+                        <div id="addressSuggestions" class="suggestions-list" style="display: none;"></div>
+                    </div>
+                    <button id="searchAddressBtn">Buscar</button>
+                </div>
+                <div id="search-status"></div>
             </div>
         </section>
 
@@ -1005,124 +1145,162 @@
     </footer>
 
     <script>
-        // Data for fairs
+        // Data for fairs with latitude and longitude
         const fairsData = [
             {
+                id: "benedito-calixto",
                 name: "Feira da Benedito Calixto",
                 description: "Famosa por suas antiguidades, artesanato e música ao vivo.",
                 region: "oeste",
                 category: "artesanal",
                 day: "sabado",
-                date: "2025-09-27", // Example: Saturday, September 27, 2025 (this week)
-                locationTag: "Pinheiros"
+                date: "2025-09-27",
+                locationTag: "Pinheiros",
+                lat: -23.559,
+                lon: -46.684
             },
             {
+                id: "agua-branca",
                 name: "Feira de Orgânicos do Parque da Água Branca",
                 description: "Produtos orgânicos, hortaliças, pães, laticínios frescos e mais.",
                 region: "sul",
                 category: "livre",
                 day: "domingo",
-                date: "2025-09-28", // Example: Sunday, September 28, 2025 (this week)
-                locationTag: "Barra Funda"
+                date: "2025-09-28",
+                locationTag: "Barra Funda",
+                lat: -23.526,
+                lon: -46.669
             },
             {
+                id: "liberdade",
                 name: "Feira da Liberdade",
                 description: "Culinária asiática autêntica, artesanato e itens culturais.",
                 region: "central",
                 category: "gastronomica",
                 day: "domingo",
-                date: "2025-10-05", // Example: Sunday, October 5, 2025 (next week)
-                locationTag: "Liberdade"
+                date: "2025-10-05",
+                locationTag: "Liberdade",
+                lat: -23.561,
+                lon: -46.636
             },
             {
+                id: "lapa",
                 name: "Feira da Lapa",
                 description: "Grande variedade de frutas, legumes e verduras frescas.",
                 region: "norte",
                 category: "livre",
                 day: "terca",
-                date: "2025-09-30", // Example: Tuesday, September 30, 2025 (next week)
-                locationTag: "Lapa"
+                date: "2025-09-30",
+                locationTag: "Lapa",
+                lat: -23.523,
+                lon: -46.702
             },
             {
+                id: "tatuape",
                 name: "Feira de Artesanato do Tatuapé",
                 description: "Peças únicas de artesanato local, joias e decoração.",
                 region: "leste",
                 category: "artesanal",
                 day: "sexta",
-                date: "2025-10-03", // Example: Friday, October 3, 2025 (next week)
-                locationTag: "Tatuapé"
+                date: "2025-10-03",
+                locationTag: "Tatuapé",
+                lat: -23.541,
+                lon: -46.576
             },
             {
+                id: "santo-amaro",
                 name: "Feira Noturna de Santo Amaro",
                 description: "Opções diversas de street food, com sabores do mundo todo.",
                 region: "sul",
                 category: "gastronomica",
                 day: "quarta",
-                date: "2025-10-08", // Example: Wednesday, October 8, 2025 (next week)
-                locationTag: "Santo Amaro"
+                date: "2025-10-08",
+                locationTag: "Santo Amaro",
+                lat: -23.650,
+                lon: -46.709
             },
             {
+                id: "vila-madalena",
                 name: "Feira Livre da Vila Madalena",
                 description: "Uma feira tradicional com produtos frescos e ambiente descontraído.",
                 region: "oeste",
                 category: "livre",
                 day: "quarta",
-                date: "2025-10-01", // Example: Wednesday, October 1, 2025 (next week)
-                locationTag: "Vila Madalena"
+                date: "2025-10-01",
+                locationTag: "Vila Madalena",
+                lat: -23.553,
+                lon: -46.696
             },
             {
+                id: "pacaembu",
                 name: "Feira Gastronômica do Pacaembu",
                 description: "Diversas opções de food trucks e barracas gourmet.",
                 region: "central",
                 category: "gastronomica",
                 day: "quinta",
-                date: "2025-10-09", // Example: Thursday, October 9, 2025 (next week)
-                locationTag: "Pacaembu"
+                date: "2025-10-09",
+                locationTag: "Pacaembu",
+                lat: -23.549,
+                lon: -46.664
             },
             {
+                id: "republica",
                 name: "Feira de Antiguidades da Praça da República",
                 description: "Colecionáveis, obras de arte e itens vintage.",
                 region: "central",
                 category: "artesanal",
                 day: "sabado",
-                date: "2025-10-11", // Example: Saturday, October 11, 2025 (next week)
-                locationTag: "República"
+                date: "2025-10-11",
+                locationTag: "República",
+                lat: -23.544,
+                lon: -46.642
             },
             {
+                id: "paulista",
                 name: "Feira de Natal na Paulista",
                 description: "Edição especial de natal com artesanato temático e comidas sazonais.",
                 region: "central",
                 category: "artesanal",
                 day: "domingo",
-                date: "2025-12-07", // Example: December 7, 2025 (future month)
-                locationTag: "Paulista"
+                date: "2025-12-07",
+                locationTag: "Paulista",
+                lat: -23.561,
+                lon: -46.656
             },
             {
+                id: "ibirapuera",
                 name: "Feira de Inverno no Ibirapuera",
                 description: "Produtos quentinhos, artesanato de lã e chocolate quente.",
                 region: "sul",
                 category: "gastronomica",
                 day: "sabado",
-                date: "2025-06-21", // Example: June 21, 2025 (past month)
-                locationTag: "Ibirapuera"
+                date: "2025-06-21",
+                locationTag: "Ibirapuera",
+                lat: -23.588,
+                lon: -46.658
             },
             {
+                id: "cidade",
                 name: "Feira da Cidade",
                 description: "Feira itinerante com o melhor da gastronomia local e pequenos produtores.",
                 region: "oeste",
                 category: "gastronomica",
                 day: "sabado",
-                date: "2025-11-08", // Example: November 8, 2025 (future month)
-                locationTag: "Diversos"
+                date: "2025-11-08",
+                locationTag: "Diversos",
+                lat: -23.559, // Using a central point for this one
+                lon: -46.684
             }
         ];
 
         document.addEventListener('DOMContentLoaded', () => {
+            // --- General page elements ---
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const mobileNavOverlay = document.getElementById('mobileNavOverlay');
             const closeMobileMenu = document.getElementById('closeMobileMenu');
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-overlay nav ul li a');
             
+            // --- Filter elements ---
             const filterSelects = document.querySelectorAll('.filter-select');
             const dateRangeFilter = document.getElementById('dateRangeFilter');
             const monthFilter = document.getElementById('monthFilter');
@@ -1134,6 +1312,14 @@
             const carouselViewBtn = document.getElementById('carousel-view-btn');
             const gridViewBtn = document.getElementById('grid-view-btn');
 
+            // --- NEW: Address search elements ---
+            const addressInput = document.getElementById('addressInput');
+            const addressSuggestions = document.getElementById('addressSuggestions');
+            const useLocationBtn = document.getElementById('useLocationBtn');
+            const searchAddressBtn = document.getElementById('searchAddressBtn');
+            const searchStatus = document.getElementById('search-status');
+            let selectedLocationCoords = null;
+            let debounceTimer;
 
             let currentFilters = {
                 region: 'all',
@@ -1143,7 +1329,6 @@
                 month: 'all'
             };
 
-            const dayNames = ["domingo", "segunda", "terca", "quarta", "quinta", "sexta", "sabado"];
             const monthNames = ["Janeiro", "Fevereiro", "Março", "Abril", "Maio", "Junho", "Julho", "Agosto", "Setembro", "Outubro", "Novembro", "Dezembro"];
 
             // --- Helper Functions for Dates ---
@@ -1180,11 +1365,25 @@
                     monthFilter.add(new Option(`${monthNames[0]} ${nextYear}`, monthValue));
                 }
             }
+            
+            // --- Helper function for distance calculation (Haversine formula) ---
+            function getDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Radius of the earth in km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c; // Distance in km
+            }
 
             // --- Fair Card Creation ---
             function createFairCardElement(fair) {
                 const card = document.createElement('div');
                 card.classList.add('fair-card');
+                card.dataset.fairId = fair.id; // Add data attribute for identification
                 card.innerHTML = `
                     <div class="image-placeholder">Imagem Indisponível</div>
                     <div class="fair-card-content">
@@ -1221,9 +1420,7 @@
                 // Populate both views
                 fairsToDisplay.forEach(fair => {
                     const cardElement = createFairCardElement(fair);
-                    // Grid view gets a clone
                     fairCardsContainer.appendChild(cardElement.cloneNode(true));
-                    // Carousel view gets the original
                     carouselWrapper.appendChild(cardElement);
                 });
             }
@@ -1249,6 +1446,118 @@
 
                 updateViews(filteredFairs);
             }
+
+            // --- NEW: Address Search and Geolocation Logic ---
+
+            // Function to find and highlight the closest fair
+            function findAndHighlightClosestFair(coords) {
+                if (!coords) {
+                    searchStatus.textContent = 'Localização não encontrada.';
+                    searchStatus.style.color = 'red';
+                    return;
+                }
+                
+                let closestFair = null;
+                let minDistance = Infinity;
+
+                fairsData.forEach(fair => {
+                    const distance = getDistance(coords.lat, coords.lon, fair.lat, fair.lon);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestFair = fair;
+                    }
+                });
+
+                if (closestFair) {
+                    searchStatus.innerHTML = `Feira mais próxima: <strong>${closestFair.name}</strong> (aprox. ${minDistance.toFixed(1)} km).`;
+                    searchStatus.style.color = 'var(--dark-green)';
+
+                    // Remove previous highlight
+                    document.querySelectorAll('.fair-card.highlight').forEach(c => c.classList.remove('highlight'));
+                    
+                    // Highlight the new card in both grid and carousel
+                    const cardsToHighlight = document.querySelectorAll(`.fair-card[data-fair-id="${closestFair.id}"]`);
+                    cardsToHighlight.forEach(card => {
+                        card.classList.add('highlight');
+                        // Scroll to the card
+                        card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    });
+                }
+            }
+
+            // Autocomplete address input
+            addressInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const query = addressInput.value;
+                if (query.length < 3) {
+                    addressSuggestions.style.display = 'none';
+                    return;
+                }
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}, São Paulo, Brazil&limit=5`);
+                        const suggestions = await response.json();
+                        addressSuggestions.innerHTML = '';
+                        if (suggestions.length > 0) {
+                            suggestions.forEach(s => {
+                                const item = document.createElement('div');
+                                item.classList.add('suggestion-item');
+                                item.textContent = s.display_name;
+                                item.addEventListener('click', () => {
+                                    addressInput.value = s.display_name;
+                                    selectedLocationCoords = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
+                                    addressSuggestions.style.display = 'none';
+                                });
+                                addressSuggestions.appendChild(item);
+                            });
+                            addressSuggestions.style.display = 'block';
+                        } else {
+                            addressSuggestions.style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar endereço:", error);
+                        addressSuggestions.style.display = 'none';
+                    }
+                }, 300);
+            });
+
+            // "Buscar" button
+            searchAddressBtn.addEventListener('click', () => {
+                if(selectedLocationCoords) {
+                    findAndHighlightClosestFair(selectedLocationCoords);
+                } else {
+                    searchStatus.textContent = 'Por favor, selecione um endereço da lista.';
+                    searchStatus.style.color = 'red';
+                }
+            });
+
+            // "Usar Meu Local" button
+            useLocationBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    searchStatus.textContent = 'Obtendo sua localização...';
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const coords = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude
+                        };
+                        findAndHighlightClosestFair(coords);
+                    }, error => {
+                        searchStatus.textContent = 'Não foi possível obter sua localização.';
+                        searchStatus.style.color = 'red';
+                        console.error("Erro de geolocalização:", error);
+                    });
+                } else {
+                    searchStatus.textContent = 'Geolocalização não é suportada por este navegador.';
+                    searchStatus.style.color = 'red';
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.autocomplete-container')) {
+                    addressSuggestions.style.display = 'none';
+                }
+            });
 
             // --- Event Listeners ---
             filterSelects.forEach(select => {
@@ -1284,7 +1593,7 @@
                 gridViewBtn.classList.add('active');
             });
             
-            // --- Drag-to-scroll for Carousel (Desktop) ---
+            // Drag-to-scroll for Carousel (Desktop)
             const slider = document.querySelector('#fairCarouselContainer .fair-carousel-wrapper');
             let isDown = false;
             let startX;
@@ -1312,10 +1621,7 @@
                 slider.scrollLeft = scrollLeft - walk;
             });
 
-            // The native overflow-x: auto with -webkit-overflow-scrolling: touch handles mobile scrolling correctly.
-            // The custom touch listeners were removed to prevent blocking vertical page scroll.
-
-            // --- Mobile Menu Functionality ---
+            // Mobile Menu Functionality
             hamburgerMenu.addEventListener('click', () => {
                 mobileNavOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
@@ -1331,7 +1637,7 @@
                 });
             });
 
-            // --- Hero Slider Functionality ---
+            // Hero Slider Functionality
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
             const prev = document.querySelector('.prev-slide');
@@ -1363,11 +1669,6 @@
             applyFilters();
             showHeroSlide(currentHeroSlide);
             startHeroSlideShow();
-            
-            // Placeholder for "Add Fair" button
-            document.getElementById('addFairButton').addEventListener('click', (e) => {
-                // Link will now handle navigation, this can be removed or repurposed
-            });
             
             // Re-render carousel on resize to adjust cards per slide
             window.addEventListener('resize', applyFilters);
