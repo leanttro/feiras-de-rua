@@ -224,6 +224,7 @@
         .busca-endereco {
             display: flex;
             gap: 10px;
+            position: relative; /* Adicionado para posicionar as sugestões */
         }
 
         #input-endereco {
@@ -238,6 +239,32 @@
              outline: none;
             border-color: var(--primary-green);
             box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
+        }
+        
+        /* --- Estilos para Sugestões de Endereço (Photon) --- */
+        #address-suggestions {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background-color: white;
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+            text-align: left;
+        }
+
+        .suggestion-item {
+            padding: 12px 15px;
+            cursor: pointer;
+            font-size: 0.95em;
+        }
+
+        .suggestion-item:hover {
+            background-color: var(--light-gray);
         }
 
         /* --- Seção de Resultados --- */
@@ -621,7 +648,8 @@
                     </button>
                     <div class="busca-endereco">
                         <input type="text" id="input-endereco" placeholder="Digite um endereço em São Paulo...">
-                        <button>Buscar</button>
+                        <button style="display: none;">Buscar</button> <!-- Botão ocultado, a busca é automática -->
+                        <div id="address-suggestions"></div>
                     </div>
                 </div>
             </div>
@@ -689,11 +717,7 @@
                 mobileNavOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
             });
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Fecha o menu mobile e reabilita o scroll da página.
 
-/*******  946806c8-386e-4647-95c3-e4c3e91610ce  *******/
             const closeMenu = () => {
                 mobileNavOverlay.classList.remove('active');
                 document.body.style.overflow = '';
@@ -710,104 +734,168 @@
             let todasAsFeiras = [];
             let feirasExibidas = [];
 
-            // --- INÍCIO: Lógica de Busca por Localização ---
+            // --- INÍCIO: Lógica de Busca ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
-            const btnBuscaEndereco = document.querySelector('.busca-endereco button');
             const inputEndereco = document.getElementById('input-endereco');
-
-            // Função para buscar feiras por geolocalização (lat/lon)
-            async function buscarFeirasPorGeolocalizacao(lat, lon) {
-                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras próximas...</p>`;
-                try {
-                    const response = await fetch(`${API_URL}?lat=${lat}&lon=${lon}`, { cache: 'no-cache' });
-                    if (!response.ok) throw new Error('Erro ao buscar feiras por geolocalização.');
-                    feirasExibidas = await response.json();
-                    console.log('DEBUG: Resposta da API para busca por geolocalização:', feirasExibidas); // Adicionado para depuração
-                    if (feirasExibidas.length > 0) {
-                        filtroBairroSelect.value = 'todos'; // Reseta o filtro de bairro
-                    }
-                    renderizarFeiras(feirasExibidas);
-                } catch (error) {
-                    console.error('Falha ao buscar feiras por geolocalização:', error);
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar as feiras próximas.</p>';
-                }
+            const suggestionsContainer = document.getElementById('address-suggestions');
+            
+            // Função para calcular a distância entre duas coordenadas usando a fórmula de Haversine.
+            function haversineDistance(coords1, coords2) {
+                function toRad(x) { return x * Math.PI / 180; }
+                if (!coords1 || !coords2 || coords1.latitude == null || coords1.longitude == null || coords2.latitude == null || coords2.longitude == null) return Infinity;
+                const R = 6371; // Raio da Terra em km
+                const dLat = toRad(coords2.latitude - coords1.latitude);
+                const dLon = toRad(coords2.longitude - coords1.longitude);
+                const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(coords1.latitude)) * Math.cos(toRad(coords2.latitude)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c;
             }
 
-            // Função para buscar feiras por endereço
-            async function buscarFeirasPorEndereco(endereco) {
-                if (!endereco.trim()) {
-                    return;
+            // Função para ordenar feiras por proximidade e renderizar
+            function ordenarEExibirFeiras(userLocation) {
+                 resultadosDiv.innerHTML = `<p class="loading-message">Calculando distâncias e ordenando feiras...</p>`;
+                const feirasComDistancia = todasAsFeiras.map(feira => {
+                    const feiraLocation = { latitude: feira.latitude, longitude: feira.longitude };
+                    const distancia = haversineDistance(userLocation, feiraLocation);
+                    return { ...feira, distancia };
+                }).sort((a, b) => a.distancia - b.distancia);
+                feirasExibidas = feirasComDistancia;
+                if (feirasExibidas.length > 0) {
+                    filtroBairroSelect.value = 'todos';
                 }
-                const enderecoCompleto = `${endereco}, São Paulo`;
-                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras perto de ${endereco}...</p>`;
-                try {
-                    const response = await fetch(`${API_URL}?endereco=${encodeURIComponent(enderecoCompleto)}`, { cache: 'no-cache' });
-                    if (!response.ok) throw new Error('Erro ao buscar feiras por endereço.');
-                    feirasExibidas = await response.json();
-                    console.log('DEBUG: Resposta da API para busca por endereço:', feirasExibidas); // Adicionado para depuração
-                     if (feirasExibidas.length > 0) {
-                        filtroBairroSelect.value = 'todos'; // Reseta o filtro de bairro
-                    }
-                    renderizarFeiras(feirasExibidas);
-                } catch (error) {
-                    console.error('Falha ao buscar feiras por endereço:', error);
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível encontrar feiras para o endereço informado. Tente ser mais específico.</p>';
-                }
+                renderizarFeiras(feirasExibidas);
             }
 
-            // Event listener para o botão "Usar Meu Local"
-            btnMeuLocal.addEventListener('click', () => {
+            // --- FUNÇÃO MODIFICADA ---
+            // Função para solicitar a geolocalização do usuário
+            function solicitarLocalizacaoEOrdenar() {
                 if ('geolocation' in navigator) {
-                    resultadosDiv.innerHTML = '<p class="loading-message">Obtendo sua localização...</p>';
-                    navigator.geolocation.getCurrentPosition(async (position) => {
-                        const { latitude, longitude } = position.coords;
-                        await buscarFeirasPorGeolocalizacao(latitude, longitude);
+                    if (document.querySelector('.initial-message')) {
+                       document.querySelector('.initial-message').textContent = 'Para mostrar as feiras mais próximas, por favor, permita o acesso à sua localização.';
+                    }
+                    navigator.geolocation.getCurrentPosition((position) => {
+                        const userLocation = {
+                            latitude: position.coords.latitude,
+                            longitude: position.coords.longitude
+                        };
+                        ordenarEExibirFeiras(userLocation);
                     }, (error) => {
-                        console.error('Erro ao obter geolocalização:', error);
-                        resultadosDiv.innerHTML = '<p class="error-message">Não foi possível obter sua localização. Verifique as permissões do navegador.</p>';
+                        // --- INÍCIO DA CORREÇÃO ---
+                        let userMessage = 'Não foi possível obter sua localização.';
+                        switch(error.code) {
+                            case error.PERMISSION_DENIED:
+                                userMessage = "Você negou o acesso à localização. Use a busca manual para encontrar feiras.";
+                                // Alterado para console.log para não parecer um erro crítico
+                                console.log('Acesso à localização negado pelo usuário.');
+                                break;
+                            case error.POSITION_UNAVAILABLE:
+                                userMessage = "Informações de localização não estão disponíveis no momento.";
+                                console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
+                                break;
+                            case error.TIMEOUT:
+                                userMessage = "A solicitação de localização demorou muito para responder.";
+                                console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
+                                break;
+                            default:
+                                console.error('Ocorreu um erro desconhecido ao obter a geolocalização:', error);
+                                break;
+                        }
+                        
+                        if (document.querySelector('.initial-message')) {
+                            document.querySelector('.initial-message').textContent = 'Use a busca acima para encontrar as feiras mais próximas.';
+                        }
+                        // Limpa a mensagem de "carregando" e exibe a mensagem de status
+                        const initialOrLoadingMessage = document.querySelector('.initial-message, .loading-message');
+                        if (initialOrLoadingMessage && initialOrLoadingMessage.parentNode === resultadosDiv) {
+                           renderizarFeiras(todasAsFeiras); // Mostra a lista padrão
+                        }
+                        // --- FIM DA CORREÇÃO ---
                     });
                 } else {
-                    resultadosDiv.innerHTML = '<p class="error-message">Geolocalização não é suportada pelo seu navegador.</p>';
-                }
-            });
-
-            // Event listener para o botão de busca por endereço
-            btnBuscaEndereco.addEventListener('click', () => {
-                buscarFeirasPorEndereco(inputEndereco.value);
-            });
-
-            // Event listener para a tecla Enter no campo de endereço
-            inputEndereco.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    buscarFeirasPorEndereco(inputEndereco.value);
-                }
-            });
-            // --- FIM: Lógica de Busca por Localização ---
-
-
-            // Função para buscar feiras de um bairro específico
-            async function carregarFeirasPorBairro(bairro) {
-                resultadosDiv.innerHTML = `<p class="loading-message">Buscando feiras em ${bairro}...</p>`;
-                try {
-                    const response = await fetch(`${API_URL}?bairro=${encodeURIComponent(bairro)}`, { cache: 'no-cache' });
-                    if (!response.ok) throw new Error('Erro ao buscar feiras por bairro.');
-                    feirasExibidas = await response.json();
-                    renderizarFeiras(feirasExibidas);
-                } catch (error) {
-                    console.error('Falha ao buscar feiras por bairro:', error);
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar as feiras do bairro selecionado.</p>';
+                    console.log('Geolocalização não é suportada por este navegador.');
                 }
             }
 
+
+            // Event listener para o botão "Usar Meu Local" (Geolocalização)
+            btnMeuLocal.addEventListener('click', solicitarLocalizacaoEOrdenar);
+
+
+            // --- INÍCIO: MODIFICAÇÃO PARA USAR NOMINATIM ---
+            function debounce(func, delay) {
+                let timeout;
+                return function(...args) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(() => func.apply(this, args), delay);
+                };
+            }
+
+            async function handleAddressInput() {
+                const query = inputEndereco.value;
+                if (query.length < 3) {
+                    suggestionsContainer.innerHTML = '';
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+                try {
+                    // URL trocada para Nominatim, com busca focada em São Paulo
+                    const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', São Paulo')}&limit=5`);
+                    const data = await response.json();
+                    displaySuggestions(data); // Passa o array de dados diretamente
+                } catch (error) {
+                    console.error('Erro ao buscar sugestões de endereço:', error);
+                }
+            }
+
+            function displaySuggestions(results) {
+                suggestionsContainer.innerHTML = '';
+                if (!results || results.length === 0) {
+                    suggestionsContainer.style.display = 'none';
+                    return;
+                }
+                // O loop agora itera sobre 'results' do Nominatim
+                results.forEach(result => {
+                    const item = document.createElement('div');
+                    item.classList.add('suggestion-item');
+                    // Usa 'display_name' do Nominatim
+                    item.textContent = result.display_name;
+
+                    item.addEventListener('click', () => {
+                        inputEndereco.value = item.textContent;
+                        suggestionsContainer.innerHTML = '';
+                        suggestionsContainer.style.display = 'none';
+                        // Pega lat e lon diretamente do objeto 'result'
+                        const userLocation = { latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) };
+                        ordenarEExibirFeiras(userLocation);
+                    });
+                    suggestionsContainer.appendChild(item);
+                });
+                suggestionsContainer.style.display = 'block';
+            }
+
+            inputEndereco.addEventListener('input', debounce(handleAddressInput, 300));
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.busca-endereco')) {
+                    suggestionsContainer.style.display = 'none';
+                }
+            });
+            // --- FIM: MODIFICAÇÃO PARA USAR NOMINATIM ---
+            
+            
             // Adiciona o listener para o seletor de bairros
             filtroBairroSelect.addEventListener('change', () => {
                 const bairroSelecionado = filtroBairroSelect.value;
+                
                 if (bairroSelecionado === 'todos') {
-                    carregarDadosIniciais(true); // Recarrega a lista inicial
+                    // Se 'Todos' for selecionado, apenas re-renderiza a lista principal (que já está ordenada e com distâncias)
+                    renderizarFeiras(feirasExibidas);
                 } else {
-                    carregarFeirasPorBairro(bairroSelecionado);
+                    // Filtra a lista principal 'feirasExibidas' em vez de fazer uma nova chamada de API
+                    const feirasFiltradas = feirasExibidas.filter(feira => feira.bairro === bairroSelecionado);
+                    renderizarFeiras(feirasFiltradas);
                 }
             });
+
 
             // --- Lógica de clique no card ---
             resultadosDiv.addEventListener('click', (e) => {
@@ -855,12 +943,16 @@
 
             // --- Funções de Renderização ---
             function criarCardFeira(feira) {
+                const distanciaHtml = feira.distancia !== undefined 
+                    ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
+                    : '';
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-header">
                             <h3>${feira.nome_feira ?? 'Nome não informado'}</h3>
                         </div>
                         <div class="fair-card-content">
+                            ${distanciaHtml}
                             <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro ?? 'Bairro não informado'}</p>
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
                             <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
@@ -887,25 +979,19 @@
             }
 
             // --- Carregamento Inicial ---
-            async function carregarDadosIniciais(apenasFeiras = false) {
-                if (!apenasFeiras) {
-                    resultadosDiv.innerHTML = '<p class="loading-message">Buscando feiras e bairros...</p>';
-                }
+            async function carregarDadosIniciais() {
+                resultadosDiv.innerHTML = '<p class="loading-message">Buscando feiras e bairros...</p>';
                 try {
                     const fetchOptions = { cache: 'no-cache' };
-                    const feirasPromise = fetch(API_URL, fetchOptions);
-                    const filtrosPromise = apenasFeiras ? Promise.resolve() : fetch(API_FILTROS_URL, fetchOptions);
+                    const feirasPromise = fetch(API_URL + '?limite=1000', fetchOptions);
+                    const filtrosPromise = fetch(API_FILTROS_URL, fetchOptions);
 
-                    const [feirasResponse, filtrosResponse] = await Promise.all([
-                        feirasPromise,
-                        filtrosPromise
-                    ]);
+                    const [feirasResponse, filtrosResponse] = await Promise.all([feirasPromise, filtrosPromise]);
 
                     if (!feirasResponse.ok) throw new Error(`Erro na rede (feiras): ${feirasResponse.statusText}`);
                     
                     todasAsFeiras = await feirasResponse.json();
-                    console.log('DEBUG: Feiras carregadas inicialmente:', todasAsFeiras); // Adicionado para depuração
-                    feirasExibidas = todasAsFeiras;
+                    feirasExibidas = [...todasAsFeiras];
                     renderizarFeiras(feirasExibidas);
                     
                     if (filtrosResponse && filtrosResponse.ok) {
@@ -924,6 +1010,10 @@
                             filtroBairroSelect.appendChild(option);
                         });
                     }
+                    
+                    // --- CHAMADA DA NOVA FUNÇÃO ---
+                    // Pede a localização do usuário assim que os dados básicos são carregados
+                    solicitarLocalizacaoEOrdenar();
 
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
