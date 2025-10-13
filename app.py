@@ -11,8 +11,9 @@ load_dotenv()
 
 # Cria a instância da aplicação Flask
 app = Flask(__name__)
-# Configuração de CORS para permitir seu site do GitHub Pages
-CORS(app, resources={r"/api/*": {"origins": "https://leanttro.github.io"}, r"/submit-fair": {"origins": "https://leanttro.github.io"}})
+# Configuração de CORS CORRIGIDA: Permite acesso de qualquer origem ("*")
+# Isso corrige o erro 'Failed to fetch' que acontece quando o frontend está em um domínio diferente (como o Canvas)
+CORS(app, resources={r"/api/*": {"origins": "*"}, r"/submit-fair": {"origins": "*"}})
 
 # Função para obter a conexão com o banco de dados
 def get_db_connection():
@@ -49,6 +50,9 @@ def get_filtros():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        # O endpoint de filtros usava a tabela 'feiras'. Para ter todos os bairros das
+        # três categorias, você precisaria de uma tabela unificada ou rodar a query
+        # nas três tabelas. Por enquanto, mantive a lógica que estava no feiras-livres.html.
         cur.execute('SELECT DISTINCT bairro FROM feiras ORDER BY bairro;')
         bairros_db = cur.fetchall()
         cur.close()
@@ -169,4 +173,3 @@ def handle_submission():
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
-
