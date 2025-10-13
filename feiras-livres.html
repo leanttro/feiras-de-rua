@@ -369,7 +369,9 @@
             .hero-section h1 { font-size: 2em; }
             #busca-local { margin-top: -60px; padding: 40px 20px; }
             .busca-opcoes { flex-direction: column; }
-            .busca-endereco { flex-direction: column; width: 100%; padding: 0 20px; }
+            /* --- INÍCIO DA CORREÇÃO --- */
+            .busca-endereco { flex-direction: column; width: 100%; padding: 0; }
+            /* --- FIM DA CORREÇÃO --- */
             #input-endereco { min-width: auto; width: 100%; }
         }
 
@@ -779,12 +781,21 @@
                         };
                         ordenarEExibirFeiras(userLocation);
                     }, (error) => {
-                        let userMessage = 'Não foi possível obter sua localização.';
+                        let userMessage;
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
-                                userMessage = "Você negou o acesso à localização. Use a busca manual para encontrar feiras.";
+                                // --- INÍCIO DA MODIFICAÇÃO: Mensagem mais útil ---
+                                userMessage = `
+                                    <strong>Você negou o acesso à localização.</strong>
+                                    <br><br>
+                                    Para usar esta função, você precisa autorizar no seu celular.
+                                    <br>
+                                    Tente ir em <strong>Ajustes > Privacidade > Serviços de Localização</strong> e reativar para o seu navegador.
+                                    <br><br>
+                                    Enquanto isso, use a busca manual para encontrar feiras.`;
                                 console.log('Acesso à localização negado pelo usuário.');
                                 break;
+                                // --- FIM DA MODIFICAÇÃO ---
                             case error.POSITION_UNAVAILABLE:
                                 userMessage = "Informações de localização não estão disponíveis no momento.";
                                 console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
@@ -794,15 +805,16 @@
                                 console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
                                 break;
                             default:
+                                userMessage = "Não foi possível obter sua localização. Por favor, tente a busca manual.";
                                 console.error('Ocorreu um erro desconhecido ao obter a geolocalização:', error);
                                 break;
                         }
                         // Em caso de erro, exibe a mensagem e volta para a lista padrão de feiras
-                        resultadosDiv.innerHTML = `<p class="info-message">${userMessage}</p>`;
+                        resultadosDiv.innerHTML = `<p class="info-message" style="line-height: 1.8;">${userMessage}</p>`;
                         // Adiciona um pequeno delay antes de mostrar a lista completa para o usuário ler a mensagem
                         setTimeout(() => {
                            renderizarFeiras(todasAsFeiras);
-                        }, 2500);
+                        }, 5000); // Aumentado para dar tempo de ler a instrução
                     });
                 } else {
                     resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada por este navegador.</p>`;
@@ -922,7 +934,9 @@
                 viewGridBtn.classList.remove('active');
             });
 
+            // --- INÍCIO DA CORREÇÃO ---
             viewGridBtn.addEventListener('click', () => {
+            // --- FIM DA CORREÇÃO ---
                 resultadosDiv.classList.remove('results-carousel');
                 viewGridBtn.classList.add('active');
                 viewCarouselBtn.classList.remove('active');
