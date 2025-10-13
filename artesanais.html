@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feiras Artesanais em São Paulo - Feito à mão, com a alma de SP!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght=300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Estilos reaproveitados do feiras-livres.html para consistência */
@@ -621,8 +621,6 @@
             
             // ATUALIZADO: Aponta para o endpoint da tabela artesanais
             const API_URL = `${BASE_API_URL}/api/artesanais`; 
-            // Mantém o endpoint de filtros, pois ele contém todas as regiões
-            const API_FILTROS_URL = `${BASE_API_URL}/api/filtros`; 
             
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             const filtroRegiaoSelect = document.getElementById('filtro-regiao-select'); 
@@ -795,14 +793,16 @@
             // --- Lógica de Filtragem por REGIÃO ---
             filtroRegiaoSelect.addEventListener('change', () => {
                 const regiaoSelecionada = filtroRegiaoSelect.value;
+                 // A base para filtrar é sempre a lista ordenada por proximidade (se existir) ou a lista completa.
+                const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
                 let listaFiltrada;
-                
+
                 if (regiaoSelecionada === 'todos') {
-                    listaFiltrada = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
+                    listaFiltrada = listaBase;
                 } else {
-                    const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
                     listaFiltrada = listaBase.filter(feira => feira.regiao === regiaoSelecionada);
                 }
+                // A função renderizar APENAS exibe os dados, não altera as listas principais.
                 renderizarFeiras(listaFiltrada);
             });
             
@@ -832,6 +832,11 @@
 
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
                 
+                // Formata a região para exibição no card
+                const regiaoFormatada = feira.regiao && feira.regiao !== 'NÃO INFORMADO'
+                    ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
+                    : (feira.bairro || '');
+
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-image">
@@ -843,7 +848,7 @@
                             ${distanciaHtml}
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                            <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${feira.regiao || feira.bairro || ''}</strong></p>
+                            <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
                             <a href="#" class="button" onclick="event.preventDefault(); alert('Página de detalhes em construção!');">Ver mais</a>
                         </div>
                     </div>
@@ -852,7 +857,6 @@
 
             function renderizarFeiras(listaDeFeiras) {
                 resultadosDiv.innerHTML = ''; 
-                feirasExibidas = listaDeFeiras;
 
                 if (!listaDeFeiras || listaDeFeiras.length === 0) {
                     resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira artesanal encontrada para estes critérios.</p>';
@@ -861,68 +865,46 @@
                 resultadosDiv.innerHTML = listaDeFeiras.map(criarCardFeira).join('');
             }
 
-            // --- Carregamento Inicial ---
+            // --- Carregamento Inicial (LÓGICA CORRIGIDA) ---
             async function carregarDadosIniciais() {
                 resultadosDiv.innerHTML = `<p class="loading-message">Carregando as melhores feiras artesanais de São Paulo...</p>`;
                 try {
-                    const feirasResponsePromise = fetchWithRetry(API_URL);
-                    const filtrosResponsePromise = fetchWithRetry(API_FILTROS_URL);
-
-                    const [feirasResponse, filtrosResponse] = await Promise.all([feirasResponsePromise, filtrosResponsePromise]);
-
-                    // Processa Feiras
+                    // Passo 1: Buscar apenas os dados das feiras. A região já vem do banco de dados.
+                    const feirasResponse = await fetchWithRetry(API_URL);
                     let feirasRaw = await feirasResponse.json();
-                    
-                    // Processa Filtros de Região
-                    if (filtrosResponse.ok) {
-                        const filtrosData = await filtrosResponse.json();
-                        
-                        // 1. Criar mapa de Bairro -> Região a partir dos filtros
-                        const bairroRegiaoMap = {};
-                        for (const [regiao, bairros] of Object.entries(filtrosData)) {
-                            const regiaoUpper = regiao.toUpperCase();
-                            bairros.forEach(bairro => {
-                                if (bairro) {
-                                    bairroRegiaoMap[bairro.toUpperCase()] = regiaoUpper;
-                                }
-                            });
+
+                    // Passo 2: Normalizar o campo 'regiao' para consistência (e.g., maiúsculas, sem espaços extras)
+                    feirasRaw = feirasRaw.map(feira => {
+                        if (feira.regiao) {
+                            feira.regiao = feira.regiao.toUpperCase().trim();
+                        } else {
+                            // Se a feira não tiver região no banco, é classificada como 'NÃO INFORMADO'
+                            feira.regiao = 'NÃO INFORMADO';
                         }
+                        return feira;
+                    });
 
-                        // 2. Aplicar a Região em cada feira
-                        feirasRaw = feirasRaw.map(feira => {
-                            if (feira.bairro) {
-                                feira.regiao = bairroRegiaoMap[feira.bairro.toUpperCase()] || 'OUTRAS';
-                            } else {
-                                feira.regiao = 'NÃO INFORMADO';
-                            }
-                            return feira;
-                        });
+                    // Passo 3: Extrair as regiões únicas diretamente dos dados carregados
+                    const regioesUnicas = [...new Set(
+                        feirasRaw
+                            .map(feira => feira.regiao)
+                            .filter(regiao => regiao && regiao !== 'NÃO INFORMADO') // Ignora nulos ou não informados
+                    )].sort(); // Ordena alfabeticamente
 
-                        // 3. Obter as Regiões únicas para o Dropdown
-                        const regioesUnicas = [...Object.keys(filtrosData), 'OUTRAS'].map(r => r.toUpperCase()).filter((value, index, self) => self.indexOf(value) === index).sort();
-                        
-                        // 4. Popular o Dropdown
-                        while (filtroRegiaoSelect.options.length > 1) {
-                            filtroRegiaoSelect.remove(1);
-                        }
-
-                        regioesUnicas.forEach(regiao => {
-                            if (regiao !== 'OUTRAS') {
-                                const option = document.createElement('option');
-                                option.value = regiao;
-                                option.textContent = regiao.charAt(0).toUpperCase() + regiao.slice(1).toLowerCase(); 
-                                filtroRegiaoSelect.appendChild(option);
-                            }
-                        });
-
-                        // 5. Adicionar a opção "OUTRAS"
-                         const outrasOption = document.createElement('option');
-                         outrasOption.value = 'OUTRAS';
-                         outrasOption.textContent = 'Outras Regiões';
-                         filtroRegiaoSelect.appendChild(outrasOption);
+                    // Passo 4: Popular o dropdown de filtro com as regiões encontradas
+                    while (filtroRegiaoSelect.options.length > 1) {
+                        filtroRegiaoSelect.remove(1); // Limpa opções antigas, mantendo "Todas as Regiões"
                     }
+
+                    regioesUnicas.forEach(regiao => {
+                        const option = document.createElement('option');
+                        option.value = regiao;
+                        // Formata o texto para melhor leitura (ex: "ZONA OESTE" -> "Zona Oeste")
+                        option.textContent = regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
+                        filtroRegiaoSelect.appendChild(option);
+                    });
                     
-                    // Finalmente, renderiza a lista completa e atualizada
+                    // Passo 5: Armazenar a lista completa e renderizar os cards na tela
                     todasAsFeiras = feirasRaw;
                     feirasExibidas = [...todasAsFeiras]; 
                     
