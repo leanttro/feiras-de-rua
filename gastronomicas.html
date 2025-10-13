@@ -618,8 +618,14 @@
 
             // --- Lógica da Página ---
             // APIS CORRIGIDAS
-            const API_URL = 'https://feiras-de-rua.onrender.com/api/gastronomicas';
-            const API_FILTROS_URL = 'https://feiras-de-rua.onrender.com/api/filtros'; // Endpoint genérico para bairros
+            // URL Base da sua API no Render
+            const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
+            
+            // --- CÓDIGO DO PROXY REMOVIDO AQUI ---
+            
+            // URLs DIRETAS para a API (SÓ FUNCIONARÁ SE O CORS NO SEU BACKEND TIVER SIDO CORRIGIDO PARA "*")
+            const API_URL = `${BASE_API_URL}/api/gastronomicas`;
+            const API_FILTROS_URL = `${BASE_API_URL}/api/filtros`; 
             
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             const filtroBairroSelect = document.getElementById('filtro-bairro-select');
@@ -628,8 +634,8 @@
             let feirasExibidas = []; // Lista de feiras após ordenação por proximidade
             
 
-            // --- FUNÇÃO DE BUSCA RESILIENTE COM EXPONENTIAL BACKOFF (Aumentado para 5 retentativas) ---
-            async function fetchWithRetry(url, options = {}, maxRetries = 5) { // AUMENTADO maxRetries para 5
+            // --- FUNÇÃO DE BUSCA RESILIENTE COM EXPONENTIAL BACKOFF (Mantida, mas sem o proxy) ---
+            async function fetchWithRetry(url, options = {}, maxRetries = 5) { // maxRetries = 5
                 // Adiciona explicitamente mode: 'cors' para mitigar problemas de ambiente/CORS
                 const mergedOptions = { ...options, mode: 'cors' };
                 for (let i = 0; i < maxRetries; i++) {
@@ -647,7 +653,7 @@
                         }
                         // Espera (2^i) * 1000 milissegundos antes de tentar novamente (Ex: 1s, 2s, 4s, 8s, 16s)
                         const delay = Math.pow(2, i) * 1000;
-                        console.log(`Falha ao buscar dados (Tentativa ${i + 1}/${maxRetries}). Tentando novamente em ${delay / 1000}s...`);
+                        // Não logamos retentativas com sucesso para evitar poluir o console
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
