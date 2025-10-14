@@ -4,24 +4,23 @@ import psycopg2.extras
 from flask import Flask, jsonify, request, send_from_directory
 from dotenv import load_dotenv
 from flask_cors import CORS
-import datetime # <-- Adicionado para lidar com datas e horas
+import datetime
 
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# Cria a instância da aplicação Flask
-app = Flask(__name__)
-# Configuração de CORS CORRIGIDA: Permite acesso de qualquer origem ("*")
-# Isso corrige o erro 'Failed to fetch' que acontece quando o frontend está em um domínio diferente (como o Canvas)
+# --- ALTERAÇÃO 1: Configurar a pasta estática ---
+# Diz ao Flask que os arquivos estáticos (html, css, js, imagens) 
+# estão na mesma pasta raiz do projeto.
+app = Flask(__name__, static_folder='.', static_url_path='')
 CORS(app, resources={r"/api/*": {"origins": "*"}, r"/submit-fair": {"origins": "*"}})
 
 # Função para obter a conexão com o banco de dados
 def get_db_connection():
-    # A variável DATABASE_URL será lida do ambiente do Render
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
 
-# Mapeamento de Bairros para Regiões (pode ser expandido)
+# Mapeamento de Bairros para Regiões
 BAIRRO_REGIAO_MAP = {
     'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
     'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
@@ -50,9 +49,6 @@ def get_filtros():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # O endpoint de filtros usava a tabela 'feiras'. Para ter todos os bairros das
-        # três categorias, você precisaria de uma tabela unificada ou rodar a query
-        # nas três tabelas. Por enquanto, mantive a lógica que estava no feiras-livres.html.
         cur.execute('SELECT DISTINCT bairro FROM feiras ORDER BY bairro;')
         bairros_db = cur.fetchall()
         cur.close()
@@ -70,9 +66,21 @@ def get_filtros():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-@app.route("/")
-def serve_frontend():
+# --- ALTERAÇÃO 2: Rota para servir o index.html ---
+# Esta rota garante que ao acessar a raiz do site, o index.html é servido.
+@app.route('/')
+def index():
     return send_from_directory('.', 'index.html')
+
+# --- ALTERAÇÃO 3: Rota "coringa" para servir TODOS os outros arquivos ---
+# Esta nova rota captura qualquer outra URL (ex: /gastronomicas.html, /assets/logo.png)
+# e tenta encontrar e servir o arquivo correspondente na pasta raiz.
+@app.route('/<path:path>')
+def serve_static_files(path):
+    # Medida de segurança: não permite que a rota acesse o próprio app.py
+    if path == "app.py":
+        return "Not Found", 404
+    return send_from_directory('.', path)
 
 @app.route('/api/feiras')
 def get_feiras():
@@ -88,8 +96,6 @@ def get_feiras():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# --- ENDPOINTS ATUALIZADOS PARA LIDAR COM DATAS E HORAS ---
-
 @app.route('/api/gastronomicas')
 def get_gastronomicas():
     try:
@@ -99,20 +105,15 @@ def get_gastronomicas():
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
-
-        # Converte os dados para um formato que o jsonify entende
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = dict(feira)
             for key, value in feira_dict.items():
-                # Converte objetos date e time para string no formato ISO
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
             feiras_processadas.append(feira_dict)
-            
         return jsonify(feiras_processadas)
     except Exception as e:
-        # Adiciona um print para vermos o erro exato nos logs do Render
         print(f"Erro no endpoint /api/gastronomicas: {e}")
         return jsonify({'error': str(e)}), 500
 
@@ -125,24 +126,17 @@ def get_artesanais():
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
-
-        # Converte os dados para um formato que o jsonify entende
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = dict(feira)
             for key, value in feira_dict.items():
-                # Converte objetos date e time para string no formato ISO
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
             feiras_processadas.append(feira_dict)
-
         return jsonify(feiras_processadas)
     except Exception as e:
-        # Adiciona um print para vermos o erro exato nos logs do Render
         print(f"Erro no endpoint /api/artesanais: {e}")
         return jsonify({'error': str(e)}), 500
-
-# --- FIM DOS ENDPOINTS ATUALIZADOS ---
 
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
@@ -164,7 +158,6 @@ def handle_submission():
         return jsonify({'message': 'Dados recebidos com sucesso!'}), 200
     except Exception as e:
         if conn: conn.rollback()
-        # Adiciona um print para vermos o erro exato nos logs do Render
         print(f"Erro no endpoint /submit-fair: {e}")
         return jsonify({'error': str(e)}), 500
     finally:
