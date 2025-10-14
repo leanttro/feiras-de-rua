@@ -1020,6 +1020,10 @@
                     shortDescription = fullDescription.substring(0, firstPeriodIndex) + '...';
                 }
 
+                const distanciaHtml = feira.distancia !== undefined && feira.distancia !== Infinity
+                    ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
+                    : '';
+
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-image">
@@ -1027,6 +1031,7 @@
                         </div>
                         <div class="fair-card-content">
                             <h3>${feira.nome_feira}</h3>
+                            ${distanciaHtml}
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
@@ -1108,3 +1113,4 @@
     </script>
 </body>
 </html>
+

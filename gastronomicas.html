@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Feiras Artesanais em São Paulo - Feito à mão, com a alma de SP!</title>
-    <link href="https://fonts.googleapis.com/css2?family/Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <title>Feiras Gastronômicas em São Paulo - Explore a capital do sabor!</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Estilos reaproveitados do feiras-livres.html para consistência */
@@ -13,15 +13,14 @@
             --dark-green: #388E3C;
             --light-green: #DCEDC8;
             --light-gray: #f8f9fa;
-            --medium-gray: #e0e0e0;
+            --medium-gray: #e0e00;
             --dark-gray: #343a40;
             --text-color: #495057;
             --white: #ffffff;
             --shadow-light: rgba(0, 0, 0, 0.08);
             --shadow-medium: rgba(0, 0, 0, 0.15);
-            
-            /* COR NOVA para o highlight Artesanais: #e07608 com transparência */
-            --hero-artesanal-orange-transparent: rgba(224, 118, 8, 0.8);
+            /* Nova cor para o highlight da hero section */
+            --hero-red-transparent: rgba(255, 0, 0, 0.7);
         }
 
         body {
@@ -92,6 +91,7 @@
         }
 
         .hamburger-menu, .mobile-nav-overlay {
+            /* Estilos do menu mobile mantidos do feiras-livres.html */
             display: none;
         }
         .hamburger-menu {
@@ -112,7 +112,7 @@
         .mobile-nav-overlay nav ul li { margin: 20px 0; }
         .mobile-nav-overlay nav ul li a { color: var(--white); text-decoration: none; font-size: 1.8em; font-weight: 700; padding: 10px 0; display: block; }
         
-        /* --- Seção Hero Personalizada para Artesanais --- */
+        /* --- Seção Hero Personalizada para Gastronômicas --- */
         .hero-section {
             color: var(--white);
             text-align: center;
@@ -122,8 +122,8 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            /* Imagem de fundo Artesanal */
-            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('fundoartesanal.png');
+            /* Nova imagem de fundo */
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('fundogastronomicas.png');
             background-size: cover;
             background-position: center;
         }
@@ -142,8 +142,8 @@
         }
         
         .hero-highlight {
-            /* Cor de fundo Laranja/Ouro com transparência para Artesanais */
-            background-color: var(--hero-artesanal-orange-transparent);
+            /* Nova cor de fundo vermelha e transparente */
+            background-color: var(--hero-red-transparent);
             padding: 5px 15px;
             border-radius: 8px;
             box-decoration-break: clone;
@@ -153,12 +153,12 @@
         .hero-subtitle {
             font-size: 0.7em;
             font-weight: 400;
-            display: block; 
+            display: block; /* Alterado para block para ficar abaixo */
             margin-top: 10px;
         }
 
         .hero-section p {
-            font-size: 1.1em; 
+            font-size: 1.1em; /* Tamanho menor para a terceira linha */
             max-width: 900px;
             margin: 15px auto 0;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
@@ -180,7 +180,7 @@
         }
         #busca-local h2 { font-size: 2em; color: var(--dark-gray); margin-top: 0; margin-bottom: 30px; }
         .busca-opcoes { display: flex; justify-content: center; align-items: center; gap: 20px; flex-wrap: wrap; }
-        #btn-meu-local, #btn-buscar-endereco { 
+        #btn-meu-local, #btn-buscar-endereco { /* Adicionado o novo botão */
             background-color: var(--primary-green); 
             color: var(--white); 
             padding: 15px 30px; 
@@ -196,8 +196,8 @@
         /* Estilo específico para o botão Buscar (Destaque laranja) */
         #btn-buscar-endereco {
             background-color: #f39c12; /* Laranja */
-            padding: 15px 20px; 
-            height: 51px; 
+            padding: 15px 20px; /* Ajuste para não ficar tão largo quanto o Usar Meu Local */
+            height: 51px; /* Para alinhar com o input */
             white-space: nowrap;
         }
         #btn-buscar-endereco:hover {
@@ -220,7 +220,7 @@
             border: 1px solid var(--medium-gray); 
             border-radius: 8px; 
             font-size: 1em; 
-            flex-grow: 1; 
+            flex-grow: 1; /* Faz o input ocupar o espaço disponível */
             min-width: 0;
         }
         #input-endereco:focus { outline: none; border-color: var(--primary-green); box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2); }
@@ -228,7 +228,7 @@
         /* Posiciona as sugestões de forma absoluta abaixo do grupo input/botão */
         #address-suggestions { 
             position: absolute; 
-            top: 51px; 
+            top: 51px; /* Altura do input/botão */
             left: 0; 
             right: 0; 
             background-color: white; 
@@ -289,7 +289,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
-            flex-grow: 1; 
+            flex-grow: 1; /* Faz o conteúdo ocupar o espaço disponível */
         }
         
         .fair-card-content h3 {
@@ -327,7 +327,7 @@
             text-decoration: none;
             font-weight: 600;
             transition: background-color 0.3s ease;
-            margin-top: auto;
+            margin-top: auto; /* Alinha o botão na parte inferior */
             align-self: flex-start;
         }
         .fair-card .button:hover {
@@ -382,7 +382,6 @@
             text-decoration: none;
         }
 
-
         /* --- Responsividade (Mantida e Ajustada para o novo botão) --- */
         @media (max-width: 992px) {
             nav.desktop-nav { display: none; }
@@ -421,9 +420,9 @@
         }
         .filtros-wrapper {
             display: flex;
-            justify-content: center; 
+            justify-content: center; /* Centraliza o filtro de Região */
             gap: 20px;
-            flex-wrap: wrap; 
+            flex-wrap: wrap; /* Para responsividade */
         }
         .filtro-grupo {
             display: flex;
@@ -444,7 +443,7 @@
             cursor: pointer;
             transition: all 0.3s ease;
             font-size: 0.9em;
-            min-width: 250px; 
+            min-width: 250px; /* Reduzido para caber melhor */
             font-family: 'Roboto', sans-serif;
         }
         .filtro-select:focus {
@@ -489,7 +488,7 @@
             border-color: var(--primary-green);
         }
         
-        /* Estilos para Carrossel */
+        /* --- Estilos para Carrossel --- */
         #resultados-feiras .container.results-carousel {
             display: flex;
             overflow-x: auto;
@@ -500,7 +499,7 @@
         }
         #resultados-feiras .container.results-carousel .fair-card {
             flex: 0 0 90%; 
-            max-width: 380px; 
+            max-width: 380px; /* Um pouco mais largo no carrossel */
             scroll-snap-align: start;
         }
         
@@ -616,9 +615,9 @@
         <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Início</a></li>
-                <li><a href="gastronomicas.html">Gastronômicas</a></li>
+                <li><a href="gastronomicas.html" class="active">Gastronômicas</a></li>
                 <li><a href="feiras-livres.html">Feiras Livres</a></li>
-                <li><a href="artesanais.html" class="active">Artesanais</a></li>
+                <li><a href="artesanais.html">Artesanais</a></li>
                 <li><a href="#">Sobre</a></li>
                 <li><a href="contato.html">Contato</a></li>
             </ul>
@@ -645,16 +644,16 @@
         <section class="hero-section">
             <div class="container">
                 <h1>
-                    <span class="hero-highlight">Feito à mão, com a alma de SP.</span>
-                    <span class="hero-subtitle">Descubra a arte e o design da nossa cidade em cada detalhe.</span>
+                    <span class="hero-highlight">Explore a capital do sabor!</span>
+                    <span class="hero-subtitle">Sua próxima experiência gastronômica te espera aqui</span>
                 </h1>
-                <p>Peças únicas, histórias únicas. Leve para casa a criatividade dos artesãos de São Paulo.</p>
+                <p>Venha provar as delícias das feiras gastronômicas de SP.</p>
             </div>
         </section>
 
         <section id="busca-local">
             <div class="container">
-                <h2>Encontre uma feira artesanal</h2>
+                <h2>Encontre uma feira gastronômica</h2>
                 <div class="busca-opcoes">
                     <button id="btn-meu-local">
                         <i class="fas fa-map-marker-alt"></i> Usar Meu Local
@@ -668,7 +667,6 @@
             </div>
         </section>
         
-        <!-- --- Filtro de Região --- -->
         <div class="filtros-container">
             <div class="filtros-wrapper">
                 <div class="filtro-grupo" id="filtro-regiao-container">
@@ -679,20 +677,15 @@
                 </div>
             </div>
         </div>
-        <!-- --- Fim do Filtro --- -->
-
-        <!-- --- Seletor de Visualização --- -->
+        
         <div class="view-switcher-container">
             <button id="view-carousel-btn" class="view-btn active"><i class="fas fa-stream"></i> Carrossel</button>
             <button id="view-grid-btn" class="view-btn"><i class="fas fa-th-large"></i> Grade</button>
         </div>
-        <!-- --- Fim do Seletor --- -->
-
-
+        
         <section id="resultados-feiras">
             <div class="container results-carousel">
-                <p class="initial-message">Carregando as melhores feiras artesanais de São Paulo...</p>
-                <!-- Resultados serão inseridos aqui pelo JavaScript -->
+                <p class="initial-message">Carregando as melhores feiras gastronômicas de São Paulo...</p>
             </div>
         </section>
     </main>
@@ -706,6 +699,7 @@
             </div>
         </div>
     </div>
+
 
     <footer>
         <div class="container">
@@ -721,7 +715,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Lógica do Menu Mobile Melhorada ---
+            // --- Lógica do Menu Mobile ---
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const mobileNavOverlay = document.getElementById('mobileNavOverlay');
             const closeMobileMenu = document.getElementById('closeMobileMenu');
@@ -743,39 +737,30 @@
 
             // --- Lógica da Página ---
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
-            
-            // ATUALIZADO: Aponta para o endpoint da tabela artesanais
-            const API_URL = `${BASE_API_URL}/api/artesanais`; 
+            const API_URL = `${BASE_API_URL}/api/gastronomicas`;
             
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             const filtroRegiaoSelect = document.getElementById('filtro-regiao-select'); 
             
             let todasAsFeiras = [];
-            let feirasExibidas = []; 
+            let feirasExibidas = [];
             
 
-            // --- FUNÇÃO DE BUSCA RESILIENTE COM EXPONENTIAL BACKOFF (CORS Mitigation) ---
-            async function fetchWithRetry(url, options = {}, maxRetries = 5) { 
+            // --- FUNÇÃO DE BUSCA RESILIENTE ---
+            async function fetchWithRetry(url, options = {}, maxRetries = 5) {
                 const mergedOptions = { ...options, mode: 'cors' };
                 for (let i = 0; i < maxRetries; i++) {
                     try {
-                        const response = await fetch(url, mergedOptions); 
-                        if (!response.ok) {
-                            throw new Error(`Erro HTTP: ${response.status} ${response.statusText}`);
-                        }
+                        const response = await fetch(url, mergedOptions);
+                        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                         return response;
                     } catch (error) {
-                        if (i === maxRetries - 1) {
-                            console.error(`Falha final ao buscar ${url}:`, error);
-                            throw error;
-                        }
+                        if (i === maxRetries - 1) throw error;
                         const delay = Math.pow(2, i) * 1000;
                         await new Promise(resolve => setTimeout(resolve, delay));
                     }
                 }
             }
-            // --- FIM DA FUNÇÃO DE BUSCA RESILIENTE ---
-
 
             // --- Lógica de Busca por Localização ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
@@ -796,33 +781,26 @@
 
             function ordenarEExibirFeiras(userLocation) {
                 resultadosDiv.innerHTML = `<p class="loading-message">Calculando distâncias...</p>`;
-                
                 if (todasAsFeiras.length === 0) {
                      resultadosDiv.innerHTML = `<p class="info-message">Nenhuma feira carregada para calcular a distância.</p>`;
                      return;
                 }
-                
                 const feirasComDistancia = todasAsFeiras.map(feira => {
-                    const feiraLocation = { 
-                        latitude: parseFloat(feira.latitude), 
-                        longitude: parseFloat(feira.longitude) 
-                    };
+                    const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
                     const distancia = haversineDistance(userLocation, feiraLocation);
                     return { ...feira, distancia };
                 }).sort((a, b) => a.distancia - b.distancia);
                 
                 feirasExibidas = feirasComDistancia.filter(feira => feira.distancia !== Infinity);
-
                 filtroRegiaoSelect.value = 'todos'; 
                 
                 if (feirasExibidas.length === 0) {
-                     resultadosDiv.innerHTML = `<p class="error-message">Nenhuma feira encontrada perto do local. Verifique se as feiras no banco de dados possuem coordenadas válidas.</p>`;
+                     resultadosDiv.innerHTML = `<p class="error-message">Nenhuma feira encontrada perto do local.</p>`;
                 } else {
                      renderizarFeiras(feirasExibidas);
                 }
             }
             
-            // Geolocalização
             btnMeuLocal.addEventListener('click', () => {
                 resultadosDiv.innerHTML = `<p class="loading-message">Obtendo sua localização...</p>`;
                 if ('geolocation' in navigator) {
@@ -830,36 +808,29 @@
                         const userLocation = { latitude: position.coords.latitude, longitude: position.coords.longitude };
                         ordenarEExibirFeiras(userLocation);
                     }, () => {
-                         resultadosDiv.innerHTML = `<p class="error-message">Não foi possível obter sua localização. Por favor, tente a busca por endereço.</p>`;
+                         resultadosDiv.innerHTML = `<p class="error-message">Não foi possível obter sua localização.</p>`;
                     });
                 } else {
-                     resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada por este navegador.</p>`;
+                     resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada.</p>`;
                 }
             });
             
-            // Busca manual
             async function geocodeAndSort(address) {
-                if (!address || address.length < 3) {
-                    resultadosDiv.innerHTML = `<p class="error-message">Por favor, digite um endereço válido para buscar.</p>`;
-                    return;
-                }
-                resultadosDiv.innerHTML = `<p class="loading-message">Buscando endereço e calculando distâncias...</p>`;
-                
+                if (!address || address.length < 3) return;
+                resultadosDiv.innerHTML = `<p class="loading-message">Buscando endereço...</p>`;
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(address + ', São Paulo')}&limit=1`);
                     const data = await response.json();
-                    
                     if (data && data.length > 0) {
                         const result = data[0];
                         const userLocation = { latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) };
                         inputEndereco.value = result.display_name; 
                         ordenarEExibirFeiras(userLocation);
                     } else {
-                        resultadosDiv.innerHTML = `<p class="error-message">Endereço "${address}" não encontrado. Tente ser mais específico (ex: "Rua Augusta, Consolação").</p>`;
+                        resultadosDiv.innerHTML = `<p class="error-message">Endereço não encontrado.</p>`;
                     }
                 } catch (error) {
-                    console.error('Erro ao buscar endereço:', error);
-                    resultadosDiv.innerHTML = `<p class="error-message">Ocorreu um erro ao tentar buscar o endereço.</p>`;
+                    resultadosDiv.innerHTML = `<p class="error-message">Erro ao buscar o endereço.</p>`;
                 }
             }
 
@@ -868,8 +839,6 @@
                 geocodeAndSort(inputEndereco.value);
             });
 
-
-            // Sugestões de endereço (Mantida)
             function debounce(func, delay) {
                 let timeout;
                 return function(...args) {
@@ -879,9 +848,7 @@
             }
             async function handleAddressInput() {
                 const query = inputEndereco.value;
-                if (query.length < 3) {
-                    suggestionsContainer.style.display = 'none'; return;
-                }
+                if (query.length < 3) { suggestionsContainer.style.display = 'none'; return; }
                 try {
                     const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ', São Paulo')}&limit=5`);
                     const data = await response.json();
@@ -890,9 +857,7 @@
             }
             function displaySuggestions(results) {
                 suggestionsContainer.innerHTML = '';
-                if (!results || results.length === 0) {
-                    suggestionsContainer.style.display = 'none'; return;
-                }
+                if (!results || results.length === 0) { suggestionsContainer.style.display = 'none'; return; }
                 results.forEach(result => {
                     const item = document.createElement('div');
                     item.classList.add('suggestion-item');
@@ -914,41 +879,30 @@
                 }
             });
 
-
             // --- Lógica de Filtragem por REGIÃO ---
             filtroRegiaoSelect.addEventListener('change', () => {
                 const regiaoSelecionada = filtroRegiaoSelect.value;
-                 // A base para filtrar é sempre a lista ordenada por proximidade (se existir) ou a lista completa.
                 const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
-                let listaFiltrada;
-
-                if (regiaoSelecionada === 'todos') {
-                    listaFiltrada = listaBase;
-                } else {
-                    listaFiltrada = listaBase.filter(feira => feira.regiao === regiaoSelecionada);
-                }
-                // A função renderizar APENAS exibe os dados, não altera as listas principais.
+                const listaFiltrada = regiaoSelecionada === 'todos' 
+                    ? listaBase 
+                    : listaBase.filter(feira => feira.regiao === regiaoSelecionada);
                 renderizarFeiras(listaFiltrada);
             });
             
-
             // --- Lógica do Seletor de Visualização ---
             const viewCarouselBtn = document.getElementById('view-carousel-btn');
             const viewGridBtn = document.getElementById('view-grid-btn');
-            
             viewCarouselBtn.addEventListener('click', () => {
                 resultadosDiv.classList.add('results-carousel');
                 viewCarouselBtn.classList.add('active');
                 viewGridBtn.classList.remove('active');
             });
-
             viewGridBtn.addEventListener('click', () => {
                 resultadosDiv.classList.remove('results-carousel');
                 viewGridBtn.classList.add('active');
                 viewCarouselBtn.classList.remove('active');
             });
 
-            
             // --- Lógica do Modal ---
             const modal = document.getElementById('fair-modal');
             const modalCloseBtn = document.getElementById('modal-close');
@@ -956,7 +910,7 @@
             function abrirModal(feira) {
                 const modalBody = document.getElementById('modal-body');
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                const regiaoFormatada = feira.regiao && feira.regiao !== 'NÃO INFORMADO'
+                const regiaoFormatada = feira.regiao && feira.regiao !== 'OUTRAS'
                     ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
                     : (feira.bairro || 'Região não informada');
                 const distanciaHtml = feira.distancia !== undefined && feira.distancia !== Infinity
@@ -1003,14 +957,13 @@
                 }
             });
 
-
-            // --- Função para criar os novos cards ---
+            // --- Função para criar os cards ---
             function criarCardFeira(feira) {
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                const regiaoFormatada = feira.regiao && feira.regiao !== 'NÃO INFORMADO'
+                const regiaoFormatada = feira.regiao && feira.regiao !== 'OUTRAS'
                     ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
                     : (feira.bairro || 'Região não informada');
-
+                
                 // Lógica para encurtar a descrição para a primeira frase
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
                 let shortDescription = fullDescription;
@@ -1020,10 +973,6 @@
                     shortDescription = fullDescription.substring(0, firstPeriodIndex) + '...';
                 }
 
-                const distanciaHtml = feira.distancia !== undefined && feira.distancia !== Infinity
-                    ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
-                    : '';
-
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-image">
@@ -1031,7 +980,6 @@
                         </div>
                         <div class="fair-card-content">
                             <h3>${feira.nome_feira}</h3>
-                            ${distanciaHtml}
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
@@ -1043,71 +991,58 @@
             }
 
             function renderizarFeiras(listaDeFeiras) {
-                resultadosDiv.innerHTML = ''; 
-
                 if (!listaDeFeiras || listaDeFeiras.length === 0) {
-                    resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira artesanal encontrada para estes critérios.</p>';
+                    resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira gastronômica encontrada.</p>';
                     return;
                 }
                 resultadosDiv.innerHTML = listaDeFeiras.map(criarCardFeira).join('');
             }
 
-            // --- Carregamento Inicial (LÓGICA CORRIGIDA) ---
+            // --- Carregamento Inicial ---
             async function carregarDadosIniciais() {
-                resultadosDiv.innerHTML = `<p class="loading-message">Carregando as melhores feiras artesanais de São Paulo...</p>`;
+                resultadosDiv.innerHTML = `<p class="loading-message">Carregando as melhores feiras...</p>`;
                 try {
-                    // Passo 1: Buscar apenas os dados das feiras. A região já vem do banco de dados.
                     const feirasResponse = await fetchWithRetry(API_URL);
                     let feirasRaw = await feirasResponse.json();
 
-                    // Passo 2: Normalizar o campo 'regiao' para consistência (e.g., maiúsculas, sem espaços extras)
                     feirasRaw = feirasRaw.map(feira => {
-                        if (feira.regiao) {
-                            feira.regiao = feira.regiao.toUpperCase().trim();
-                        } else {
-                            // Se a feira não tiver região no banco, é classificada como 'NÃO INFORMADO'
-                            feira.regiao = 'NÃO INFORMADO';
-                        }
+                        feira.regiao = feira.regiao ? feira.regiao.toUpperCase().trim() : 'OUTRAS';
                         return feira;
                     });
 
-                    // Passo 3: Extrair as regiões únicas diretamente dos dados carregados
-                    const regioesUnicas = [...new Set(
-                        feirasRaw
-                            .map(feira => feira.regiao)
-                            .filter(regiao => regiao && regiao !== 'NÃO INFORMADO') // Ignora nulos ou não informados
-                    )].sort(); // Ordena alfabeticamente
+                    const regioesUnicas = [...new Set(feirasRaw.map(f => f.regiao).filter(r => r && r !== 'OUTRAS'))].sort();
 
-                    // Passo 4: Popular o dropdown de filtro com as regiões encontradas
                     while (filtroRegiaoSelect.options.length > 1) {
-                        filtroRegiaoSelect.remove(1); // Limpa opções antigas, mantendo "Todas as Regiões"
+                        filtroRegiaoSelect.remove(1);
                     }
-
                     regioesUnicas.forEach(regiao => {
                         const option = document.createElement('option');
                         option.value = regiao;
-                        // Formata o texto para melhor leitura (ex: "ZONA OESTE" -> "Zona Oeste")
                         option.textContent = regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase());
                         filtroRegiaoSelect.appendChild(option);
                     });
                     
-                    // Passo 5: Armazenar a lista completa e renderizar os cards na tela
+                    if (feirasRaw.some(f => f.regiao === 'OUTRAS')) {
+                         const outrasOption = document.createElement('option');
+                         outrasOption.value = 'OUTRAS';
+                         outrasOption.textContent = 'Outras Regiões';
+                         filtroRegiaoSelect.appendChild(outrasOption);
+                    }
+                    
                     todasAsFeiras = feirasRaw;
                     feirasExibidas = [...todasAsFeiras]; 
                     
                     if (todasAsFeiras.length > 0) {
                         renderizarFeiras(todasAsFeiras);
                     } else {
-                         resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira artesanal cadastrada. Adicione dados válidos (com latitude e longitude) no seu banco de dados.</p>';
+                         resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira gastronômica cadastrada.</p>';
                     }
-                    
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados das feiras artesanais. Verifique a conexão com o backend externo e as configurações de CORS.</p>';
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados das feiras.</p>';
                 }
             }
             
-            // Inicia o carregamento
             carregarDadosIniciais();
         });
     </script>
