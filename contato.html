@@ -408,18 +408,18 @@
             .hamburger-menu { display: block; padding-right: 20px; }
             .hero-section { height: 450px; }
             
-            /* Ajuste responsivo para tablets: Frase (1.6em / 2 = 0.8em), Palavra (3.5rem / 2 = 1.75rem) */
+            /* Ajuste responsivo para tablets: Frase (1.2em), Palavra (3rem) */
             .slide h1 { 
                 padding-top: 70px; 
             }
             .hero-section h1 { 
-                /* ALTERADO: De 1.6em para 0.8em */
-                font-size: 0.8em; 
+                /* CORRIGIDO: De 0.8em para 1.2em */
+                font-size: 1.2em; 
             }
             .hero-section h1 .highlight-word::before { 
-                /* ALTERADO: De 3.5rem para 1.75rem */
-                font-size: 1.75rem; 
-                top: -10px; /* Ajuste para centralizar o novo tamanho reduzido */
+                /* CORRIGIDO: De 1.75rem para 3rem */
+                font-size: 3rem; 
+                top: -15px; /* Reajustado para melhor centralização */
             }
         }
 
@@ -439,20 +439,20 @@
             }
             .contact-info { flex-direction: column; gap: 20px; }
 
-            /* Ajuste responsivo para celular (landscape): Frase (1.3em / 2 = 0.65em), Palavra (2.5rem / 2 = 1.25rem) */
+            /* Ajuste responsivo para celular (landscape): Frase (1.0em), Palavra (2rem) */
             .slide h1 { 
                 padding-top: 50px; 
             }
             .hero-section h1 {
-                /* ALTERADO: De 1.3em para 0.65em */
-                font-size: 0.65em;
+                /* CORRIGIDO: De 0.65em para 1.0em */
+                font-size: 1.0em;
                 line-height: 1.3;
             }
             .hero-section h1 .highlight-word::before {
-                /* ALTERADO: De 2.5rem para 1.25rem */
-                font-size: 1.25rem;
+                /* CORRIGIDO: De 1.25rem para 2rem */
+                font-size: 2rem;
                 padding: 5px 20px;
-                top: -8px; /* Ajuste para centralizar o novo tamanho reduzido */
+                top: -10px; /* Reajustado para melhor centralização */
             }
         }
 
@@ -468,18 +468,18 @@
                 margin-top: 42px;
             }
 
-            /* Ajuste responsivo para celular (portrait): Frase (1.0em / 2 = 0.5em), Palavra (2rem / 2 = 1rem) */
+            /* Ajuste responsivo para celular (portrait): Frase (0.8em), Palavra (1.5rem) */
             .slide h1 { 
                 padding-top: 45px; 
             }
             .hero-section h1 {
-                /* ALTERADO: De 1.0em para 0.5em */
-                font-size: 0.5em;
+                /* CORRIGIDO: De 0.5em para 0.8em */
+                font-size: 0.8em;
             }
             .hero-section h1 .highlight-word::before {
-                /* ALTERADO: De 2rem para 1rem */
-                font-size: 1rem;
-                top: -5px; /* Ajuste para centralizar o novo tamanho reduzido */
+                /* CORRIGIDO: De 1rem para 1.5rem */
+                font-size: 1.5rem;
+                top: -5px; /* Reajustado para melhor centralização */
             }
         }
         
@@ -492,7 +492,7 @@
         }
         
         .hero-section h1 {
-            /* Tamanho da frase desktop mantido */
+            /* Tamanho da frase desktop MANTIDO em 1.8em */
             font-size: 1.8em;
             font-weight: 400;
             line-height: 1.4;
@@ -506,7 +506,7 @@
             left: 50%;
             transform: translateX(-50%); 
             display: block;
-            /* Tamanho da palavra destacada desktop mantido */
+            /* Tamanho da palavra destacada desktop MANTIDO em 5rem */
             font-size: 5rem;
             font-weight: 700;
             padding: 5px 25px;
@@ -514,6 +514,22 @@
             color: var(--white);
             line-height: 1.3;
             text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Define o texto e a cor de cada título */
+        #slide-1 .highlight-word.orange::before {
+            content: 'Visibilidade';
+            background-color: rgba(243, 156, 18, 0.8);
+        }
+
+        #slide-2 .highlight-word.green::before {
+            content: 'Mostre';
+            background-color: rgba(76, 175, 80, 0.8);
+        }
+
+        #slide-3 .highlight-word.red::before {
+            content: 'Transforme';
+            background-color: rgba(231, 76, 60, 0.8);
         }
     </style>
 </head>
