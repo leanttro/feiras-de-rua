@@ -408,18 +408,16 @@
             .hamburger-menu { display: block; padding-right: 20px; }
             .hero-section { height: 450px; }
             
-            /* Ajuste responsivo para tablets: Frase (1.2em), Palavra (3rem) */
+            /* Ajuste responsivo para tablets */
             .slide h1 { 
-                padding-top: 70px; 
+                padding-top: 85px; 
             }
             .hero-section h1 { 
-                /* CORRIGIDO: De 0.8em para 1.2em */
-                font-size: 1.2em; 
+                font-size: 1.1em; 
             }
             .hero-section h1 .highlight-word::before { 
-                /* CORRIGIDO: De 1.75rem para 3rem */
-                font-size: 3rem; 
-                top: -15px; /* Reajustado para melhor centralização */
+                font-size: 2.8rem; 
+                top: -18px;
             }
         }
 
@@ -439,20 +437,18 @@
             }
             .contact-info { flex-direction: column; gap: 20px; }
 
-            /* Ajuste responsivo para celular (landscape): Frase (1.0em), Palavra (2rem) */
+            /* Ajuste responsivo para celular (landscape): Frase e Palavra Menores e Centralizados */
             .slide h1 { 
-                padding-top: 50px; 
+                padding-top: 100px; /* Aumentado para empurrar o conteúdo para o meio */
             }
             .hero-section h1 {
-                /* CORRIGIDO: De 0.65em para 1.0em */
-                font-size: 1.0em;
-                line-height: 1.3;
+                font-size: 0.9em; /* Frase um pouco menor */
+                line-height: 1.4;
             }
             .hero-section h1 .highlight-word::before {
-                /* CORRIGIDO: De 1.25rem para 2rem */
-                font-size: 2rem;
-                padding: 5px 20px;
-                top: -10px; /* Reajustado para melhor centralização */
+                font-size: 1.8rem; /* Palavra destacada menor */
+                padding: 5px 15px;
+                top: -15px; /* Reajustado para a nova posição */
             }
         }
 
@@ -468,18 +464,17 @@
                 margin-top: 42px;
             }
 
-            /* Ajuste responsivo para celular (portrait): Frase (0.8em), Palavra (1.5rem) */
+            /* Ajuste responsivo para celular (portrait): Frase e Palavra Menores e Centralizados */
             .slide h1 { 
-                padding-top: 45px; 
+                padding-top: 110px; /* Aumentado drasticamente para centralizar na vertical */
             }
             .hero-section h1 {
-                /* CORRIGIDO: De 0.5em para 0.8em */
-                font-size: 0.8em;
+                font-size: 0.85em; /* Tamanho da frase ajustado */
             }
             .hero-section h1 .highlight-word::before {
-                /* CORRIGIDO: De 1rem para 1.5rem */
-                font-size: 1.5rem;
-                top: -5px; /* Reajustado para melhor centralização */
+                font-size: 1.4rem; /* Palavra destacada significativamente menor */
+                padding: 3px 10px; /* Retângulo menor */
+                top: -12px; /* Reajustado para a nova posição */
             }
         }
         
