@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Feiras Artesanais em São Paulo - Feito à mão, com a alma de SP!</title>
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family/Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
         /* Estilos reaproveitados do feiras-livres.html para consistência */
@@ -316,7 +316,6 @@
         .fair-card-description {
             font-size: 0.95em;
             margin-top: 5px;
-            flex-grow: 1; 
         }
 
         .fair-card .button {
@@ -328,7 +327,7 @@
             text-decoration: none;
             font-weight: 600;
             transition: background-color 0.3s ease;
-            margin-top: 15px;
+            margin-top: auto;
             align-self: flex-start;
         }
         .fair-card .button:hover {
@@ -353,6 +352,36 @@
         }
         footer a { color: var(--primary-green); text-decoration: none; margin: 0 8px; transition: color 0.3s ease; }
         footer a:hover { color: var(--light-green); text-decoration: underline; }
+
+        .footer-bottom {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .developer-credit {
+            margin: 0;
+            font-size: 0.95em;
+        }
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0077B5; /* LinkedIn blue */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .linkedin-btn:hover {
+            background-color: #005582;
+            color: white;
+            text-decoration: none;
+        }
+
 
         /* --- Responsividade (Mantida e Ajustada para o novo botão) --- */
         @media (max-width: 992px) {
@@ -493,6 +522,90 @@
             scrollbar-width: thin; 
             scrollbar-color: var(--medium-gray) #f1f1f1;
         }
+
+        /* --- Estilos do Modal --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--white);
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: black;
+        }
+
+        #modal-body {
+            text-align: left;
+        }
+        .modal-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 2em;
+            color: var(--dark-gray);
+            margin: 0 0 15px 0;
+        }
+        .modal-description {
+            white-space: pre-wrap; /* Preserva quebras de linha na descrição */
+            margin-bottom: 20px;
+        }
+        #modal-body p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        #modal-body p i {
+             color: var(--primary-green);
+            width: 20px;
+            text-align: center;
+        }
+        .maps-button {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -584,12 +697,24 @@
         </section>
     </main>
 
+    <!-- Modal para detalhes da feira -->
+    <div id="fair-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close-btn">&times;</button>
+            <div id="modal-body">
+                <!-- Conteúdo dos detalhes da feira será injetado aqui pelo JavaScript -->
+            </div>
+        </div>
+    </div>
+
     <footer>
         <div class="container">
-            <p>&copy; 2024 FeirasSP.com.br - Todos os direitos reservados.</p>
-            <div>
-                <a href="#">Política de Privacidade</a> |
-                <a href="#">Termos de Uso</a>
+            <p>&copy; 2025 - FeirasDeRua.com - Todos os direitos reservados.</p>
+            <div class="footer-bottom">
+                <p class="developer-credit">Desenvolvido por Leandro Andrade</p>
+                <a href="https://www.linkedin.com/in/leanttro" target="_blank" class="linkedin-btn">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
             </div>
         </div>
     </footer>
@@ -823,19 +948,77 @@
                 viewCarouselBtn.classList.remove('active');
             });
 
+            
+            // --- Lógica do Modal ---
+            const modal = document.getElementById('fair-modal');
+            const modalCloseBtn = document.getElementById('modal-close');
+            
+            function abrirModal(feira) {
+                const modalBody = document.getElementById('modal-body');
+                const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
+                const regiaoFormatada = feira.regiao && feira.regiao !== 'NÃO INFORMADO'
+                    ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
+                    : (feira.bairro || 'Região não informada');
+                const distanciaHtml = feira.distancia !== undefined && feira.distancia !== Infinity
+                    ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
+                const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
+
+                modalBody.innerHTML = `
+                    <img class="modal-image" src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                    <h2 class="modal-title">${feira.nome_feira}</h2>
+                    <p class="modal-description">${feira.descricao || 'Descrição não disponível.'}</p>
+                    ${distanciaHtml}
+                    <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${feira.dia_semana || 'Não informado'}</p>
+                    <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} às ${formatTime(feira.horario_fim)}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}, ${feira.bairro || ''} - ${regiaoFormatada}</p>
+                    <a href="${googleMapsUrl}" target="_blank" class="button maps-button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}>
+                        <i class="fas fa-map-marked-alt"></i> Ver no mapa
+                    </a>`;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function fecharModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            modalCloseBtn.addEventListener('click', fecharModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) { // Fecha se clicar no overlay
+                    fecharModal();
+                }
+            });
+
+            // Event listener para os botões "Ver mais"
+            resultadosDiv.addEventListener('click', (event) => {
+                if (event.target.classList.contains('ver-mais-btn')) {
+                    event.preventDefault();
+                    const card = event.target.closest('.fair-card');
+                    const feiraId = card.dataset.feiraId;
+                    const feira = todasAsFeiras.find(f => String(f.id) === feiraId);
+                    if (feira) {
+                        abrirModal(feira);
+                    }
+                }
+            });
+
 
             // --- Função para criar os novos cards ---
             function criarCardFeira(feira) {
-                const distanciaHtml = feira.distancia !== undefined && feira.distancia !== Infinity
-                    ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
-                    : '';
-
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                
-                // Formata a região para exibição no card
                 const regiaoFormatada = feira.regiao && feira.regiao !== 'NÃO INFORMADO'
                     ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase())
-                    : (feira.bairro || '');
+                    : (feira.bairro || 'Região não informada');
+
+                // Lógica para encurtar a descrição para a primeira frase
+                const fullDescription = feira.descricao || 'Descrição não disponível.';
+                let shortDescription = fullDescription;
+                const firstPeriodIndex = fullDescription.indexOf('.');
+                
+                if (firstPeriodIndex > 0) {
+                    shortDescription = fullDescription.substring(0, firstPeriodIndex) + '...';
+                }
 
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
@@ -844,12 +1027,11 @@
                         </div>
                         <div class="fair-card-content">
                             <h3>${feira.nome_feira}</h3>
-                            <p class="fair-card-description">${feira.descricao || 'Descrição não disponível.'}</p>
-                            ${distanciaHtml}
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
-                            <a href="#" class="button" onclick="event.preventDefault(); alert('Página de detalhes em construção!');">Ver mais</a>
+                            <p class="fair-card-description">${shortDescription}</p>
+                            <a href="#" class="button ver-mais-btn">Ver mais</a>
                         </div>
                     </div>
                 `;
