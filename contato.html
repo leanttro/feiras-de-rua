@@ -143,16 +143,61 @@
         #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero1.jpg'); }
         #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero2.jpg'); }
         #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero3.jpg'); }
-
-        .hero-section h1 {
-            font-size: 2.5em;
+        
+        /* --- ESTILOS CORRIGIDOS PARA O HERO --- */
+        
+        /* O H1 agora é um container de posicionamento para o título destacado */
+        .slide h1 {
+            position: relative; /* Cria o contexto de posicionamento */
+            padding-top: 80px; /* Espaço para o título destacado que será posicionado absolutamente */
             margin: 0;
-            transform: translateY(-27px);
+            max-width: 90%;
+        }
+        
+        /* Estilo do subtítulo (o texto principal completo do H1) */
+        .hero-section h1 {
+            font-size: 1.6em;
+            font-weight: 400;
+            line-height: 1.4;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
+        }
+
+        /* O SPAN da palavra destacada não precisa de estilos, ele apenas serve de âncora para o ::before */
+        .hero-section h1 .highlight-word {
+           /* A palavra volta a aparecer normalmente na frase */
+        }
+
+        /* Cria o novo título grande e destacado usando um pseudo-elemento posicionado absolutamente */
+        .hero-section h1 .highlight-word::before {
+            content: ''; /* O conteúdo (texto) é definido abaixo para cada cor */
+            position: absolute;
+            top: 0;
+            left: 50%;
+            transform: translateX(-50%); /* Centraliza o título */
+            display: block;
+            font-size: 3rem;
             font-weight: 700;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.7);
-            line-height: 1.2;
+            padding: 5px 25px;
+            border-radius: 8px;
             color: var(--white);
-            max-width: 800px;
+            line-height: 1.3;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        /* Define o texto e a cor de cada título */
+        #slide-1 .highlight-word.orange::before {
+            content: 'Visibilidade';
+            background-color: rgba(243, 156, 18, 0.8);
+        }
+
+        #slide-2 .highlight-word.green::before {
+            content: 'Mostre';
+            background-color: rgba(76, 175, 80, 0.8);
+        }
+
+        #slide-3 .highlight-word.red::before {
+            content: 'Transforme';
+            background-color: rgba(231, 76, 60, 0.8);
         }
         
         .prev-slide, .next-slide {
@@ -358,18 +403,13 @@
             nav.desktop-nav { display: none; }
             .hamburger-menu { display: block; padding-right: 20px; }
             .hero-section { height: 450px; }
-            .hero-section h1 { 
-                font-size: 2.2em;
-                transform: translateY(-27px);
-            }
+            .slide h1 { padding-top: 70px; }
+            .hero-section h1 .highlight-word::before { font-size: 2.5rem; }
+            .hero-section h1 { font-size: 1.4em; }
         }
 
         @media (max-width: 768px) {
             .hero-section { height: 400px; }
-            .hero-section h1 { 
-                font-size: 1.6em;
-                transform: translateY(-27px);
-            }
             .form-grid { grid-template-columns: 1fr; }
             .form-section { 
                 margin-top: -60px; 
@@ -383,15 +423,21 @@
                 margin-top: 42px;
             }
             .contact-info { flex-direction: column; gap: 20px; }
+
+            .slide h1 { padding-top: 60px; }
+            .hero-section h1 .highlight-word::before {
+                font-size: 2rem;
+                padding: 5px 20px;
+            }
+            .hero-section h1 {
+                font-size: 1.2em;
+                line-height: 1.3;
+            }
         }
 
         @media (max-width: 480px) {
             header .logo img { height: 50px; }
             .hero-section { height: 350px; }
-            .hero-section h1 { 
-                font-size: 1.2em;
-                transform: translateY(-27px);
-            }
             .form-section h2, .contact-section h2 { font-size: 2em; }
             
             .contact-section {
@@ -399,6 +445,14 @@
             }
             .contact-section h2 { 
                 margin-top: 42px;
+            }
+
+            .slide h1 { padding-top: 55px; }
+            .hero-section h1 .highlight-word::before {
+                font-size: 1.8rem;
+            }
+            .hero-section h1 {
+                font-size: 1em;
             }
         }
     </style>
@@ -439,13 +493,13 @@
     <main>
         <section class="hero-section">
             <div class="slide active" id="slide-1">
-                <h1>Dê visibilidade à sua feira.<br>Alcance milhares de novos clientes.</h1>
+                <h1>Dê <span class="highlight-word orange">visibilidade</span> à sua feira.<br>Alcance milhares de novos clientes.</h1>
             </div>
             <div class="slide" id="slide-2">
-                <h1>Mostre o que você tem de melhor.<br>O público certo está aqui.</h1>
+                <h1><span class="highlight-word green">Mostre</span> o que você tem de melhor.<br>O público certo está aqui.</h1>
             </div>
             <div class="slide" id="slide-3">
-                <h1>Transforme seu evento local em um grande sucesso. Anuncie conosco.</h1>
+                <h1><span class="highlight-word red">Transforme</span> seu evento local em um grande sucesso. Anuncie conosco.</h1>
             </div>
 
             <!-- Navegação do Slider -->
@@ -656,3 +710,4 @@
     </script>
 </body>
 </html>
+
