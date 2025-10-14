@@ -223,9 +223,9 @@
             visibility: visible;
         }
 
-        #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/hero-background-1.png'); }
-        #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/hero-background-2.png'); }
-        #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('/hero-background-3.png'); }
+        #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-1.png'); }
+        #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-2.png'); }
+        #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-3.png'); }
 
 
         .hero-banner {
@@ -775,16 +775,16 @@
 <body>
     <header>
         <div class="logo">
-            <img src="/assets/logo.png" alt="Logo FeirasSP">
+            <img src="assets/logo.png" alt="Logo FeirasSP">
         </div>
         <nav class="desktop-nav">
             <ul>
-                <li><a href="/">Início</a></li>
-                <li><a href="/gastronomicas.html">Gastronômicas</a></li>
-                <li><a href="/feiras-livres.html">Feiras Livres</a></li>
-                <li><a href="/artesanais.html">Artesanais</a></li>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="gastronomicas.html">Gastronômicas</a></li>
+                <li><a href="feiras-livres.html">Feiras Livres</a></li>
+                <li><a href="artesanais.html">Artesanais</a></li>
                 <li><a href="#">Sobre</a></li>
-                <li><a href="/contato.html">Contato</a></li>
+                <li><a href="contato.html">Contato</a></li>
             </ul>
         </nav>
         <div class="hamburger-menu" id="hamburgerMenu">
@@ -797,12 +797,12 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="/">Início</a></li>
-                    <li><a href="/gastronomicas.html">Gastronômicas</a></li>
-                    <li><a href="/feiras-livres.html">Feiras Livres</a></li>
-                    <li><a href="/artesanais.html">Artesanais</a></li>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="gastronomicas.html">Gastronômicas</a></li>
+                    <li><a href="feiras-livres.html">Feiras Livres</a></li>
+                    <li><a href="artesanais.html">Artesanais</a></li>
                     <li><a href="#">Sobre</a></li>
-                    <li><a href="/contato.html">Contato</a></li>
+                    <li><a href="contato.html">Contato</a></li>
                 </ul>
             </nav>
         </div>
@@ -825,7 +825,7 @@
                         <h1>SABORES QUE ENCANTAM <span class="subtitle">uma experiência para o paladar</span></h1>
                     </div>
                     <p>Mergulhe em um universo de aromas e sabores. As feiras gastronômicas de São Paulo são um convite para novas experiências culinárias.</p>
-                    <a href="/gastronomicas.html" class="button">VER FEIRAS GASTRONÔMICAS</a>
+                    <a href="gastronomicas.html" class="button">VER FEIRAS GASTRONÔMICAS</a>
                 </div>
             </div>
             <div class="slide" id="slide-3">
@@ -834,7 +834,7 @@
                          <h1>ARTE QUE PULSA NA CIDADE <span class="subtitle">criatividade e cultura local</span></h1>
                     </div>
                     <p>Encontre peças únicas, feitas à mão por artistas locais. Leve para casa um pedaço da cultura e da criatividade de São Paulo.</p>
-                    <a href="/artesanais.html" class="button">VER FEIRAS ARTESANAIS</a>
+                    <a href="artesanais.html" class="button">VER FEIRAS ARTESANAIS</a>
                 </div>
             </div>
 
@@ -881,7 +881,7 @@
 
                 <!-- "Ver Todas" Button -->
                 <div class="see-all-container">
-                    <a href="/gastronomicas.html" class="button" id="seeAllBtn">Ver Todas</a>
+                    <a href="gastronomicas.html" class="button" id="seeAllBtn">Ver Todas</a>
                 </div>
             </div>
         </section>
@@ -991,7 +991,7 @@
                 return `
                     <div class="fair-card" data-id="${feira.id}">
                         <div class="fair-card-image">
-                            <img src="${feira.imagem_url || '/assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                            <img src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
                         </div>
                         <div class="fair-card-content">
                             <h3>${feira.nome_feira}</h3>
@@ -1065,9 +1065,9 @@
                 }
                 
                 const pageMap = {
-                    'gastronomica': '/gastronomicas.html',
-                    'artesanal': '/artesanais.html',
-                    'livre': '/feiras-livres.html'
+                    'gastronomica': 'gastronomicas.html',
+                    'artesanal': 'artesanais.html',
+                    'livre': 'feiras-livres.html'
                 };
                 seeAllBtn.href = pageMap[category] || '#';
             }
@@ -1098,7 +1098,7 @@
                     const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
                     
                     modalHtml = `
-                        <img class="modal-image" src="${feira.imagem_url || '/assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                        <img class="modal-image" src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
                         <h2 class="modal-title">${feira.nome_feira}</h2>
                         <p class="modal-description">${feira.descricao || 'Descrição não disponível.'}</p>
                         ${distanciaHtml}
