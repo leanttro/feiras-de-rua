@@ -144,12 +144,10 @@
         #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero2.jpg'); }
         #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('hero3.jpg'); }
         
-        /* --- ESTILOS CORRIGIDOS PARA O HERO --- */
-        
+        /* --- ESTILOS PARA O HERO (Desktop) --- */
         /* O H1 agora é um container de posicionamento para o título destacado */
         .slide h1 {
             position: relative; /* Cria o contexto de posicionamento */
-            /* Posição superior desktop mantida */
             padding-top: 120px; 
             margin: 0;
             max-width: 90%;
@@ -157,28 +155,20 @@
         
         /* Estilo do subtítulo (o texto principal completo do H1) */
         .hero-section h1 {
-            /* Tamanho da frase desktop mantido */
             font-size: 1.8em;
             font-weight: 400;
             line-height: 1.4;
             text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
         }
 
-        /* O SPAN da palavra destacada não precisa de estilos, ele apenas serve de âncora para o ::before */
-        .hero-section h1 .highlight-word {
-           /* A palavra volta a aparecer normalmente na frase */
-        }
-
         /* Cria o novo título grande e destacado usando um pseudo-elemento posicionado absolutamente */
         .hero-section h1 .highlight-word::before {
             content: ''; /* O conteúdo (texto) é definido abaixo para cada cor */
             position: absolute;
-            /* Posição superior desktop mantida */
             top: -40px; 
             left: 50%;
             transform: translateX(-50%); /* Centraliza o título */
             display: block;
-            /* Tamanho da palavra destacada desktop mantido */
             font-size: 5rem;
             font-weight: 700;
             padding: 5px 25px;
@@ -402,7 +392,7 @@
             transform: scale(1.1);
         }
 
-        /* Responsividade */
+        /* --- Responsividade --- */
         @media (max-width: 992px) {
             nav.desktop-nav { display: none; }
             .hamburger-menu { display: block; padding-right: 20px; }
@@ -437,18 +427,16 @@
             }
             .contact-info { flex-direction: column; gap: 20px; }
 
-            /* Ajuste responsivo para celular (landscape): Frase e Palavra Menores e Centralizados */
+            /* Ajuste responsivo para celular (landscape) */
             .slide h1 { 
-                padding-top: 100px; /* Aumentado para empurrar o conteúdo para o meio */
+                padding-top: 90px;
             }
             .hero-section h1 {
-                font-size: 0.9em; /* Frase um pouco menor */
-                line-height: 1.4;
+                font-size: 1.1em;
             }
             .hero-section h1 .highlight-word::before {
-                font-size: 1.8rem; /* Palavra destacada menor */
-                padding: 5px 15px;
-                top: -15px; /* Reajustado para a nova posição */
+                font-size: 3rem;
+                top: -25px;
             }
         }
 
@@ -464,67 +452,18 @@
                 margin-top: 42px;
             }
 
-            /* Ajuste responsivo para celular (portrait): Frase e Palavra Menores e Centralizados */
+            /* Ajuste responsivo para celular (portrait) */
             .slide h1 { 
-                padding-top: 110px; /* Aumentado drasticamente para centralizar na vertical */
+                padding-top: 80px;
             }
             .hero-section h1 {
-                font-size: 0.85em; /* Tamanho da frase ajustado */
+                font-size: 0.9em;
             }
             .hero-section h1 .highlight-word::before {
-                font-size: 1.4rem; /* Palavra destacada significativamente menor */
-                padding: 3px 10px; /* Retângulo menor */
-                top: -12px; /* Reajustado para a nova posição */
+                font-size: 2.2rem;
+                padding: 4px 12px;
+                top: -20px;
             }
-        }
-        
-        /* --- ESTILOS CORRIGIDOS PARA O HERO (Desktop) --- */
-        .slide h1 {
-            position: relative;
-            padding-top: 120px; 
-            margin: 0;
-            max-width: 90%;
-        }
-        
-        .hero-section h1 {
-            /* Tamanho da frase desktop MANTIDO em 1.8em */
-            font-size: 1.8em;
-            font-weight: 400;
-            line-height: 1.4;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.6);
-        }
-
-        .hero-section h1 .highlight-word::before {
-            content: '';
-            position: absolute;
-            top: -40px; 
-            left: 50%;
-            transform: translateX(-50%); 
-            display: block;
-            /* Tamanho da palavra destacada desktop MANTIDO em 5rem */
-            font-size: 5rem;
-            font-weight: 700;
-            padding: 5px 25px;
-            border-radius: 8px;
-            color: var(--white);
-            line-height: 1.3;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
-        }
-
-        /* Define o texto e a cor de cada título */
-        #slide-1 .highlight-word.orange::before {
-            content: 'Visibilidade';
-            background-color: rgba(243, 156, 18, 0.8);
-        }
-
-        #slide-2 .highlight-word.green::before {
-            content: 'Mostre';
-            background-color: rgba(76, 175, 80, 0.8);
-        }
-
-        #slide-3 .highlight-word.red::before {
-            content: 'Transforme';
-            background-color: rgba(231, 76, 60, 0.8);
         }
     </style>
 </head>
@@ -782,3 +721,4 @@
     </script>
 </body>
 </html>
+
