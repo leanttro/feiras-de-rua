@@ -167,7 +167,6 @@
             max-width: 900px;
         }
         
-        /* --- INÍCIO DA MODIFICAÇÃO --- */
         .hero-highlight {
             background-color: rgba(76, 175, 80, 0.7); /* Cor #4caf50 com transparência */
             padding: 5px 15px;
@@ -182,7 +181,6 @@
             display: inline-block;
             margin-top: 15px;
         }
-        /* --- FIM DA MODIFICAÇÃO --- */
 
         .hero-section p {
             font-size: 1.3em;
@@ -258,7 +256,6 @@
             box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
         }
         
-        /* --- Estilos para Sugestões de Endereço (Photon) --- */
         #address-suggestions {
             position: absolute;
             top: 100%;
@@ -302,9 +299,10 @@
             box-shadow: var(--shadow-light);
             overflow: hidden;
             text-align: left;
-            transition: transform 0.3s ease, box-shadow 0.3s ease, margin-bottom 0.3s ease;
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
             border: 1px solid var(--medium-gray);
-            cursor: pointer; 
+            display: flex;
+            flex-direction: column;
         }
         
         .fair-card:hover {
@@ -328,6 +326,7 @@
             display: flex;
             flex-direction: column;
             gap: 12px;
+            flex-grow: 1;
         }
 
         .fair-card-content p {
@@ -342,6 +341,22 @@
             color: var(--primary-green);
             width: 20px;
             text-align: center;
+        }
+        
+        .fair-card .button {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 10px 20px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600;
+            transition: background-color 0.3s ease;
+            margin-top: auto;
+            align-self: flex-start;
+        }
+        .fair-card .button:hover {
+            background-color: var(--dark-green);
         }
 
         .initial-message, .loading-message, .error-message, .info-message {
@@ -371,6 +386,35 @@
         footer a:hover {
             color: var(--light-green);
             text-decoration: underline;
+        }
+
+        .footer-bottom {
+            margin-top: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+        }
+        .developer-credit {
+            margin: 0;
+            font-size: 0.95em;
+        }
+        .linkedin-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background-color: #0077B5; /* LinkedIn blue */
+            color: white;
+            padding: 8px 15px;
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 500;
+            transition: background-color 0.3s ease;
+        }
+        .linkedin-btn:hover {
+            background-color: #005582;
+            color: white;
+            text-decoration: none;
         }
 
         .mobile-title {
@@ -513,58 +557,55 @@
             scrollbar-color: var(--medium-gray) #f1f1f1;
         }
 
-        /* --- CSS para o Modal --- */
-        .modal-overlay-hidden {
+        /* --- Estilos do Modal --- */
+        .modal-overlay {
             display: none;
             position: fixed;
-            top: 0;
+            z-index: 2000;
             left: 0;
+            top: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.6);
-            justify-content: center;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
             align-items: center;
-            z-index: 2000;
+            justify-content: center;
         }
-        .modal-overlay-visible {
-            display: flex;
-        }
-        #modal-content {
+        .modal-content {
             background-color: var(--white);
-            padding: 30px;
+            margin: auto;
+            padding: 25px;
             border-radius: 12px;
-            box-shadow: var(--shadow-medium);
             width: 90%;
             max-width: 600px;
-            max-height: 80vh;
-            overflow-y: auto;
             position: relative;
-            animation: slide-down 0.3s ease-out;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
         }
-        @keyframes slide-down {
-            from {
-                transform: translateY(-30px);
-                opacity: 0;
-            }
-            to {
-                transform: translateY(0);
-                opacity: 1;
-            }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
         }
+
         .modal-close-btn {
+            color: #aaa;
             position: absolute;
             top: 10px;
-            right: 15px;
-            background: none;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
             border: none;
-            font-size: 2.5em;
-            color: var(--medium-gray);
+            background: none;
             cursor: pointer;
-            line-height: 1;
-            padding: 0;
         }
-        .modal-close-btn:hover {
-            color: var(--dark-gray);
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: black;
+        }
+
+        #modal-body {
+            text-align: left;
         }
         #modal-body h2 {
             margin-top: 0;
@@ -578,51 +619,19 @@
             font-size: 1.1em;
             line-height: 1.7;
             color: var(--text-color);
+            display: flex; /* Para alinhar ícones */
+            align-items: center;
+            gap: 10px;
         }
         #modal-body p strong {
             color: var(--dark-gray);
             margin-right: 8px;
-            display: inline-block;
-            min-width: 150px;
         }
-
-        /* --- INÍCIO: CSS para Detalhes do Card Expandido --- */
-        .fair-card-details {
-            background-color: #fdfdfd;
-            padding: 0 20px;
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.4s ease-out, padding 0.4s ease-out;
-            border-top: 1px solid transparent;
+         #modal-body p i {
+            color: var(--primary-green);
+            width: 20px;
+            text-align: center;
         }
-
-        .fair-card-details.expanded {
-            padding: 20px;
-            max-height: 300px; /* Valor suficiente para o conteúdo */
-            border-top: 1px solid var(--medium-gray);
-        }
-
-        .fair-card-details p {
-            margin: 10px 0;
-            font-size: 0.95em;
-            display: flex;
-            align-items: center;
-        }
-
-        .fair-card-details p strong {
-            color: var(--dark-gray);
-            margin-right: 8px;
-            min-width: 150px; /* Alinha os valores */
-        }
-
-        /* NOVO: Força a expansão dos detalhes na visualização em carrossel */
-        .results-carousel .fair-card .fair-card-details {
-            padding: 20px;
-            max-height: 300px;
-            border-top: 1px solid var(--medium-gray);
-        }
-        /* --- FIM: CSS para Detalhes do Card Expandido --- */
-
     </style>
 </head>
 <body>
@@ -633,9 +642,9 @@
         <nav class="desktop-nav">
             <ul>
                 <li><a href="index.html">Início</a></li>
-                <li><a href="#">Gastronômicas</a></li>
+                <li><a href="gastronomicas.html">Gastronômicas</a></li>
                 <li><a href="feiras-livres.html" class="active">Feiras Livres</a></li>
-                <li><a href="#">Artesanais</a></li>
+                <li><a href="artesanais.html">Artesanais</a></li>
                 <li><a href="#">Sobre</a></li>
                 <li><a href="contato.html">Contato</a></li>
             </ul>
@@ -648,9 +657,9 @@
             <nav>
                 <ul>
                     <li><a href="index.html">Início</a></li>
-                    <li><a href="#">Gastronômicas</a></li>
+                    <li><a href="gastronomicas.html">Gastronômicas</a></li>
                     <li><a href="feiras-livres.html">Feiras Livres</a></li>
-                    <li><a href="#">Artesanais</a></li>
+                    <li><a href="artesanais.html">Artesanais</a></li>
                     <li><a href="#">Sobre</a></li>
                     <li><a href="contato.html">Contato</a></li>
                 </ul>
@@ -661,13 +670,11 @@
     <main>
         <section class="hero-section">
             <div class="container">
-                <!-- --- INÍCIO DA MODIFICAÇÃO --- -->
                 <h1>
                     <span class="hero-highlight">+1000 Feiras-Livres em São Paulo!</span>
                     <br>
                     <span class="hero-subtitle">Encontre a mais próxima de você.</span>
                 </h1>
-                <!-- --- FIM DA MODIFICAÇÃO --- -->
                 <p>Produtos frescos, orgânicos e artesanais pertinho de você.</p>
             </div>
         </section>
@@ -688,7 +695,6 @@
             </div>
         </section>
         
-        <!-- --- Filtro de Bairro --- -->
         <div class="filtros-container">
             <div class="filtros-wrapper">
                 <div class="filtro-grupo" id="filtro-bairro-container">
@@ -699,41 +705,38 @@
                 </div>
             </div>
         </div>
-        <!-- --- Fim do Filtro --- -->
-
-        <!-- --- Seletor de Visualização --- -->
+        
         <div class="view-switcher-container">
             <button id="view-carousel-btn" class="view-btn"><i class="fas fa-stream"></i> Carrossel</button>
             <button id="view-grid-btn" class="view-btn"><i class="fas fa-th-large"></i> Grade</button>
         </div>
-        <!-- --- Fim do Seletor --- -->
-
+        
         <section id="resultados-feiras">
             <div class="container">
                 <p class="initial-message">Use a busca ou o botão "Usar Meu Local" para encontrar as feiras mais próximas.</p>
-                <!-- Resultados serão inseridos aqui pelo JavaScript -->
             </div>
         </section>
 
-        <!-- --- Modal --- -->
-        <div id="modal-overlay" class="modal-overlay-hidden">
-            <div id="modal-content">
-                <button id="modal-close-btn" class="modal-close-btn">&times;</button>
+        <!-- Modal para detalhes da feira -->
+        <div id="fair-modal" class="modal-overlay">
+            <div class="modal-content">
+                <button id="modal-close" class="modal-close-btn">&times;</button>
                 <div id="modal-body">
-                    <!-- Conteúdo da feira será inserido aqui -->
+                    <!-- Conteúdo dos detalhes da feira será injetado aqui pelo JavaScript -->
                 </div>
             </div>
         </div>
-        <!-- --- Fim do Modal --- -->
 
     </main>
 
     <footer>
         <div class="container">
-            <p>&copy; 2024 FeirasSP.com.br - Todos os direitos reservados.</p>
-            <div>
-                <a href="#">Política de Privacidade</a> |
-                <a href="#">Termos de Uso</a>
+            <p>&copy; 2025 - FeirasDeRua.com - Todos os direitos reservados.</p>
+            <div class="footer-bottom">
+                <p class="developer-credit">Desenvolvido por Leandro Andrade</p>
+                <a href="https://www.linkedin.com/in/leanttro" target="_blank" class="linkedin-btn">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
             </div>
         </div>
     </footer>
@@ -767,16 +770,15 @@
             let todasAsFeiras = [];
             let feirasExibidas = [];
 
-            // --- INÍCIO: Lógica de Busca ---
+            // --- Lógica de Busca ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
             const inputEndereco = document.getElementById('input-endereco');
             const suggestionsContainer = document.getElementById('address-suggestions');
             
-            // Função para calcular a distância entre duas coordenadas usando a fórmula de Haversine.
             function haversineDistance(coords1, coords2) {
                 function toRad(x) { return x * Math.PI / 180; }
                 if (!coords1 || !coords2 || coords1.latitude == null || coords1.longitude == null || coords2.latitude == null || coords2.longitude == null) return Infinity;
-                const R = 6371; // Raio da Terra em km
+                const R = 6371;
                 const dLat = toRad(coords2.latitude - coords1.latitude);
                 const dLon = toRad(coords2.longitude - coords1.longitude);
                 const a = Math.sin(dLat / 2) * Math.sin(dLat / 2) + Math.cos(toRad(coords1.latitude)) * Math.cos(toRad(coords2.latitude)) * Math.sin(dLon / 2) * Math.sin(dLon / 2);
@@ -784,7 +786,6 @@
                 return R * c;
             }
 
-            // Função para ordenar feiras por proximidade e renderizar
             function ordenarEExibirFeiras(userLocation) {
                  resultadosDiv.innerHTML = `<p class="loading-message">Calculando distâncias e ordenando feiras...</p>`;
                 const feirasComDistancia = todasAsFeiras.map(feira => {
@@ -799,11 +800,8 @@
                 renderizarFeiras(feirasExibidas);
             }
 
-            // --- FUNÇÃO CORRIGIDA PARA MOBILE ---
             function solicitarLocalizacaoEOrdenar() {
-                // Fornece feedback imediato ao usuário que o clique foi registrado
                 resultadosDiv.innerHTML = `<p class="loading-message">Obtendo sua localização...</p>`;
-
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition((position) => {
                         const userLocation = {
@@ -815,48 +813,23 @@
                         let userMessage;
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
-                                userMessage = `
-                                    <strong>Você negou o acesso à localização.</strong>
-                                    <br><br>
-                                    Para usar esta função, você precisa autorizar no seu celular.
-                                    <br>
-                                    Tente ir em <strong>Ajustes > Privacidade > Serviços de Localização</strong> e reativar para o seu navegador.
-                                    <br><br>
-                                    Enquanto isso, use a busca manual para encontrar feiras.`;
-                                console.log('Acesso à localização negado pelo usuário.');
-                                break;
-                            case error.POSITION_UNAVAILABLE:
-                                userMessage = "Informações de localização não estão disponíveis no momento.";
-                                console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
-                                break;
-                            case error.TIMEOUT:
-                                userMessage = "A solicitação de localização demorou muito para responder.";
-                                console.error('Erro ao obter geolocalização:', userMessage, `(Code: ${error.code})`);
+                                userMessage = `<strong>Você negou o acesso à localização.</strong><br><br>Para usar esta função, você precisa autorizar no seu celular.<br>Tente ir em <strong>Ajustes > Privacidade > Serviços de Localização</strong> e reativar para o seu navegador.<br><br>Enquanto isso, use a busca manual para encontrar feiras.`;
                                 break;
                             default:
                                 userMessage = "Não foi possível obter sua localização. Por favor, tente a busca manual.";
-                                console.error('Ocorreu um erro desconhecido ao obter a geolocalização:', error);
                                 break;
                         }
-                        // Em caso de erro, exibe a mensagem e volta para a lista padrão de feiras
                         resultadosDiv.innerHTML = `<p class="info-message" style="line-height: 1.8;">${userMessage}</p>`;
-                        // Adiciona um pequeno delay antes de mostrar a lista completa para o usuário ler a mensagem
                         setTimeout(() => {
                            renderizarFeiras(todasAsFeiras);
-                        }, 5000); // Aumentado para dar tempo de ler a instrução
+                        }, 5000);
                     });
                 } else {
                     resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada por este navegador.</p>`;
-                    console.log('Geolocalização não é suportada por este navegador.');
                 }
             }
-
-
-            // Event listener para o botão "Usar Meu Local" (Geolocalização)
             btnMeuLocal.addEventListener('click', solicitarLocalizacaoEOrdenar);
 
-
-            // --- Lógica de busca de endereço com Nominatim ---
             function debounce(func, delay) {
                 let timeout;
                 return function(...args) {
@@ -868,7 +841,6 @@
             async function handleAddressInput() {
                 const query = inputEndereco.value;
                 if (query.length < 3) {
-                    suggestionsContainer.innerHTML = '';
                     suggestionsContainer.style.display = 'none';
                     return;
                 }
@@ -891,10 +863,8 @@
                     const item = document.createElement('div');
                     item.classList.add('suggestion-item');
                     item.textContent = result.display_name;
-
                     item.addEventListener('click', () => {
                         inputEndereco.value = item.textContent;
-                        suggestionsContainer.innerHTML = '';
                         suggestionsContainer.style.display = 'none';
                         const userLocation = { latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) };
                         ordenarEExibirFeiras(userLocation);
@@ -911,37 +881,57 @@
                 }
             });
             
-            
-            // Adiciona o listener para o seletor de bairros
             filtroBairroSelect.addEventListener('change', () => {
                 const bairroSelecionado = filtroBairroSelect.value;
-                
+                const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
                 if (bairroSelecionado === 'todos') {
-                    renderizarFeiras(feirasExibidas);
+                    renderizarFeiras(listaBase);
                 } else {
-                    const feirasFiltradas = feirasExibidas.filter(feira => feira.bairro === bairroSelecionado);
+                    const feirasFiltradas = listaBase.filter(feira => feira.bairro === bairroSelecionado);
                     renderizarFeiras(feirasFiltradas);
                 }
             });
 
+            // --- Lógica do Modal ---
+            const modal = document.getElementById('fair-modal');
+            const modalCloseBtn = document.getElementById('modal-close');
 
-            // --- Lógica de clique no card ---
-            resultadosDiv.addEventListener('click', (e) => {
-                const card = e.target.closest('.fair-card');
-                if (!card) return;
+            function abrirModal(feira) {
+                const modalBody = document.getElementById('modal-body');
+                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
+                modalBody.innerHTML = `
+                    <h2>${feira.nome_feira ?? 'Nome não informado'}</h2>
+                    ${distanciaHtml}
+                    <p><i class="fas fa-map-marked-alt"></i><strong>Endereço:</strong> ${feira.endereco || 'Não informado'}</p>
+                    <p><i class="fas fa-map-pin"></i><strong>Bairro:</strong> ${feira.bairro || 'Não informado'}</p>
+                    <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_feira || 'Não informado'}</p>
+                    <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h</p>
+                    <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
+                `;
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
 
-                if (!resultadosDiv.classList.contains('results-carousel')) {
-                    const detailsDiv = card.querySelector('.fair-card-details');
-                    if (!detailsDiv) return;
-                    const isAlreadyOpen = detailsDiv.classList.contains('expanded');
-                    document.querySelectorAll('.fair-card-details.expanded').forEach(openDetail => {
-                        openDetail.classList.remove('expanded');
-                    });
-                    if (!isAlreadyOpen) {
-                        detailsDiv.classList.add('expanded');
-                        setTimeout(() => {
-                            card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                        }, 400);
+            function fecharModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            modalCloseBtn.addEventListener('click', fecharModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    fecharModal();
+                }
+            });
+            
+            resultadosDiv.addEventListener('click', (event) => {
+                if (event.target.classList.contains('ver-mais-btn')) {
+                    event.preventDefault();
+                    const card = event.target.closest('.fair-card');
+                    const feiraId = card.dataset.feiraId;
+                    const feira = todasAsFeiras.find(f => String(f.id) === feiraId);
+                    if (feira) {
+                        abrirModal(feira);
                     }
                 }
             });
@@ -955,18 +945,17 @@
             viewGridBtn.classList.remove('active');
 
             viewCarouselBtn.addEventListener('click', () => {
-                document.querySelectorAll('.fair-card-details.expanded').forEach(openDetail => {
-                    openDetail.classList.remove('expanded');
-                });
                 resultadosDiv.classList.add('results-carousel');
                 viewCarouselBtn.classList.add('active');
                 viewGridBtn.classList.remove('active');
+                renderizarFeiras(feirasExibidas); // Re-renderizar para aplicar o modo correto
             });
 
             viewGridBtn.addEventListener('click', () => {
                 resultadosDiv.classList.remove('results-carousel');
                 viewGridBtn.classList.add('active');
                 viewCarouselBtn.classList.remove('active');
+                renderizarFeiras(feirasExibidas); // Re-renderizar para aplicar o modo correto
             });
 
             // --- Funções de Renderização ---
@@ -974,6 +963,7 @@
                 const distanciaHtml = feira.distancia !== undefined 
                     ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
                     : '';
+
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-header">
@@ -985,24 +975,18 @@
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
                             <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
                             <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
-                        </div>
-                        <div class="fair-card-details">
-                            <p><strong>Endereço:</strong> <span>${feira.endereco || 'Endereço não informado'}</span></p>
-                            <p><strong>Bairro:</strong> <span>${feira.bairro || 'Não informado'}</span></p>
-                            <p><strong>Dia da Feira:</strong> <span>${feira.dia_feira || 'Não informado'}</span></p>
-                            <p><strong>Horário:</strong> <span>8:00h - 14:00h</span></p>
-                            <p><strong>Quantidade de Feirantes:</strong> <span>${feira.qnt_feirantes || 'Não informado'}</span></p>
+                            <a href="#" class="button ver-mais-btn">Ver mais</a>
                         </div>
                     </div>
                 `;
             }
 
             function renderizarFeiras(listaDeFeiras) {
-                resultadosDiv.innerHTML = ''; 
                 if (!listaDeFeiras || listaDeFeiras.length === 0) {
                     resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira encontrada para os critérios selecionados.</p>';
                     return;
                 }
+                feirasExibidas = listaDeFeiras;
                 resultadosDiv.innerHTML = listaDeFeiras.map(criarCardFeira).join('');
             }
 
@@ -1019,8 +1003,6 @@
                     if (!feirasResponse.ok) throw new Error(`Erro na rede (feiras): ${feirasResponse.statusText}`);
                     
                     todasAsFeiras = await feirasResponse.json();
-                    feirasExibidas = [...todasAsFeiras];
-                    renderizarFeiras(feirasExibidas);
                     
                     if (filtrosResponse && filtrosResponse.ok) {
                         const filtrosData = await filtrosResponse.json();
@@ -1039,11 +1021,11 @@
                         });
                     }
                     
-                    // --- REMOVIDA A CHAMADA AUTOMÁTICA DAQUI ---
+                    renderizarFeiras(todasAsFeiras);
 
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados. O "cérebro" (backend) está rodando?</p>';
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Verifique a conexão com o servidor.</p>';
                 }
             }
             
