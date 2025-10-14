@@ -736,6 +736,30 @@
             #address-suggestions { top: 110px; }
             .fair-cards-container { grid-template-columns: 1fr; gap: 25px; }
             .fair-card { max-width: 450px; margin: 0 auto; }
+
+            /* INÍCIO DA ALTERAÇÃO: Estilos do Carrossel para Feira Livre no Mobile */
+            .fair-cards-container.mobile-carousel {
+                grid-template-columns: none; /* Remove a configuração de grid */
+                display: flex;
+                overflow-x: auto; /* Permite o scroll horizontal */
+                scroll-snap-type: x mandatory; /* Efeito de "ímã" ao rolar */
+                padding: 0 20px 20px 20px;
+                margin: 0 -20px;
+                gap: 15px; /* Espaçamento entre os cards */
+                scrollbar-width: none; /* Oculta a barra de rolagem (Firefox) */
+            }
+
+            .fair-cards-container.mobile-carousel::-webkit-scrollbar {
+                display: none; /* Oculta a barra de rolagem (Chrome, Safari) */
+            }
+            
+            .fair-cards-container.mobile-carousel .fair-card {
+                scroll-snap-align: center; /* Centraliza o card no "ímã" */
+                flex: 0 0 85%; /* Define a largura de cada card */
+                max-width: 85%;
+                margin: 0;
+            }
+            /* FIM DA ALTERAÇÃO */
         }
 
         @media (max-width: 480px) {
@@ -1004,6 +1028,15 @@
             // --- Render Logic ---
             function renderFairs(category) {
                 activeCategory = category;
+
+                // INÍCIO DA ALTERAÇÃO: Adiciona/remove classe para o carrossel mobile
+                if (category === 'livre') {
+                    fairCardsContainer.classList.add('mobile-carousel');
+                } else {
+                    fairCardsContainer.classList.remove('mobile-carousel');
+                }
+                // FIM DA ALTERAÇÃO
+
                 let fairsToProcess = [...allFairsData[category]];
                 
                 if (userCoordinates) {
@@ -1247,4 +1280,3 @@
     </script>
 </body>
 </html>
-
