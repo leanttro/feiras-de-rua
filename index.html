@@ -502,20 +502,20 @@
             font-size: 1.4em;
             color: var(--dark-gray);
         }
+        /* UPDATED: Based on feiras-livres.html for consistency */
         .fair-card-content p {
             margin: 0;
             font-size: 1em;
             display: flex;
-            align-items: flex-start; /* Alinha o ícone ao topo */
+            align-items: center; /* Changed to center */
             gap: 10px;
             color: var(--text-color);
+            min-height: 2.5em; /* Ensures enough space for two lines of text, keeping cards aligned */
         }
         .fair-card-content p i {
             color: var(--primary-green);
             width: 20px;
             text-align: center;
-            margin-top: 0.25em; /* Ajuste mais preciso para alinhar com a linha do texto */
-            flex-shrink: 0; /* Impede que o ícone encolha */
         }
 
         .fair-card .button {
@@ -719,12 +719,6 @@
 
             .fair-cards-container {
                 grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjust card size */
-            }
-
-            /* FIX: Garante que os cards de feira livre tenham a mesma altura em telas menores,
-               definindo uma altura mínima para o campo de endereço que pode quebrar a linha. */
-            .fair-card-content p:has(i.fa-map-pin) {
-                min-height: 2.5em; 
             }
         }
 
@@ -1253,3 +1247,4 @@
     </script>
 </body>
 </html>
+
