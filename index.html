@@ -10,17 +10,17 @@
         @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap');
 
         :root {
-            --primary-green: #4CAF50;
+            --primary-green: #4CAF50; /* A slightly richer green */
             --dark-green: #388E3C;
-            --light-green: #DCEDC8;
-            --light-gray: #f8f9fa;
+            --light-green: #DCEDC8; /* New: for subtle accents */
+            --light-gray: #f8f9fa; /* Lighter background */
             --medium-gray: #e0e0e0;
-            --dark-gray: #343a40;
-            --text-color: #495057;
+            --dark-gray: #343a40; /* Darker, modern text */
+            --text-color: #495057; /* General text color */
             --white: #ffffff;
             --shadow-light: rgba(0, 0, 0, 0.08);
             --shadow-medium: rgba(0, 0, 0, 0.15);
-            --accent-gold: #FFC107;
+            --accent-gold: #FFC107; /* New: for subtle accents or highlights */
         }
 
         body {
@@ -30,13 +30,14 @@
             box-sizing: border-box;
             background-color: var(--light-gray);
             color: var(--text-color);
-            line-height: 1.6;
+            line-height: 1.6; /* Improved readability */
         }
 
+        /* General Container for Centering Content */
         .container {
             max-width: 1200px;
             margin: 0 auto;
-            padding: 0 20px;
+            padding: 0 20px; /* Consistent padding */
         }
 
         header {
@@ -45,17 +46,17 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            position: relative;
+            position: relative; /* For mobile menu positioning */
         }
 
         header .logo {
             display: flex;
             align-items: center;
-            padding-left: 20px;
+            padding-left: 20px; /* Align with container */
         }
 
         header .logo img {
-            height: 60px;
+            height: 60px; /* Slightly larger logo */
             margin-right: 10px;
         }
 
@@ -64,57 +65,140 @@
             margin: 0;
             padding: 0;
             display: flex;
-            padding-right: 20px;
+            padding-right: 20px; /* Align with container */
         }
 
         header nav.desktop-nav ul li {
-            margin-left: 35px;
+            margin-left: 35px; /* More spacing */
         }
 
         header nav.desktop-nav ul li a {
             text-decoration: none;
             color: var(--white);
             font-weight: 500;
-            transition: color 0.3s ease;
+            transition: color 0.3s ease, transform 0.2s ease;
             position: relative;
         }
-        
-        header nav.desktop-nav ul li a.active {
-            font-weight: 700;
-            border-bottom: 2px solid var(--white);
+
+        header nav.desktop-nav ul li a::after { /* Underline effect */
+            content: '';
+            position: absolute;
+            width: 0;
+            height: 2px;
+            bottom: -5px;
+            left: 0;
+            background-color: var(--white);
+            transition: width 0.3s ease-out;
         }
 
-        header nav.desktop-nav ul li a:not(.active):hover {
+        header nav.desktop-nav ul li a:hover {
             color: var(--light-green);
+            transform: translateY(-2px);
         }
 
-        .hamburger-menu, .mobile-nav-overlay {
-            display: none;
+        header nav.desktop-nav ul li a:hover::after {
+            width: 100%;
         }
+
+        /* Hamburger Menu Icon */
         .hamburger-menu {
+            display: none; /* Hidden on desktop */
             font-size: 1.8em;
             color: var(--white);
             cursor: pointer;
             padding: 10px 20px;
-            z-index: 1001;
+            z-index: 1001; /* Ensure it's above other content */
         }
+
+        /* Mobile Navigation Overlay */
         .mobile-nav-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-color: rgba(0, 0, 0, 0.9); z-index: 1000;
-            justify-content: center; align-items: center; opacity: 0;
+            display: none; /* Hidden by default */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8); /* Dark overlay */
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
             transition: opacity 0.3s ease;
         }
-        .mobile-nav-overlay.active { display: flex; opacity: 1; }
-        .mobile-nav-overlay nav ul { list-style: none; flex-direction: column; text-align: center; padding: 0; }
-        .mobile-nav-overlay nav ul li { margin: 20px 0; }
-        .mobile-nav-overlay nav ul li a { color: var(--white); text-decoration: none; font-size: 1.8em; font-weight: 700; padding: 10px 0; display: block; }
-        
+
+        .mobile-nav-overlay.active {
+            display: flex;
+            opacity: 1;
+        }
+
+        .mobile-nav-overlay nav ul {
+            flex-direction: column;
+            text-align: center;
+            padding: 0;
+        }
+
+        .mobile-nav-overlay nav ul li {
+            margin: 20px 0;
+        }
+
+        .mobile-nav-overlay nav ul li a {
+            color: var(--white);
+            font-size: 1.8em;
+            font-weight: 700;
+            padding: 10px 0;
+            display: block;
+        }
+
+        .mobile-nav-overlay nav ul li a:hover {
+            color: var(--primary-green);
+        }
+
         .hero-section {
             color: var(--white);
             text-align: center;
             position: relative;
             overflow: hidden;
-            height: 600px;
+            isolation: isolate;
+            height: 650px;
+        }
+
+        /* Animated background elements for movement */
+        .hero-section::before,
+        .hero-section::after {
+            content: '';
+            position: absolute;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: -1; /* Behind content */
+        }
+
+        .hero-section::before {
+            width: 300px;
+            height: 300px;
+            top: -50px;
+            left: -50px;
+            animation: moveCircle1 15s infinite alternate ease-in-out;
+        }
+
+        .hero-section::after {
+            width: 400px;
+            height: 400px;
+            bottom: -100px;
+            right: -100px;
+            animation: moveCircle2 20s infinite alternate-reverse ease-in-out;
+        }
+
+        @keyframes moveCircle1 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(50px, 50px) scale(1.1); }
+            100% { transform: translate(0, 0) scale(1); }
+        }
+
+        @keyframes moveCircle2 {
+            0% { transform: translate(0, 0) scale(1); }
+            50% { transform: translate(-70px, -70px) scale(0.9); }
+            100% { transform: translate(0, 0) scale(1); }
         }
         
         /* SLIDER STYLES START */
@@ -139,65 +223,66 @@
             visibility: visible;
         }
 
-        #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('fundofeiras.jpg'); }
-        #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('fundogastronomicas.png'); }
-        #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('fundoartesanal.png'); }
+        #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-1.png'); }
+        #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-2.png'); }
+        #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-3.png'); }
+
 
         .hero-banner {
-            background-color: rgba(76, 175, 80, 0.85);
+            background-color: rgba(76, 175, 80, 0.85); /* Green with transparency */
             padding: 20px 40px;
-            display: inline-block;
+            display: inline-block; /* To wrap the text */
             border-radius: 8px;
-            margin-bottom: 30px;
+            margin-bottom: 30px; /* Space between banner and paragraph */
         }
         
         .hero-banner.hero-banner-red {
-            background-color: rgba(211, 47, 47, 0.85);
+            background-color: rgba(211, 47, 47, 0.85); /* Red translucent */
         }
 
         .hero-banner.hero-banner-orange {
-            background-color: rgba(245, 124, 0, 0.85);
+            background-color: rgba(245, 124, 0, 0.85); /* Orange translucent */
         }
 
         .hero-section h1 {
-            font-size: 2.8em;
-            margin: 0;
+            font-size: 2.8em; /* Adjust main title size */
+            margin: 0; /* Remove default margins */
             font-weight: 700;
-            text-shadow: none;
+            text-shadow: none; /* Remove shadow as it's on a solid bg now */
             line-height: 1.2;
             color: var(--white);
         }
 
         .hero-section h1 .subtitle {
             display: block;
-            font-size: 0.6em;
-            font-weight: 400;
+            font-size: 0.6em; /* Relative to the h1 size */
+            font-weight: 400; /* Lighter font weight */
             margin-top: 5px;
         }
 
         .hero-section p {
-            font-size: 1.3em;
+            font-size: 1.3em; /* Larger paragraph */
             max-width: 900px;
             margin: 0 auto 40px auto;
             line-height: 1.7;
-            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5); /* Add shadow for readability */
         }
 
         .hero-section .button {
             display: inline-block;
-            background-color: var(--accent-gold);
-            color: var(--dark-gray);
-            padding: 18px 35px;
-            border-radius: 8px;
+            background-color: var(--accent-gold); /* New accent color */
+            color: var(--dark-gray); /* Dark text for contrast */
+            padding: 18px 35px; /* Larger button */
+            border-radius: 8px; /* Softer edges */
             text-decoration: none;
             font-weight: 700;
             font-size: 1.1em;
             transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
-            box-shadow: 0 5px 15px var(--shadow-medium);
+            box-shadow: 0 5px 15px var(--shadow-medium); /* More prominent shadow */
         }
 
         .hero-section .button:hover {
-            background-color: #e6b300;
+            background-color: #e6b300; /* Darker gold on hover */
             transform: translateY(-3px);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.3);
         }
@@ -218,9 +303,19 @@
             z-index: 10;
         }
 
-        .prev-slide { left: 20px; border-radius: 3px 0 0 3px; }
-        .next-slide { right: 20px; border-radius: 3px 0 0 3px; }
-        .prev-slide:hover, .next-slide:hover { background-color: rgba(0,0,0,0.2); }
+        .prev-slide {
+            left: 20px;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .next-slide {
+            right: 20px;
+            border-radius: 3px 0 0 3px;
+        }
+
+        .prev-slide:hover, .next-slide:hover {
+            background-color: transparent;
+        }
 
         .dots-container {
             text-align: center;
@@ -241,194 +336,327 @@
             transition: background-color 0.3s ease;
         }
 
-        .dot.active, .dot:hover { background-color: rgba(255, 255, 255, 1); }
+        .dot.active, .dot:hover {
+            background-color: rgba(255, 255, 255, 1);
+        }
         /* SLIDER STYLES END */
 
-        /* --- Seção de Filtro de Feiras --- */
-        .filters-section {
-            padding: 50px 20px;
+        /* --- NEW: ADDRESS SEARCH SECTION --- */
+        .address-search-section {
+            padding: 50px 0;
             background-color: var(--white);
             margin-top: -60px;
             position: relative;
             z-index: 20;
             border-radius: 12px;
             box-shadow: var(--shadow-medium);
-            max-width: 900px;
+            max-width: 900px; /* Adjusted width */
             margin-left: auto;
             margin-right: auto;
             text-align: center;
+            transform: translateY(-20px);
+            opacity: 0;
+            animation: fadeInTop 0.8s forwards 0.5s;
         }
-        .filters-section h2 {
+
+        @keyframes fadeInTop {
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        .address-search-section h2 {
             font-size: 2.2em;
             color: var(--dark-gray);
-            margin-top: 0;
             margin-bottom: 30px;
         }
-        .filter-group {
+
+        .address-form-container {
             display: flex;
-            flex-direction: column;
+            flex-wrap: wrap;
+            justify-content: center;
             align-items: center;
-            gap: 10px;
+            gap: 15px;
+            max-width: 800px;
+            margin: 0 auto;
         }
-        .filter-group label {
+
+        .address-form-container button {
+            padding: 14px 25px;
+            border-radius: 8px;
+            border: none;
             font-weight: 600;
-            color: var(--dark-gray);
-            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
         }
-        .filter-select {
+
+        #useLocationBtn {
+            background-color: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+        }
+        #useLocationBtn:hover {
+            background-color: var(--light-green);
+        }
+
+        #searchAddressBtn {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
+        #searchAddressBtn:hover {
+            background-color: var(--dark-green);
+        }
+
+        .autocomplete-container {
+            position: relative;
+            flex-grow: 1;
+        }
+
+        #addressInput {
             width: 100%;
-            max-width: 400px;
-            padding: 12px 18px;
+            padding: 15px 20px;
             border: 1px solid var(--medium-gray);
             border-radius: 8px;
-            background-color: var(--white);
             font-size: 1em;
-            cursor: pointer;
+            color: var(--text-color);
+            box-sizing: border-box;
         }
-        .filter-select:focus {
+        #addressInput:focus {
             outline: none;
             border-color: var(--primary-green);
             box-shadow: 0 0 0 4px rgba(76, 175, 80, 0.2);
         }
+
+        .suggestions-list {
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: var(--white);
+            border: 1px solid var(--medium-gray);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            z-index: 100;
+            max-height: 200px;
+            overflow-y: auto;
+        }
+
+        .suggestion-item {
+            padding: 12px 20px;
+            cursor: pointer;
+            text-align: left;
+        }
+        .suggestion-item:hover {
+            background-color: var(--light-gray);
+        }
         
-        /* Seção de Resultados */
-        .resultados-section {
-            padding: 60px 20px;
+        #search-status {
+            margin-top: 15px;
+            font-weight: 500;
+            color: var(--dark-green);
+            min-height: 20px; /* Reserve space */
         }
-        .fair-carousel-container {
-            position: relative;
+
+        .fair-card.highlight {
+            border: 3px solid var(--accent-gold);
+            box-shadow: 0 8px 25px rgba(255, 193, 7, 0.5);
+            transform: translateY(-8px) scale(1.02);
         }
-        .fair-carousel-wrapper {
-            display: flex;
-            gap: 30px;
-            overflow-x: auto;
-            scroll-snap-type: x mandatory;
-            padding: 20px 5px;
-            scrollbar-width: thin;
-            scrollbar-color: var(--medium-gray) var(--light-gray);
+        
+        @media (max-width: 768px) {
+            .address-form-container {
+                flex-direction: column;
+            }
+            .autocomplete-container {
+                width: 100%;
+            }
         }
-        .fair-carousel-wrapper::-webkit-scrollbar { height: 8px; }
-        .fair-carousel-wrapper::-webkit-scrollbar-track { background: var(--light-gray); border-radius: 10px; }
-        .fair-carousel-wrapper::-webkit-scrollbar-thumb { background: var(--medium-gray); border-radius: 10px; }
-        .fair-carousel-wrapper::-webkit-scrollbar-thumb:hover { background: var(--dark-gray); }
+
+        .featured-fairs {
+            padding: 40px 20px 80px;
+            text-align: center;
+            background-color: var(--light-gray);
+        }
+
+        .fair-cards-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)); /* Slightly wider min cards */
+            gap: 35px; /* More gap */
+            justify-content: center;
+        }
 
         .fair-card {
             background-color: var(--white);
-            border-radius: 12px;
+            border-radius: 12px; /* Softer edges */
             box-shadow: var(--shadow-light);
             overflow: hidden;
             text-align: left;
             transition: all 0.3s ease;
             display: flex;
             flex-direction: column;
-            width: 320px; /* Reduzido */
-            flex-shrink: 0;
-            scroll-snap-align: start;
+            border: 3px solid transparent; /* Prepare for highlight */
         }
+
         .fair-card:hover {
-            transform: translateY(-8px);
-            box-shadow: var(--shadow-medium);
+            transform: translateY(-8px); /* More pronounced lift */
+            box-shadow: 0 10px 25px var(--shadow-medium); /* Stronger shadow */
         }
+
         .fair-card .image-placeholder {
-            height: 200px;
+            background-color: var(--light-green); /* Lighter green for placeholder */
+            height: 200px; /* Taller image placeholder */
             display: flex;
             justify-content: center;
             align-items: center;
-            color: var(--text-color);
-            font-weight: 500;
-            background-color: var(--light-gray);
+            color: var(--primary-green); /* Green text */
+            font-weight: 600;
+            font-size: 1.2em;
+            border-bottom: 1px solid rgba(0,0,0,0.05);
         }
-        .fair-card .image-placeholder img {
-             width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
+
         .fair-card-content {
-            padding: 25px;
+            padding: 25px; /* More padding */
             flex-grow: 1;
-            display: flex;
+            display: flex; /* For pushing button to bottom */
             flex-direction: column;
         }
+
         .fair-card h3 {
-            font-size: 1.5em;
+            font-size: 1.6em; /* Larger title */
             color: var(--dark-gray);
-            margin: 0 0 10px 0;
-        }
-        .fair-card p {
-            font-size: 1em;
-            line-height: 1.6;
-            margin: 0;
-            color: var(--text-color);
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-         .fair-card p i {
-            color: var(--primary-green);
-            width: 20px;
-            text-align: center;
-        }
-        
-        /* NOVOS ESTILOS PARA DESCRIÇÃO */
-        .description-wrapper {
-            margin-bottom: 15px;
-            flex-grow: 1; /* Faz a descrição ocupar espaço disponível */
-        }
-        .description-wrapper p {
-            margin: 0;
-        }
-        .card-description-text {
-            display: -webkit-box;
-            -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            margin-bottom: 8px;
-        }
-        .card-description-text.expanded {
-            -webkit-line-clamp: unset;
-        }
-        .read-more-btn {
-            display: inline-block;
-            color: var(--primary-green);
+            margin-top: 0;
+            margin-bottom: 12px;
             font-weight: 600;
+        }
+
+        .fair-card p {
+            font-size: 1em; /* Slightly larger paragraph */
+            line-height: 1.6;
+            margin-bottom: 20px;
+            color: var(--text-color);
+        }
+
+        .fair-card .tags {
+            margin-top: auto; /* Push tags to bottom if content is shorter */
+            margin-bottom: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px; /* More gap */
+        }
+
+        .fair-card .tag {
+            background-color: #e8f5e9;
+            color: var(--dark-green);
+            padding: 6px 14px; /* Slightly larger tags */
+            border-radius: 20px;
+            font-size: 0.85em;
+            font-weight: 500;
+            text-transform: capitalize; /* Consistent capitalization */
+        }
+
+        .fair-card .button {
+            display: inline-block;
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 12px 22px; /* Larger button */
+            border-radius: 6px;
+            text-decoration: none;
+            font-weight: 600; /* Bolder text */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            margin-top: 15px; /* Space between tags and button */
+            align-self: flex-start; /* Align button to start */
+        }
+
+        .fair-card .button:hover {
+            background-color: var(--dark-green);
+            transform: translateY(-2px);
+        }
+        
+        /* --- NEW: Styles for the slicer filter --- */
+        .slicer-filter-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-bottom: 50px;
+            flex-wrap: wrap;
+        }
+
+        .slicer-btn {
+            background-color: var(--white);
+            color: var(--primary-green);
+            border: 2px solid var(--primary-green);
+            padding: 12px 25px;
+            border-radius: 50px; /* Pill shape */
             cursor: pointer;
-            font-size: 0.9em;
+            font-size: 1.1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
         }
-        .read-more-btn:hover {
-            text-decoration: underline;
+
+        .slicer-btn:hover {
+            background-color: var(--light-green);
+            transform: translateY(-2px);
         }
-        
-        .loading-message, .error-message, .info-message {
-            width: 100%;
+
+        .slicer-btn.active {
+            background-color: var(--primary-green);
+            color: var(--white);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
+        }
+
+        /* --- NEW: Container for the "Ver Todas" button --- */
+        .see-all-container {
+            margin-top: 50px;
             text-align: center;
-            font-size: 1.2em;
-            color: #666;
-            padding: 40px 0;
         }
-        
+
+        .see-all-container .button {
+            background-color: var(--dark-green);
+            color: var(--white);
+            padding: 15px 35px;
+            font-size: 1.1em;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .see-all-container .button:hover {
+            background-color: var(--primary-green);
+            transform: translateY(-2px);
+        }
+
         .call-to-action-footer {
             background-color: var(--dark-gray);
             color: var(--white);
             text-align: center;
-            padding: 60px 20px;
+            padding: 5px 20px 80px;
         }
+
         .call-to-action-footer h2 {
-            font-size: 2.2em;
+            font-size: 2.2em; /* Larger heading */
             margin-bottom: 30px;
             font-weight: 700;
         }
+
         .call-to-action-footer .button {
-            background-color: var(--accent-gold);
+            background-color: var(--accent-gold); /* Accent gold */
             color: var(--dark-gray);
-            padding: 18px 40px;
+            padding: 18px 40px; /* Larger button */
             border-radius: 8px;
             text-decoration: none;
             font-weight: 700;
             font-size: 1.1em;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
             box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
         }
+
         .call-to-action-footer .button:hover {
             background-color: #e6b300;
             transform: translateY(-3px);
@@ -436,38 +664,150 @@
         }
 
         footer {
-            background-color: #212529;
-            color: var(--medium-gray);
+            background-color: #212529; /* Even darker gray */
+            color: var(--medium-gray); /* Lighter text for contrast */
             text-align: center;
-            padding: 25px;
+            padding: 25px; /* More padding */
             font-size: 0.9em;
         }
-        footer a { color: var(--primary-green); text-decoration: none; margin: 0 8px; transition: color 0.3s ease; }
-        footer a:hover { color: var(--light-green); text-decoration: underline; }
 
-        @media (max-width: 992px) {
-            nav.desktop-nav { display: none; }
-            .hamburger-menu { display: block; padding-right: 20px; }
-            .hero-section { height: 550px; }
-            .hero-section h1 { font-size: 2.4em; }
+        footer a {
+            color: var(--primary-green);
+            text-decoration: none;
+            margin: 0 8px; /* More spacing */
+            transition: color 0.3s ease;
         }
+
+        footer a:hover {
+            color: var(--light-green); /* Lighter green on hover */
+            text-decoration: underline;
+        }
+
+        /* Responsive adjustments */
+        @media (max-width: 992px) { /* Adjust breakpoint for tablet */
+            nav.desktop-nav {
+                display: none; /* Hide desktop menu */
+            }
+
+            .hamburger-menu {
+                display: block; /* Show hamburger */
+                padding-right: 20px;
+            }
+
+            .hero-section {
+                height: 550px;
+            }
+
+            .hero-section h1 {
+                font-size: 2.4em;
+            }
+
+            .hero-section p {
+                font-size: 1.1em;
+            }
+
+            .fair-cards-container {
+                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjust card size */
+            }
+        }
+
         @media (max-width: 768px) {
-            .hero-section { height: 500px; }
-            .hero-section h1 { font-size: 2em; }
-            .hero-banner { padding: 15px 20px; }
-            .hero-section p { font-size: 1em; max-width: 75%; }
-            .filters-section { padding: 40px 15px; }
+            .hero-section {
+                height: 500px;
+            }
+
+            .slide .container {
+                padding-bottom: 40px; /* Pushes content up */
+            }
+
+            .hero-section h1 {
+                font-size: 2em; /* Smaller on mobile */
+            }
+             .hero-banner {
+                padding: 15px 20px;
+            }
+
+            .hero-section p {
+                font-size: 1em;
+                max-width: 75%; /* Reduced width */
+                margin: 0 auto 30px;
+            }
+
+            .fair-cards-container {
+                grid-template-columns: 1fr; /* Single column on small mobile */
+                gap: 25px;
+            }
+
+            .fair-card {
+                max-width: 450px; /* Limit width on smaller screens */
+                margin: 0 auto;
+            }
+
+            .call-to-action-footer {
+                padding: 45px 20px 25px; /* More top padding */
+            }
+
+            .call-to-action-footer .button {
+                white-space: nowrap; /* Fix button text wrapping */
+                position: relative;
+                top: -30px; /* Sobe o botão no mobile */
+            }
+
+            .call-to-action-footer h2 {
+                font-size: 1.8em;
+                position: relative;
+                top: -36px; /* Sobe a frase no mobile */
+            }
+        }
+
+        @media (max-width: 480px) {
+            header .logo img {
+                height: 50px;
+            }
+
+            .hamburger-menu {
+                font-size: 1.5em;
+                padding: 8px 15px;
+            }
+            
+            .slide .container {
+                padding-bottom: 60px; /* Pushes content up more */
+            }
+
+            .hero-section h1 {
+                font-size: 1.6em;
+            }
+             .hero-banner {
+                padding: 10px 15px;
+            }
+
+            .hero-section p {
+                font-size: 0.9em;
+                max-width: 85%; /* Reduced width */
+            }
+
+            .fair-card-content {
+                padding: 20px;
+            }
+
+            .fair-card h3 {
+                font-size: 1.3em;
+            }
+
+            .call-to-action-footer h2 {
+                font-size: 1.5em;
+            }
         }
     </style>
 </head>
 <body>
     <header>
         <div class="logo">
-            <a href="index.html"><img src="assets/logo.png" alt="Logo FeirasSP"></a>
+            <img src="assets/logo.png" alt="Logo FeirasSP">
         </div>
         <nav class="desktop-nav">
             <ul>
-                <li><a href="index.html" class="active">Início</a></li>
+                <li><a href="index.html">Início</a></li>
                 <li><a href="gastronomicas.html">Gastronômicas</a></li>
                 <li><a href="feiras-livres.html">Feiras Livres</a></li>
                 <li><a href="artesanais.html">Artesanais</a></li>
@@ -475,9 +815,14 @@
                 <li><a href="contato.html">Contato</a></li>
             </ul>
         </nav>
-        <div class="hamburger-menu" id="hamburgerMenu"><i class="fas fa-bars"></i></div>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <i class="fas fa-bars"></i>
+        </div>
+
         <div class="mobile-nav-overlay" id="mobileNavOverlay">
-            <div class="hamburger-menu" id="closeMobileMenu"><i class="fas fa-times"></i></div>
+            <div class="hamburger-menu" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </div>
             <nav>
                 <ul>
                     <li><a href="index.html">Início</a></li>
@@ -499,7 +844,7 @@
                         <h1>A SUA FEIRA DE SÃO PAULO <span class="subtitle">a um clique de distância</span></h1>
                     </div>
                     <p>Explore, descubra e apaixone-se pelas feiras de rua da nossa cidade. Encontre produtos frescos, artesanato local e muito mais!</p>
-                    <a href="feiras-livres.html" class="button">ENCONTRE UMA FEIRA-LIVRE</a>
+                    <a href="#address-search-section" class="button">ENCONTRE MINHA FEIRA AGORA!</a>
                 </div>
             </div>
             <div class="slide" id="slide-2">
@@ -531,41 +876,52 @@
             </div>
         </section>
         
-        <section class="filters-section">
+        <!-- NEW ADDRESS SEARCH SECTION -->
+        <section id="address-search-section" class="address-search-section">
             <div class="container">
-                <div class="filter-group">
-                    <label for="tipoFeiraFilter">Selecione o tipo de feira que você procura:</label>
-                    <select id="tipoFeiraFilter" class="filter-select">
-                        <option value="" disabled selected>Selecione uma categoria...</option>
-                        <option value="feiras-livres">Feiras Livres</option>
-                        <option value="gastronomicas">Gastronômicas</option>
-                        <option value="artesanais">Artesanais</option>
-                    </select>
+                <h2>Encontre sua feira</h2>
+                <div class="address-form-container">
+                    <button id="useLocationBtn"><i class="fas fa-map-marker-alt"></i> Usar Meu Local</button>
+                    <div class="autocomplete-container">
+                        <input type="text" id="addressInput" placeholder="Digite um endereço em São Paulo...">
+                        <div id="addressSuggestions" class="suggestions-list" style="display: none;"></div>
+                    </div>
+                    <button id="searchAddressBtn">Buscar</button>
                 </div>
+                <div id="search-status"></div>
             </div>
         </section>
 
-        <section class="resultados-section">
+        <section class="featured-fairs">
             <div class="container">
-                <div class="fair-carousel-container" id="fairCarouselContainer">
-                    <div class="fair-carousel-wrapper">
-                        <!-- Os cards do carrossel serão inseridos aqui pelo JavaScript -->
-                    </div>
+                <!-- NEW Slicer Filter -->
+                <div class="slicer-filter-container">
+                    <button class="slicer-btn active" data-category="gastronomica">Gastronômicas</button>
+                    <button class="slicer-btn" data-category="artesanal">Artesanais</button>
+                    <button class="slicer-btn" data-category="livre">Feiras Livres</button>
+                </div>
+
+                <!-- Cards Container -->
+                <div class="fair-cards-container" id="fairCardsContainer">
+                    <!-- Cards will be injected here by JS -->
+                </div>
+
+                <!-- "Ver Todas" Button -->
+                <div class="see-all-container">
+                    <a href="gastronomicas.html" class="button" id="seeAllBtn">Ver Todas</a>
                 </div>
             </div>
         </section>
 
         <section class="call-to-action-footer">
-            <div class="container">
-                <h2>Tem uma feira para divulgar?</h2>
-                <a href="contato.html" class="button">QUERO ADICIONAR MINHA FEIRA</a>
+            <div class="container"> <h2>Tem uma feira para divulgar?</h2>
+                <a href="contato.html" class="button" id="addFairButton">QUERO ADICIONAR MINHA FEIRA</a>
             </div>
         </section>
     </main>
 
     <footer>
-        <div class="container">
-            <p>&copy; 2024 FeirasSP.com.br - Todos os direitos reservados.</p>
+        <div class="container"> <p>&copy; 2024 FeirasSP.com.br - Todos os direitos reservados.</p>
             <div>
                 <a href="#">Política de Privacidade</a> |
                 <a href="#">Termos de Uso</a>
@@ -574,27 +930,385 @@
     </footer>
 
     <script>
+        // Data for fairs with latitude and longitude
+        const fairsData = [
+            {
+                id: "benedito-calixto",
+                name: "Feira da Benedito Calixto",
+                description: "Famosa por suas antiguidades, artesanato e música ao vivo.",
+                region: "oeste",
+                category: "artesanal",
+                day: "sabado",
+                date: "2025-09-27",
+                locationTag: "Pinheiros",
+                lat: -23.559,
+                lon: -46.684
+            },
+            {
+                id: "agua-branca",
+                name: "Feira de Orgânicos do Parque da Água Branca",
+                description: "Produtos orgânicos, hortaliças, pães, laticínios frescos e mais.",
+                region: "sul",
+                category: "livre",
+                day: "domingo",
+                date: "2025-09-28",
+                locationTag: "Barra Funda",
+                lat: -23.526,
+                lon: -46.669
+            },
+            {
+                id: "liberdade",
+                name: "Feira da Liberdade",
+                description: "Culinária asiática autêntica, artesanato e itens culturais.",
+                region: "central",
+                category: "gastronomica",
+                day: "domingo",
+                date: "2025-10-05",
+                locationTag: "Liberdade",
+                lat: -23.561,
+                lon: -46.636
+            },
+            {
+                id: "lapa",
+                name: "Feira da Lapa",
+                description: "Grande variedade de frutas, legumes e verduras frescas.",
+                region: "norte",
+                category: "livre",
+                day: "terca",
+                date: "2025-09-30",
+                locationTag: "Lapa",
+                lat: -23.523,
+                lon: -46.702
+            },
+            {
+                id: "tatuape",
+                name: "Feira de Artesanato do Tatuapé",
+                description: "Peças únicas de artesanato local, joias e decoração.",
+                region: "leste",
+                category: "artesanal",
+                day: "sexta",
+                date: "2025-10-03",
+                locationTag: "Tatuapé",
+                lat: -23.541,
+                lon: -46.576
+            },
+            {
+                id: "santo-amaro",
+                name: "Feira Noturna de Santo Amaro",
+                description: "Opções diversas de street food, com sabores do mundo todo.",
+                region: "sul",
+                category: "gastronomica",
+                day: "quarta",
+                date: "2025-10-08",
+                locationTag: "Santo Amaro",
+                lat: -23.650,
+                lon: -46.709
+            },
+            {
+                id: "vila-madalena",
+                name: "Feira Livre da Vila Madalena",
+                description: "Uma feira tradicional com produtos frescos e ambiente descontraído.",
+                region: "oeste",
+                category: "livre",
+                day: "quarta",
+                date: "2025-10-01",
+                locationTag: "Vila Madalena",
+                lat: -23.553,
+                lon: -46.696
+            },
+            {
+                id: "pacaembu",
+                name: "Feira Gastronômica do Pacaembu",
+                description: "Diversas opções de food trucks e barracas gourmet.",
+                region: "central",
+                category: "gastronomica",
+                day: "quinta",
+                date: "2025-10-09",
+                locationTag: "Pacaembu",
+                lat: -23.549,
+                lon: -46.664
+            },
+            {
+                id: "republica",
+                name: "Feira de Antiguidades da Praça da República",
+                description: "Colecionáveis, obras de arte e itens vintage.",
+                region: "central",
+                category: "artesanal",
+                day: "sabado",
+                date: "2025-10-11",
+                locationTag: "República",
+                lat: -23.544,
+                lon: -46.642
+            },
+            {
+                id: "paulista",
+                name: "Feira de Natal na Paulista",
+                description: "Edição especial de natal com artesanato temático e comidas sazonais.",
+                region: "central",
+                category: "artesanal",
+                day: "domingo",
+                date: "2025-12-07",
+                locationTag: "Paulista",
+                lat: -23.561,
+                lon: -46.656
+            },
+            {
+                id: "ibirapuera",
+                name: "Feira de Inverno no Ibirapuera",
+                description: "Produtos quentinhos, artesanato de lã e chocolate quente.",
+                region: "sul",
+                category: "gastronomica",
+                day: "sabado",
+                date: "2025-06-21",
+                locationTag: "Ibirapuera",
+                lat: -23.588,
+                lon: -46.658
+            },
+            {
+                id: "cidade",
+                name: "Feira da Cidade",
+                description: "Feira itinerante com o melhor da gastronomia local e pequenos produtores.",
+                region: "oeste",
+                category: "gastronomica",
+                day: "sabado",
+                date: "2025-11-08",
+                locationTag: "Diversos",
+                lat: -23.559, // Using a central point for this one
+                lon: -46.684
+            }
+        ];
+
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Lógica do Menu Mobile ---
+            // --- General page elements ---
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const mobileNavOverlay = document.getElementById('mobileNavOverlay');
             const closeMobileMenu = document.getElementById('closeMobileMenu');
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-overlay nav ul li a');
             
-            const openMenu = () => {
+            // --- NEW: Slicer Filter Elements ---
+            const slicerBtns = document.querySelectorAll('.slicer-btn');
+            const fairCardsContainer = document.getElementById('fairCardsContainer');
+            const seeAllBtn = document.getElementById('seeAllBtn');
+
+            // --- Address search elements ---
+            const addressInput = document.getElementById('addressInput');
+            const addressSuggestions = document.getElementById('addressSuggestions');
+            const useLocationBtn = document.getElementById('useLocationBtn');
+            const searchAddressBtn = document.getElementById('searchAddressBtn');
+            const searchStatus = document.getElementById('search-status');
+            let selectedLocationCoords = null;
+            let debounceTimer;
+
+            // --- Helper function for distance calculation (Haversine formula) ---
+            function getDistance(lat1, lon1, lat2, lon2) {
+                const R = 6371; // Radius of the earth in km
+                const dLat = (lat2 - lat1) * Math.PI / 180;
+                const dLon = (lon2 - lon1) * Math.PI / 180;
+                const a =
+                    Math.sin(dLat / 2) * Math.sin(dLat / 2) +
+                    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+                    Math.sin(dLon / 2) * Math.sin(dLon / 2);
+                const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+                return R * c; // Distance in km
+            }
+
+            // --- Fair Card Creation ---
+            function createFairCardElement(fair) {
+                const card = document.createElement('div');
+                card.classList.add('fair-card');
+                card.dataset.fairId = fair.id; // Add data attribute for identification
+                card.innerHTML = `
+                    <div class="image-placeholder">Imagem Indisponível</div>
+                    <div class="fair-card-content">
+                        <h3>${fair.name}</h3>
+                        <p>${fair.description}</p>
+                        <div class="tags">
+                            <span class="tag">${fair.locationTag}</span>
+                            <span class="tag">${fair.region.charAt(0).toUpperCase() + fair.region.slice(1)}</span>
+                            <span class="tag">${fair.day.charAt(0).toUpperCase() + fair.day.slice(1)}</span>
+                            <span class="tag">${fair.category.charAt(0).toUpperCase() + fair.category.slice(1)}</span>
+                        </div>
+                        <a href="#" class="button">Ver mais</a>
+                    </div>
+                `;
+                return card;
+            }
+            
+            const noFairsMessage = '<p style="grid-column: 1 / -1; text-align: center; color: #666; font-size: 1.1em; padding: 20px; width: 100%;">Nenhuma feira encontrada para esta categoria.</p>';
+
+            // --- NEW: Render Fairs based on Slicer ---
+            function renderFairs(category) {
+                // Filter fairs by the selected category
+                const filteredFairs = fairsData.filter(fair => fair.category === category);
+                
+                // Show a maximum of 3 fairs on the homepage
+                const fairsToDisplay = filteredFairs.slice(0, 3);
+
+                // Clear the container
+                fairCardsContainer.innerHTML = '';
+
+                if (fairsToDisplay.length === 0) {
+                    fairCardsContainer.innerHTML = noFairsMessage;
+                } else {
+                    fairsToDisplay.forEach(fair => {
+                        const cardElement = createFairCardElement(fair);
+                        fairCardsContainer.appendChild(cardElement);
+                    });
+                }
+                
+                // Update the "Ver Todas" button link
+                const pageMap = {
+                    'gastronomica': 'gastronomicas.html',
+                    'artesanal': 'artesanais.html',
+                    'livre': 'feiras-livres.html'
+                };
+                seeAllBtn.href = pageMap[category] || '#';
+            }
+            
+            // --- Event Listeners for Slicer Buttons ---
+            slicerBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Update active class
+                    slicerBtns.forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    
+                    // Get category and render fairs
+                    const category = btn.dataset.category;
+                    renderFairs(category);
+                });
+            });
+
+            // --- Address Search and Geolocation Logic ---
+
+            // Function to find and highlight the closest fair
+            function findAndHighlightClosestFair(coords) {
+                if (!coords) {
+                    searchStatus.textContent = 'Localização não encontrada.';
+                    searchStatus.style.color = 'red';
+                    return;
+                }
+                
+                let closestFair = null;
+                let minDistance = Infinity;
+
+                fairsData.forEach(fair => {
+                    const distance = getDistance(coords.lat, coords.lon, fair.lat, fair.lon);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestFair = fair;
+                    }
+                });
+
+                if (closestFair) {
+                    searchStatus.innerHTML = `Feira mais próxima: <strong>${closestFair.name}</strong> (aprox. ${minDistance.toFixed(1)} km).`;
+                    searchStatus.style.color = 'var(--dark-green)';
+
+                    // Remove previous highlight
+                    document.querySelectorAll('.fair-card.highlight').forEach(c => c.classList.remove('highlight'));
+                    
+                    // Highlight the new card
+                    const cardToHighlight = document.querySelector(`.fair-card[data-fair-id="${closestFair.id}"]`);
+                    if (cardToHighlight) {
+                        cardToHighlight.classList.add('highlight');
+                        // Scroll to the card
+                        cardToHighlight.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    } else {
+                        searchStatus.innerHTML += `<br><small>A feira mais próxima não está visível com o filtro atual. Mude o tipo de feira para vê-la.</small>`;
+                    }
+                }
+            }
+
+            // Autocomplete address input
+            addressInput.addEventListener('input', () => {
+                clearTimeout(debounceTimer);
+                const query = addressInput.value;
+                if (query.length < 3) {
+                    addressSuggestions.style.display = 'none';
+                    return;
+                }
+                debounceTimer = setTimeout(async () => {
+                    try {
+                        const response = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query)}, São Paulo, Brazil&limit=5`);
+                        const suggestions = await response.json();
+                        addressSuggestions.innerHTML = '';
+                        if (suggestions.length > 0) {
+                            suggestions.forEach(s => {
+                                const item = document.createElement('div');
+                                item.classList.add('suggestion-item');
+                                item.textContent = s.display_name;
+                                item.addEventListener('click', () => {
+                                    addressInput.value = s.display_name;
+                                    selectedLocationCoords = { lat: parseFloat(s.lat), lon: parseFloat(s.lon) };
+                                    addressSuggestions.style.display = 'none';
+                                });
+                                addressSuggestions.appendChild(item);
+                            });
+                            addressSuggestions.style.display = 'block';
+                        } else {
+                            addressSuggestions.style.display = 'none';
+                        }
+                    } catch (error) {
+                        console.error("Erro ao buscar endereço:", error);
+                        addressSuggestions.style.display = 'none';
+                    }
+                }, 300);
+            });
+
+            // "Buscar" button
+            searchAddressBtn.addEventListener('click', () => {
+                if(selectedLocationCoords) {
+                    findAndHighlightClosestFair(selectedLocationCoords);
+                } else {
+                    searchStatus.textContent = 'Por favor, selecione um endereço da lista.';
+                    searchStatus.style.color = 'red';
+                }
+            });
+
+            // "Usar Meu Local" button
+            useLocationBtn.addEventListener('click', () => {
+                if (navigator.geolocation) {
+                    searchStatus.textContent = 'Obtendo sua localização...';
+                    navigator.geolocation.getCurrentPosition(position => {
+                        const coords = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude
+                        };
+                        findAndHighlightClosestFair(coords);
+                    }, error => {
+                        searchStatus.textContent = 'Não foi possível obter sua localização.';
+                        searchStatus.style.color = 'red';
+                        console.error("Erro de geolocalização:", error);
+                    });
+                } else {
+                    searchStatus.textContent = 'Geolocalização não é suportada por este navegador.';
+                    searchStatus.style.color = 'red';
+                }
+            });
+
+            // Hide suggestions when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!e.target.closest('.autocomplete-container')) {
+                    addressSuggestions.style.display = 'none';
+                }
+            });
+
+            // Mobile Menu Functionality
+            hamburgerMenu.addEventListener('click', () => {
                 mobileNavOverlay.classList.add('active');
                 document.body.style.overflow = 'hidden';
-            };
-            const closeMenu = () => {
+            });
+            closeMobileMenu.addEventListener('click', () => {
                 mobileNavOverlay.classList.remove('active');
                 document.body.style.overflow = '';
-            };
+            });
+            mobileNavLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileNavOverlay.classList.remove('active');
+                    document.body.style.overflow = '';
+                });
+            });
 
-            hamburgerMenu.addEventListener('click', openMenu);
-            closeMobileMenu.addEventListener('click', closeMenu);
-            mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
-
-            // --- Lógica do Slider do Hero ---
+            // Hero Slider Functionality
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
             const prev = document.querySelector('.prev-slide');
@@ -621,140 +1335,11 @@
                 dot.addEventListener('click', () => { showHeroSlide(index); startHeroSlideShow(); });
             });
             
-            // --- Lógica do Carrossel de Feiras ---
-            const tipoFeiraFilter = document.getElementById('tipoFeiraFilter');
-            const carouselWrapper = document.querySelector('.fair-carousel-wrapper');
-            const BASE_API_URL = 'https://feiras-de-rua.onrender.com/api';
-
-            const apiEndpoints = {
-                'feiras-livres': `${BASE_API_URL}/feiras`,
-                'gastronomicas': `${BASE_API_URL}/gastronomicas`,
-                'artesanais': `${BASE_API_URL}/artesanais`
-            };
-
-            const pageLinks = {
-                'feiras-livres': 'feiras-livres.html',
-                'gastronomicas': 'gastronomicas.html',
-                'artesanais': 'artesanais.html'
-            };
-
-            async function fetchWithRetry(url, options = {}, maxRetries = 5) {
-                for (let i = 0; i < maxRetries; i++) {
-                    try {
-                        const response = await fetch(url, { ...options, mode: 'cors' });
-                        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                        return response.json();
-                    } catch (error) {
-                        if (i === maxRetries - 1) throw error;
-                        await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
-                    }
-                }
-            }
-            
-            function createFairCardElement(feira, tipo) {
-                const card = document.createElement('div');
-                card.classList.add('fair-card');
-
-                const nome = feira.nome_feira || 'Nome não disponível';
-                
-                let placeholderText = nome.split(' ')[0];
-                if (tipo === 'feiras-livres') {
-                    placeholderText = 'FEIRA-LIVRE';
-                }
-                const imagem = feira.imagem_url || `https://placehold.co/600x400/f8f9fa/343a40?text=${placeholderText}`;
-                
-                let detalhesHtml = '';
-                if (tipo === 'feiras-livres') {
-                    detalhesHtml = `
-                        <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro || 'Bairro não informado'}</p>
-                        <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira || 'Dia não informado'}</p>
-                        <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
-                    `;
-                } else { // Gastronômicas e Artesanais
-                    const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                    const descricao = feira.descricao || 'Sem descrição';
-                    const limiteCaracteres = 100;
-
-                    const descriptionBlock = `
-                        <div class="description-wrapper">
-                            <p class="card-description-text">
-                                <i class="fas fa-info-circle"></i> ${descricao}
-                            </p>
-                            ${descricao.length > limiteCaracteres ? '<a href="#" class="read-more-btn">Ler mais</a>' : ''}
-                        </div>
-                    `;
-
-                    detalhesHtml = `
-                        ${descriptionBlock}
-                        <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
-                        <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                        <p><i class="fas fa-map-pin"></i> ${feira.rua || 'Endereço não informado'}</p>
-                    `;
-                }
-
-                card.innerHTML = `
-                    <div class="image-placeholder">
-                         <img src="${imagem}" alt="Foto da ${nome}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Off';">
-                    </div>
-                    <div class="fair-card-content">
-                        <h3>${nome}</h3>
-                        ${detalhesHtml}
-                    </div>
-                `;
-                return card;
-            }
-
-            async function loadFairs(tipo) {
-                carouselWrapper.innerHTML = `<p class="loading-message">Carregando feiras...</p>`;
-                const url = apiEndpoints[tipo];
-                
-                try {
-                    const data = await fetchWithRetry(url + '?limite=20'); // Limita a 20 para o carrossel da home
-                    carouselWrapper.innerHTML = '';
-                    if (data && data.length > 0) {
-                        data.forEach(feira => {
-                            const card = createFairCardElement(feira, tipo);
-                            carouselWrapper.appendChild(card);
-                        });
-                    } else {
-                        carouselWrapper.innerHTML = `<p class="info-message">Nenhuma feira encontrada para esta categoria.</p>`;
-                    }
-                } catch (error) {
-                    console.error(`Falha ao carregar feiras do tipo ${tipo}:`, error);
-                    carouselWrapper.innerHTML = `<p class="error-message">Não foi possível carregar as feiras. Tente novamente mais tarde.</p>`;
-                }
-            }
-
-            tipoFeiraFilter.addEventListener('change', (e) => {
-                const selectedType = e.target.value;
-                if (selectedType) {
-                    loadFairs(selectedType);
-                }
-            });
-
-            carouselWrapper.addEventListener('click', (e) => {
-                if (e.target.classList.contains('read-more-btn')) {
-                    e.preventDefault();
-                    const btn = e.target;
-                    const wrapper = btn.closest('.description-wrapper');
-                    const descriptionP = wrapper.querySelector('.card-description-text');
-                    
-                    descriptionP.classList.toggle('expanded');
-                    
-                    if (descriptionP.classList.contains('expanded')) {
-                        btn.textContent = 'Ler menos';
-                    } else {
-                        btn.textContent = 'Ler mais';
-                    }
-                }
-            });
-
             // --- Initial Page Load ---
+            renderFairs('gastronomica'); // Initial render for the default category
             showHeroSlide(currentHeroSlide);
             startHeroSlideShow();
-            carouselWrapper.innerHTML = `<p class="info-message">Selecione um tipo de feira acima para ver os destaques.</p>`;
         });
     </script>
 </body>
 </html>
-
