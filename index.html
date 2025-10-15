@@ -589,6 +589,93 @@
             transform: translateY(-2px);
         }
 
+        /* --- NOVA SEÇÃO: ESTILOS DO CARROSSEL PRÓXIMAS FEIRAS --- */
+        .proximas-feiras {
+            padding: 60px 20px 80px;
+            background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('proximas.png');
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }
+
+        .proximas-feiras h2 {
+            font-size: 2.5em;
+            color: var(--white);
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 50px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+        }
+
+        .carousel-wrapper {
+            position: relative;
+        }
+
+        .carousel-container {
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
+            gap: 35px;
+            padding-bottom: 20px; /* Espaço para a barra de rolagem, se visível */
+            scrollbar-width: thin; /* Firefox */
+            scrollbar-color: var(--medium-gray) transparent; /* Firefox */
+        }
+
+        .carousel-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .carousel-container::-webkit-scrollbar-track {
+            background: transparent; 
+        }
+        .carousel-container::-webkit-scrollbar-thumb {
+            background: var(--medium-gray); 
+            border-radius: 10px;
+        }
+        .carousel-container::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gray); 
+        }
+
+        .carousel-container .fair-card {
+            scroll-snap-align: start;
+            flex: 0 0 320px; /* Largura fixa para os cards */
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background-color: rgba(255, 255, 255, 0.9);
+            border: 1px solid var(--medium-gray);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            font-size: 24px;
+            color: var(--dark-gray);
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: var(--shadow-light);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .carousel-btn:hover {
+            background-color: var(--white);
+            box-shadow: var(--shadow-medium);
+            transform: translateY(-50%) scale(1.1);
+        }
+
+        .carousel-btn.prev {
+            left: -25px;
+        }
+
+        .carousel-btn.next {
+            right: -25px;
+        }
+        /* --- FIM DOS ESTILOS DA NOVA SEÇÃO --- */
+
+
         /* --- FOOTER (from gastronomicas.html) --- */
         footer {
             background-color: #212529;
@@ -760,6 +847,21 @@
                 margin: 0;
             }
             /* FIM DA ALTERAÇÃO */
+
+            /* Responsividade para o novo carrossel */
+            .carousel-container {
+                gap: 20px;
+            }
+            .carousel-container .fair-card {
+                flex-basis: 85%; /* Mais largo no mobile */
+            }
+            .carousel-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 20px;
+            }
+            .carousel-btn.prev { left: 5px; }
+            .carousel-btn.next { right: 5px; }
         }
 
         @media (max-width: 480px) {
@@ -847,6 +949,20 @@
                 <span class="dot"></span>
             </div>
         </section>
+
+        <!-- NOVA SEÇÃO: Próximas Feiras -->
+        <section class="proximas-feiras">
+            <div class="container">
+                <h2>Próximas Feiras</h2>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container" id="proximasFeirasCarousel">
+                        <!-- Cards das próximas feiras serão injetados aqui pelo JS -->
+                    </div>
+                    <button class="carousel-btn prev" id="prevProximaFeira">&#10094;</button>
+                    <button class="carousel-btn next" id="nextProximaFeira">&#10095;</button>
+                </div>
+            </div>
+        </section>
         
         <!-- UPDATED ADDRESS SEARCH SECTION -->
         <section id="busca-local">
@@ -885,6 +1001,7 @@
                 </div>
             </div>
         </section>
+
     </main>
 
     <!-- Modal para detalhes da feira -->
@@ -932,6 +1049,11 @@
             const suggestionsContainer = document.getElementById('address-suggestions');
             const btnBuscarEndereco = document.getElementById('btn-buscar-endereco');
 
+            // --- NOVA SEÇÃO: Próximas Feiras Carousel Elements ---
+            const proximasFeirasContainer = document.getElementById('proximasFeirasCarousel');
+            const prevProximaFeiraBtn = document.getElementById('prevProximaFeira');
+            const nextProximaFeiraBtn = document.getElementById('nextProximaFeira');
+
             // --- API and Data Handling ---
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
             const apiEndpoints = {
@@ -974,6 +1096,8 @@
                     allFairsData.livre = await livreRes.json();
 
                     renderFairs(activeCategory);
+                    // Chamada para a nova função do carrossel
+                    setupProximasFeirasCarousel();
                 } catch (error) {
                     console.error('Falha ao carregar dados de todas as feiras:', error);
                     fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Tente novamente mais tarde.</p>';
@@ -988,6 +1112,21 @@
                 const shortDescription = fullDescription.split('.')[0] + '.';
                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
 
+                // Lógica para exibir a data do evento ou o dia da semana
+                let dateInfo;
+                if (feira.data_inicio) {
+                    const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
+                    const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
+                    if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
+                        const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
+                        dateInfo = `De ${inicio} a ${fim}`;
+                    } else {
+                        dateInfo = inicio;
+                    }
+                } else {
+                    dateInfo = feira.dia_semana || 'Não informado';
+                }
+
                 return `
                     <div class="fair-card" data-id="${feira.id}">
                         <div class="fair-card-image">
@@ -996,7 +1135,7 @@
                         <div class="fair-card-content">
                             <h3>${feira.nome_feira}</h3>
                             ${distanciaHtml}
-                            <p><i class="fas fa-calendar-day"></i> ${feira.dia_semana || 'Não informado'}</p>
+                            <p><i class="fas fa-calendar-day"></i> ${dateInfo}</p>
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
                             <p class="fair-card-description">${shortDescription}</p>
@@ -1024,7 +1163,49 @@
                     </div>
                 `;
             }
+            
+            // --- NOVA FUNÇÃO: Lógica do Carrossel Próximas Feiras ---
+            function setupProximasFeirasCarousel() {
+                const combinedFairs = [...allFairsData.gastronomica, ...allFairsData.artesanal];
+                if (combinedFairs.length === 0) {
+                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma feira gastronômica ou artesanal encontrada.</p>';
+                    return;
+                }
+                
+                const hoje = new Date();
+                hoje.setHours(0, 0, 0, 0); // Zera o tempo para comparar apenas as datas
 
+                const upcomingFairs = combinedFairs
+                    .filter(feira => {
+                        // A feira deve ter data de início e fim
+                        if (!feira.data_inicio || !feira.data_fim) {
+                            return false;
+                        }
+                        // A data final deve ser igual ou maior que hoje para a feira ser exibida
+                        // Adiciona 'T00:00:00' para tratar a data como local, evitando problemas de fuso horário
+                        const dataFinal = new Date(feira.data_fim + 'T00:00:00');
+                        return dataFinal >= hoje;
+                    })
+                    .map(feira => ({
+                        ...feira,
+                        // Adiciona um objeto Date para facilitar a ordenação
+                        startDateObj: new Date(feira.data_inicio + 'T00:00:00')
+                    }))
+                    // Ordena pela data de início mais próxima
+                    .sort((a, b) => a.startDateObj - b.startDateObj);
+
+
+                // Renderiza os cards ordenados no carrossel
+                proximasFeirasContainer.innerHTML = '';
+                if (upcomingFairs.length > 0) {
+                    upcomingFairs.forEach(fair => {
+                        proximasFeirasContainer.innerHTML += createGastronomicaArtesanalCard(fair);
+                    });
+                } else {
+                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma próxima feira com data definida foi encontrada.</p>';
+                }
+            }
+            
             // --- Render Logic ---
             function renderFairs(category) {
                 activeCategory = category;
@@ -1073,14 +1254,28 @@
             }
 
             // --- Modal Logic ---
-            function abrirModal(feiraId) {
-                const feira = allFairsData[activeCategory].find(f => String(f.id) === String(feiraId));
-                if (!feira) return;
+            function abrirModal(feiraId, category) {
+                let feira;
+                
+                // Se uma categoria for fornecida, busca nela.
+                // Se não, busca em gastronomicas e artesanais (para o carrossel de próximas feiras).
+                if (category) {
+                    feira = allFairsData[category]?.find(f => String(f.id) === String(feiraId));
+                } else {
+                    feira = allFairsData.gastronomica.find(f => String(f.id) === String(feiraId)) ||
+                            allFairsData.artesanal.find(f => String(f.id) === String(feiraId));
+                }
+
+                if (!feira) {
+                    console.error("Feira não encontrada com o ID:", feiraId);
+                    return;
+                }
 
                 const modalBody = document.getElementById('modal-body');
                 let modalHtml = '';
+                const isFeiraLivre = category === 'livre';
 
-                if (activeCategory === 'livre') {
+                if (isFeiraLivre) {
                     const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
                     modalHtml = `
                         <h2 class="modal-title">${feira.nome_feira ?? 'Nome não informado'}</h2>
@@ -1092,17 +1287,33 @@
                         <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
                     `;
                 } else {
+                    // Lógica detalhada do modal para Gastronômicas/Artesanais
                     const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
                     const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
                     const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
                     const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
+
+                     // Lógica para exibir a data do evento ou o dia da semana
+                    let dateInfo;
+                    if (feira.data_inicio) {
+                        const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
+                        const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
+                        if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
+                            const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
+                            dateInfo = `De ${inicio} a ${fim}`;
+                        } else {
+                            dateInfo = inicio;
+                        }
+                    } else {
+                        dateInfo = feira.dia_semana || 'Não informado';
+                    }
                     
                     modalHtml = `
                         <img class="modal-image" src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
                         <h2 class="modal-title">${feira.nome_feira}</h2>
-                        <p class="modal-description">${feira.descricao || 'Descrição não disponível.'}</p>
+                        <p style="white-space: pre-wrap;">${feira.descricao || 'Descrição não disponível.'}</p>
                         ${distanciaHtml}
-                        <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${feira.dia_semana || 'Não informado'}</p>
+                        <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
                         <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} às ${formatTime(feira.horario_fim)}</p>
                         <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}, ${feira.bairro || ''} - ${regiaoFormatada}</p>
                         <a href="${googleMapsUrl}" target="_blank" class="button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}><i class="fas fa-map-marked-alt"></i> Ver no mapa</a>
@@ -1124,7 +1335,18 @@
                     e.preventDefault();
                     const card = button.closest('.fair-card');
                     const feiraId = card.dataset.id;
-                    abrirModal(feiraId);
+                    abrirModal(feiraId, activeCategory);
+                }
+            });
+
+            // NOVO: Event listener para o carrossel de próximas feiras
+            proximasFeirasContainer.addEventListener('click', (e) => {
+                const button = e.target.closest('.ver-mais-btn');
+                if (button) {
+                    e.preventDefault();
+                    const card = button.closest('.fair-card');
+                    const feiraId = card.dataset.id;
+                    abrirModal(feiraId); // Chama o modal sem categoria específica
                 }
             });
 
@@ -1271,6 +1493,23 @@
             dots.forEach((dot, index) => {
                 dot.addEventListener('click', () => { showHeroSlide(index); startHeroSlideShow(); });
             });
+
+            // --- NOVO: Event Listeners para o carrossel de Próximas Feiras ---
+            prevProximaFeiraBtn.addEventListener('click', () => {
+                const card = proximasFeirasContainer.querySelector('.fair-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35; // O mesmo gap definido no CSS
+                proximasFeirasContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+            });
+
+            nextProximaFeiraBtn.addEventListener('click', () => {
+                const card = proximasFeirasContainer.querySelector('.fair-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35; // O mesmo gap definido no CSS
+                proximasFeirasContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+            });
             
             // --- Initial Page Load ---
             loadAllFairs();
@@ -1280,3 +1519,5 @@
     </script>
 </body>
 </html>
+
+
