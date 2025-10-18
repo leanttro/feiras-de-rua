@@ -815,6 +815,38 @@
             .hero-banner { padding: 10px 15px; }
             .hero-section p { font-size: 0.9em; max-width: 85%; }
         }
+
+        /* --- NOVOS ESTILOS PARA O BLOG --- */
+        .blog-section { 
+            padding: 80px 20px; 
+            background-color: var(--white); /* Fundo branco, como solicitado */
+        }
+        .blog-section h2 { 
+            font-size: 2.5em; 
+            color: var(--dark-gray);
+            text-align: center; 
+            margin-top: 0;
+            margin-bottom: 50px;
+        }
+        .blog-card {
+            background-color: var(--white);
+            border-radius: 12px;
+            overflow: hidden;
+            text-align: left;
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+            border: 1px solid var(--medium-gray);
+        }
+        .blog-card:hover { transform: translateY(-8px); box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        .blog-card a { text-decoration: none; color: inherit; display: flex; flex-direction: column; height: 100%; }
+        .blog-card-image img { width: 100%; height: 180px; object-fit: cover; }
+        .blog-card-content { padding: 20px; display: flex; flex-direction: column; flex-grow: 1; }
+        .blog-card-content h3 { margin: 0 0 10px 0; font-size: 1.3em; color: var(--dark-gray); }
+        .blog-card-content p { margin: 0 0 20px 0; font-size: 0.95em; color: var(--text-color); flex-grow: 1; }
+        .blog-card-content .button { margin-top: auto; align-self: flex-start; background-color: var(--dark-green); color: var(--white); padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
+        .carousel-container .blog-card { scroll-snap-align: start; flex: 0 0 320px; }
     </style>
 </head>
 <body>
@@ -945,6 +977,21 @@
             </div>
         </section>
 
+        <!-- --- NOVA SEÇÃO: DO NOSSO BLOG --- -->
+        <section class="blog-section">
+            <div class="container">
+                <h2>Dicas & Roteiros do Nosso Blog</h2>
+                <div class="carousel-wrapper">
+                    <div class="carousel-container" id="blogCarouselContainer">
+                        <!-- Cards do blog serão injetados aqui pelo JS -->
+                    </div>
+                    <button class="carousel-btn prev" id="prevBlogPost">&#10094;</button>
+                    <button class="carousel-btn next" id="nextBlogPost">&#10095;</button>
+                </div>
+            </div>
+        </section>
+        <!-- --- FIM DA NOVA SEÇÃO --- -->
+
     </main>
 
     <!-- --- ALTERAÇÃO IMPORTANTE --- -->
@@ -992,19 +1039,31 @@
             const proximasFeirasContainer = document.getElementById('proximasFeirasCarousel');
             const prevProximaFeiraBtn = document.getElementById('prevProximaFeira');
             const nextProximaFeiraBtn = document.getElementById('nextProximaFeira');
+            
+            // --- Adicione estas linhas abaixo das constantes existentes ---
+            const blogCarouselContainer = document.getElementById('blogCarouselContainer');
+            const prevBlogPostBtn = document.getElementById('prevBlogPost');
+            const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
             // --- API and Data Handling ---
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
+            
+            // --- No objeto apiEndpoints, adicione a linha do blog ---
             const apiEndpoints = {
                 gastronomica: `${BASE_API_URL}/api/gastronomicas`,
                 artesanal: `${BASE_API_URL}/api/artesanais`,
-                livre: `${BASE_API_URL}/api/feiras`
+                livre: `${BASE_API_URL}/api/feiras`,
+                blog: `${BASE_API_URL}/api/blog` 
             };
+
+            // --- No objeto allFairsData, adicione a linha do blog ---
             const allFairsData = {
                 gastronomica: [],
                 artesanal: [],
-                livre: []
+                livre: [],
+                blog: []
             };
+
             let activeCategory = 'gastronomica';
             let userCoordinates = null; // State for user location
 
@@ -1024,22 +1083,58 @@
             async function loadAllFairs() {
                 fairCardsContainer.innerHTML = '<p class="loading-message">Carregando feiras...</p>';
                 try {
-                    const [gastronomicaRes, artesanalRes, livreRes] = await Promise.all([
+                    // --- Dentro da função loadAllFairs, modifique o Promise.all e a atribuição ---
+                    // DE: const [gastronomicaRes, artesanalRes, livreRes] = await Promise.all([...]);
+                    // PARA:
+                    const [gastronomicaRes, artesanalRes, livreRes, blogRes] = await Promise.all([
                         fetchWithRetry(apiEndpoints.gastronomica),
                         fetchWithRetry(apiEndpoints.artesanal),
-                        fetchWithRetry(apiEndpoints.livre)
+                        fetchWithRetry(apiEndpoints.livre),
+                        fetchWithRetry(apiEndpoints.blog) // Adicione esta linha
                     ]);
 
                     allFairsData.gastronomica = await gastronomicaRes.json();
                     allFairsData.artesanal = await artesanalRes.json();
                     allFairsData.livre = await livreRes.json();
+                    allFairsData.blog = await blogRes.json(); // Adicione esta linha
 
                     renderFairs(activeCategory);
                     setupProximasFeirasCarousel();
+                    setupBlogCarousel(); // Adicione esta linha
                 } catch (error) {
                     console.error('Falha ao carregar dados de todas as feiras:', error);
                     fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Tente novamente mais tarde.</p>';
                 }
+            }
+
+            function createBlogPostCard(post) {
+                const subtitulo = post.subtitulo || '';
+                const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
+                return `
+                    <div class="blog-card">
+                        <a href="${post.url}">
+                            <div class="blog-card-image">
+                                <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
+                            </div>
+                            <div class="blog-card-content">
+                                <h3>${post.titulo}</h3>
+                                <p>${shortSubtitulo}</p>
+                                <span class="button">Leia Mais</span>
+                            </div>
+                        </a>
+                    </div>
+                `;
+            }
+
+            function setupBlogCarousel() {
+                if (!allFairsData.blog || allFairsData.blog.length === 0) {
+                    blogCarouselContainer.innerHTML = '<p class="info-message" style="color: var(--dark-gray); width: 100%; text-align: center;">Nenhum post no blog encontrado ainda.</p>';
+                    return;
+                }
+                blogCarouselContainer.innerHTML = '';
+                allFairsData.blog.forEach(post => {
+                    blogCarouselContainer.innerHTML += createBlogPostCard(post);
+                });
             }
 
             // --- Card Creation Functions ---
@@ -1357,6 +1452,22 @@
                 proximasFeirasContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
             });
             
+            prevBlogPostBtn.addEventListener('click', () => {
+                const card = blogCarouselContainer.querySelector('.blog-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35;
+                blogCarouselContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+            });
+
+            nextBlogPostBtn.addEventListener('click', () => {
+                const card = blogCarouselContainer.querySelector('.blog-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35;
+                blogCarouselContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+            });
+
             // --- Initial Page Load ---
             loadAllFairs();
             showHeroSlide(currentHeroSlide);
@@ -1365,3 +1476,4 @@
     </script>
 </body>
 </html>
+
