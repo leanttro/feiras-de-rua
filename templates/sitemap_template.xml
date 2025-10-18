@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    
+    <!-- Páginas Estáticas Principais -->
+    <url>
+        <loc>{{ base_url }}/</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>1.00</priority>
+    </url>
+    <url>
+        <loc>{{ base_url }}/anuncie.html</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ base_url }}/contato.html</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ base_url }}/gastronomicas.html</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ base_url }}/artesanais.html</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.80</priority>
+    </url>
+    <url>
+        <loc>{{ base_url }}/feiras-livres.html</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.80</priority>
+    </url>
+
+    <!-- Páginas Dinâmicas das Feiras Gastronômicas -->
+    {% for feira in gastronomicas %}
+    <url>
+        <loc>{{ base_url }}/gastronomicas/{{ feira.slug }}</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.90</priority>
+    </url>
+    {% endfor %}
+
+    <!-- Páginas Dinâmicas das Feiras Artesanais -->
+    {% for feira in artesanais %}
+    <url>
+        <loc>{{ base_url }}/artesanais/{{ feira.slug }}</loc>
+        <lastmod>{{ hoje }}</lastmod>
+        <priority>0.90</priority>
+    </url>
+    {% endfor %}
+
+</urlset>

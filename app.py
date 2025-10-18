@@ -1,44 +1,94 @@
 import os
 import psycopg2
 import psycopg2.extras
-# --- NENHUMA MUDANÇA NAS IMPORTAÇÕES ---
-from flask import Flask, jsonify, request, send_from_directory, render_template
+# --- NOVA IMPORTAÇÃO ---
+# Importamos 'render_template' e agora 'make_response' e 'url_for'
+from flask import Flask, jsonify, request, send_from_directory, render_template, make_response, url_for
 from dotenv import load_dotenv
 from flask_cors import CORS
 import datetime
 
+# Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
+# Configuração do Flask (sem alteração)
 app = Flask(__name__, static_folder='.', static_url_path='', template_folder='templates')
 CORS(app, resources={r"/api/*": {"origins": "*"}, r"/submit-fair": {"origins": "*"}})
 
+# Função de conexão (sem alteração)
 def get_db_connection():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
 
-# Mapeamento de Bairros para Regiões (seu código original, sem alteração)
-BAIRRO_REGIAO_MAP = { 'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste', 'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste', 'SAPOPEMBA': 'Zona Leste', 'GUAIANASES': 'Zona Leste', 'VILA MATILDE': 'Zona Leste', 'PENHA': 'Zona Leste', 'VILA CARRAO': 'Zona Leste', 'TATUAPE': 'Zona Leste', 'SAO MATEUS': 'Zona Leste', 'AGUA RASA': 'Zona Leste', 'ERMELINO MATARAZZO': 'Zona Leste', 'ARTUR ALVIM': 'Zona Leste', 'ITAIM PAULISTA': 'Zona Leste', 'CAPAO REDONDO': 'Zona Sul', 'CAMPO LIMPO': 'Zona Sul', 'SACOMA': 'Zona Sul', 'IPIRANGA': 'Zona Sul', 'SAUDE': 'Zona Sul', 'JABAQUARA': 'Zona Sul', 'VILA MARIANA': 'Zona Sul', 'CIDADE ADEMAR': 'Zona Sul', 'CURSINO': 'Zona Sul', 'SOCORRO': 'Zona Sul', 'CAMPO BELO': 'Zona Sul', 'SANTO AMARO': 'Zona Sul', 'M BOI MIRIM': 'Zona Sul', 'GRAJAU': 'Zona Sul', 'PIRITUBA': 'Zona Norte', 'FREGUESIA DO O': 'Zona Norte', 'CASA VERDE': 'Zona Norte', 'LIMAO': 'Zona Norte', 'BRASILANDIA': 'Zona Norte', 'VILA MARIA': 'Zona Norte', 'TUCURUVI': 'Zona Norte', 'SANTANA': 'Zona Norte', 'VILA GUILHERME': 'Zona Norte', 'TREMEMBE': 'Zona Norte', 'JAÇANA': 'Zona Norte', 'LAPA': 'Zona Oeste', 'BUTANTA': 'Zona Oeste', 'PINHEIROS': 'Zona Oeste', 'PERDIZES': 'Zona Oeste', 'RAPOSO TAVARES': 'Zona Oeste', 'JAGUARA': 'Zona Oeste', 'BARRA FUNDA': 'Zona Oeste', 'VILA LEOPOLDINA': 'Zona Oeste', 'SE': 'Centro', 'BOM RETIRO': 'Centro', 'REPUBLICA': 'Centro', 'CONSOLACAO': 'Centro', 'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro' }
+# Mapeamento de Bairros (sem alteração)
+BAIRRO_REGIAO_MAP = {
+    'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
+    'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
+    'SAPOPEMBA': 'Zona Leste', 'GUAIANASES': 'Zona Leste', 'VILA MATILDE': 'Zona Leste',
+    'PENHA': 'Zona Leste', 'VILA CARRAO': 'Zona Leste', 'TATUAPE': 'Zona Leste',
+    'SAO MATEUS': 'Zona Leste', 'AGUA RASA': 'Zona Leste', 'ERMELINO MATARAZZO': 'Zona Leste',
+    'ARTUR ALVIM': 'Zona Leste', 'ITAIM PAULISTA': 'Zona Leste',
+    'CAPAO REDONDO': 'Zona Sul', 'CAMPO LIMPO': 'Zona Sul', 'SACOMA': 'Zona Sul',
+    'IPIRANGA': 'Zona Sul', 'SAUDE': 'Zona Sul', 'JABAQUARA': 'Zona Sul',
+    'VILA MARIANA': 'Zona Sul', 'CIDADE ADEMAR': 'Zona Sul', 'CURSINO': 'Zona Sul',
+    'SOCORRO': 'Zona Sul', 'CAMPO BELO': 'Zona Sul', 'SANTO AMARO': 'Zona Sul',
+    'M BOI MIRIM': 'Zona Sul', 'GRAJAU': 'Zona Sul',
+    'PIRITUBA': 'Zona Norte', 'FREGUESIA DO O': 'Zona Norte', 'CASA VERDE': 'Zona Norte',
+    'LIMAO': 'Zona Norte', 'BRASILANDIA': 'Zona Norte', 'VILA MARIA': 'Zona Norte',
+    'TUCURUVI': 'Zona Norte', 'SANTANA': 'Zona Norte', 'VILA GUILHERME': 'Zona Norte',
+    'TREMEMBE': 'Zona Norte', 'JAÇANA': 'Zona Norte',
+    'LAPA': 'Zona Oeste', 'BUTANTA': 'Zona Oeste', 'PINHEIROS': 'Zona Oeste',
+    'PERDIZES': 'Zona Oeste', 'RAPOSO TAVARES': 'Zona Oeste', 'JAGUARA': 'Zona Oeste',
+    'BARRA FUNDA': 'Zona Oeste', 'VILA LEOPOLDINA': 'Zona Oeste',
+    'SE': 'Centro', 'BOM RETIRO': 'Centro', 'REPUBLICA': 'Centro', 'CONSOLACAO': 'Centro',
+    'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro'
+}
 
-@app.route('/api/filtros')
-def get_filtros():
-    # Seu código original de filtros (sem alteração)
+# --- NOVA ROTA PARA GERAR O SITEMAP.XML ---
+@app.route('/sitemap.xml')
+def sitemap():
+    conn = None
     try:
         conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute('SELECT DISTINCT bairro FROM feiras ORDER BY bairro;')
-        bairros_db = cur.fetchall()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+
+        # Busca os slugs das feiras gastronômicas
+        cur.execute('SELECT slug FROM gastronomicas;')
+        gastronomicas = cur.fetchall()
+
+        # Busca os slugs das feiras artesanais
+        cur.execute('SELECT slug FROM artesanais;')
+        artesanais = cur.fetchall()
+
         cur.close()
-        conn.close()
-        filtros = {}
-        for item in bairros_db:
-            bairro = item['bairro']
-            regiao = BAIRRO_REGIAO_MAP.get(bairro, 'Outras')
-            if regiao not in filtros:
-                filtros[regiao] = []
-            filtros[regiao].append(bairro)
-        return jsonify(filtros)
+
+        # Pega a data de hoje para a tag <lastmod>
+        hoje = datetime.datetime.now().strftime("%Y-%m-%d")
+
+        # Renderiza o template do sitemap com os dados
+        sitemap_xml = render_template(
+            'sitemap_template.xml',
+            gastronomicas=gastronomicas,
+            artesanais=artesanais,
+            hoje=hoje,
+            base_url="https://www.feirasderua.com.br"
+        )
+        
+        response = make_response(sitemap_xml)
+        response.headers['Content-Type'] = 'application/xml'
+        
+        return response
+
     except Exception as e:
-        return jsonify({'error': str(e)}), 500
+        print(f"Erro ao gerar sitemap: {e}")
+        return "Erro ao gerar sitemap", 500
+    finally:
+        if conn: conn.close()
+# --- FIM DA NOVA ROTA ---
+
+
+# Todas as suas outras rotas (index, /api/..., /gastronomicas/<slug>, etc.) continuam aqui...
+# Vou omiti-las por brevidade, mas elas NÃO DEVEM ser apagadas.
 
 @app.route('/')
 def index():
@@ -48,19 +98,17 @@ def format_feira_data(feira_dict):
     """Função auxiliar para formatar datas e horas para o template."""
     for key, value in feira_dict.items():
         if isinstance(value, datetime.date):
-            feira_dict[key] = value.strftime('%d/%m/%Y')
+            feira_dict[key] = value.strftime('%d/%m/%Y') if value else None
         elif isinstance(value, datetime.time):
-            feira_dict[key] = value.strftime('%H:%M')
+            feira_dict[key] = value.strftime('%H:%M') if value else None
     return feira_dict
 
-# --- ALTERAÇÃO 1: Rota de Detalhes agora usa 'slug' ---
 @app.route('/gastronomicas/<slug>')
 def feira_gastronomica_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Busca pelo slug em vez do id
         cur.execute('SELECT * FROM gastronomicas WHERE slug = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
@@ -76,14 +124,12 @@ def feira_gastronomica_detalhe(slug):
     finally:
         if conn: conn.close()
 
-# --- ALTERAÇÃO 2: Rota de Detalhes agora usa 'slug' ---
 @app.route('/artesanais/<slug>')
 def feira_artesanal_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Busca pelo slug em vez do id
         cur.execute('SELECT * FROM artesanais WHERE slug = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
@@ -99,9 +145,31 @@ def feira_artesanal_detalhe(slug):
     finally:
         if conn: conn.close()
 
+# ... (outras rotas da API e de submission)
+@app.route('/api/filtros')
+def get_filtros():
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        cur.execute('SELECT DISTINCT bairro FROM feiras ORDER BY bairro;')
+        bairros_db = cur.fetchall()
+        cur.close()
+        conn.close()
+
+        filtros = {}
+        for item in bairros_db:
+            bairro = item['bairro']
+            regiao = BAIRRO_REGIAO_MAP.get(bairro, 'Outras')
+            if regiao not in filtros:
+                filtros[regiao] = []
+            filtros[regiao].append(bairro)
+
+        return jsonify(filtros)
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
 @app.route('/api/feiras')
 def get_feiras():
-    # Seu código original (sem alteração por enquanto)
     try:
         limite_query = request.args.get('limite', default=1000, type=int) 
         conn = get_db_connection()
@@ -119,8 +187,7 @@ def get_gastronomicas():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Adicionado 'slug' ao SELECT
-        cur.execute('SELECT *, slug FROM gastronomicas ORDER BY id;')
+        cur.execute('SELECT * FROM gastronomicas ORDER BY id;')
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
@@ -131,10 +198,7 @@ def get_gastronomicas():
             for key, value in feira_dict.items():
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
-            
-            # --- ALTERAÇÃO 3: API agora gera a URL com o 'slug' ---
             feira_dict['url'] = f'/gastronomicas/{feira_dict["slug"]}'
-            
             feiras_processadas.append(feira_dict)
         return jsonify(feiras_processadas)
     except Exception as e:
@@ -146,8 +210,7 @@ def get_artesanais():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Adicionado 'slug' ao SELECT
-        cur.execute('SELECT *, slug FROM artesanais ORDER BY id;')
+        cur.execute('SELECT * FROM artesanais ORDER BY id;')
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
@@ -158,10 +221,7 @@ def get_artesanais():
             for key, value in feira_dict.items():
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
-            
-            # --- ALTERAÇÃO 4: API agora gera a URL com o 'slug' ---
             feira_dict['url'] = f'/artesanais/{feira_dict["slug"]}'
-            
             feiras_processadas.append(feira_dict)
         return jsonify(feiras_processadas)
     except Exception as e:
@@ -170,7 +230,6 @@ def get_artesanais():
 
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
-    # Seu código original (sem alteração)
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -178,7 +237,11 @@ def handle_submission():
             INSERT INTO contato (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
         """
-        data_tuple = ( request.form.get('fairName'), request.form.get('region'), request.form.get('address'), request.form.get('days'), request.form.get('category'), request.form.get('responsibleName'), request.form.get('contactEmail'), request.form.get('whatsapp'), request.form.get('description') )
+        data_tuple = (
+            request.form.get('fairName'), request.form.get('region'), request.form.get('address'),
+            request.form.get('days'), request.form.get('category'), request.form.get('responsibleName'),
+            request.form.get('contactEmail'), request.form.get('whatsapp'), request.form.get('description')
+        )
         cur.execute(sql, data_tuple)
         conn.commit()
         cur.close()
@@ -190,12 +253,15 @@ def handle_submission():
     finally:
         if conn: conn.close()
 
+# Rota "coringa" (deve ser a última)
 @app.route('/<path:path>')
 def serve_static_files(path):
     if path == "app.py":
         return "Not Found", 404
     return send_from_directory('.', path)
 
+
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
     app.run(host="0.0.0.0", port=port, debug=True)
+
