@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5SDJYV66KE');
+    </script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ post.titulo }} | Blog Feiras de Rua</title>
+    <meta name="description" content="{{ post.subtitulo or post.conteudo | truncate(155) }}">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        /* ESTILOS GERAIS (MANTIDOS PARA VARIÁVEIS E CORPO) */
+        :root {
+            --primary-green: #4CAF50; --dark-green: #388E3C; --light-green: #DCEDC8;
+            --light-gray: #f8f9fa; --medium-gray: #e0e0e0; --dark-gray: #343a40;
+            --text-color: #495057; --white: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08); --shadow-medium: rgba(0, 0, 0, 0.15);
+        }
+        body { 
+            font-family: 'Roboto', sans-serif; 
+            margin: 0; 
+            background-color: var(--light-gray); 
+            line-height: 1.7; 
+            color: var(--text-color); 
+        }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+
+        /* ESTILOS ESPECÍFICOS DO POST */
+        .post-container { 
+            max-width: 800px; 
+            margin: 40px auto; 
+            padding: 20px 40px 40px 40px; 
+            background: #fff; 
+            border-radius: 8px; 
+            box-shadow: var(--shadow-medium); 
+        }
+        .breadcrumb { 
+            margin-bottom: 20px; 
+            font-size: 1em; 
+        }
+        .breadcrumb a { 
+            color: var(--primary-green); 
+            text-decoration: none; 
+            font-weight: 500;
+        }
+        .breadcrumb a:hover {
+            text-decoration: underline;
+        }
+        .post-header h1 { font-size: 2.8em; margin: 0 0 10px 0; color: var(--dark-gray); line-height: 1.2; }
+        .post-header .subtitulo { font-size: 1.3em; color: #6c757d; margin-bottom: 20px; }
+        .post-header .meta { color: #6c757d; font-size: 0.9em; border-bottom: 1px solid var(--medium-gray); padding-bottom: 20px; }
+        .post-imagem { 
+            width: 100%; 
+            height: auto;
+            max-height: 450px;
+            object-fit: cover;
+            border-radius: 8px; 
+            margin: 30px 0; 
+        }
+        .post-conteudo { font-size: 1.1em; color: var(--dark-gray); }
+        .post-conteudo h2 { font-size: 1.8em; margin-top: 40px; color: var(--dark-gray); }
+        .post-conteudo a { color: var(--primary-green); font-weight: 600; }
+        .post-conteudo a:hover { text-decoration: underline; }
+
+        @media (max-width: 768px) {
+            .post-container {
+                margin: 20px 10px;
+                padding: 15px 20px 20px 20px;
+            }
+            .post-header h1 {
+                font-size: 2.2em;
+            }
+            .post-header .subtitulo {
+                font-size: 1.1em;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <main>
+        <article class="post-container">
+            <div class="breadcrumb">
+                <a href="/">❮ Voltar para o Início</a>
+            </div>
+            <header class="post-header">
+                <h1>{{ post.titulo }}</h1>
+                {% if post.subtitulo %}
+                    <p class="subtitulo">{{ post.subtitulo }}</p>
+                {% endif %}
+                <p class="meta">Por <strong>{{ post.autor }}</strong> em {{ post.data_publicacao }}</p>
+            </header>
+
+            {% if post.imagem_url %}
+                <img classs="post-imagem" 
+                     src="{{ post.imagem_url }}" 
+                     alt="{{ post.titulo }}"
+                     onerror="this.onerror=null;this.src='https://placehold.co/800x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+            {% endif %}
+
+            <section class="post-conteudo">
+                {{ post.conteudo | safe }}
+            </section>
+        </article>
+    </main>
+
+    </body>
+</html>
