@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>{{ feira.nome_feira }} | Feiras de Rua SP</title>
+    
+    <meta name="description" content="{{ feira.descricao | truncate(155, True, '...') }}">
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f8f9fa; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .header-detalhe { text-align: center; }
+        .header-detalhe .voltar-link { display: inline-block; margin-bottom: 20px; color: #4CAF50; text-decoration: none; font-weight: 500; }
+        .header-detalhe .voltar-link:hover { text-decoration: underline; }
+        .header-detalhe h1 { font-size: 2.5em; margin: 0 0 20px 0; color: #343a40; }
+        .feira-imagem { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 25px; }
+        .feira-descricao { font-size: 1.1em; line-height: 1.7; white-space: pre-wrap; margin-bottom: 30px; }
+        .feira-info { list-style: none; padding: 0; }
+        .feira-info li { display: flex; align-items: center; font-size: 1.1em; margin-bottom: 15px; }
+        .feira-info li i { color: #4CAF50; width: 30px; text-align: center; font-size: 1.2em; }
+        .map-button { display: inline-block; background-color: #4CAF50; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s; }
+        .map-button:hover { background-color: #388E3C; }
+    </style>
+
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": "{{ feira.nome_feira }}",
+      "startDate": "{{ feira.data_inicio }}",
+      "endDate": "{{ feira.data_fim }}",
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@type": "Place",
+        "name": "{{ feira.rua }}",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "{{ feira.rua }}",
+          "addressLocality": "{{ feira.bairro }}",
+          "addressRegion": "SP",
+          "addressCountry": "BR"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "{{ feira.latitude }}",
+          "longitude": "{{ feira.longitude }}"
+        }
+      },
+      "image": [
+        "{{ feira.imagem_url }}"
+      ],
+      "description": "{{ feira.descricao | truncate(250, True, '...') }}"
+    }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header-detalhe">
+            <a href="/" class="voltar-link">❮ Voltar para o Início</a>
+            <h1>{{ feira.nome_feira }}</h1>
+        </div>
+
+        <img class="feira-imagem" 
+             src="{{ feira.imagem_url or 'assets/placeholder.png' }}" 
+             alt="Foto da {{ feira.nome_feira }}" 
+             onerror="this.onerror=null;this.src='https://placehold.co/800x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+
+        <p class="feira-descricao">{{ feira.descricao or 'Descrição não disponível.' }}</p>
+
+        <ul class="feira-info">
+            {% if feira.data_inicio %}
+                <li><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> De {{ feira.data_inicio }} a {{ feira.data_fim }}</li>
+            {% else %}
+                <li><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> {{ feira.dia_semana or 'Não informado' }}</li>
+            {% endif %}
+            
+            <li><i class="fas fa-clock"></i> <strong>Horário:</strong> {{ feira.horario_inicio or 'N/A' }} às {{ feira.horario_fim or 'N/A' }}</li>
+            <li><i class="fas fa-map-marker-alt"></i> <strong>Local:</strong> {{ feira.rua or 'Não informado' }}, {{ feira.bairro or '' }} - {{ feira.regiao or '' }}</li>
+        </ul>
+
+        {% if feira.latitude and feira.longitude %}
+            <a href="https://www.google.com/maps/search/?api=1&query={{feira.latitude}},{{feira.longitude}}" 
+               target="_blank" 
+               class="map-button">
+               <i class="fas fa-map-marked-alt"></i> Ver no mapa
+            </a>
+        {% endif %}
+    </div>
+
+    </body>
+</html>

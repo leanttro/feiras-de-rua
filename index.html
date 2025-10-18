@@ -715,72 +715,6 @@
             text-decoration: none;
         }
         
-        /* --- Modal Styles --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: var(--white);
-            margin: auto;
-            padding: 25px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-        .modal-close-btn {
-            color: #aaa;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-        #modal-body { text-align: left; }
-        .modal-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .modal-title {
-            font-size: 2em;
-            color: var(--dark-gray);
-            margin: 0 0 15px 0;
-        }
-        #modal-body p {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        #modal-body p i {
-            color: var(--primary-green);
-            width: 20px;
-            text-align: center;
-        }
-
-
         /* Responsive adjustments */
         @media (max-width: 992px) { /* Adjust breakpoint for tablet */
             nav.desktop-nav {
@@ -1004,15 +938,9 @@
 
     </main>
 
-    <!-- Modal para detalhes da feira -->
-    <div id="fair-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button id="modal-close" class="modal-close-btn">&times;</button>
-            <div id="modal-body">
-                <!-- Conteúdo do modal será injetado aqui -->
-            </div>
-        </div>
-    </div>
+    <!-- --- ALTERAÇÃO IMPORTANTE --- -->
+    <!-- O Modal foi removido daqui. O HTML e o JavaScript dele foram apagados. -->
+    <!-- --- FIM DA ALTERAÇÃO --- -->
 
 
     <!-- UPDATED FOOTER -->
@@ -1040,8 +968,10 @@
             const slicerBtns = document.querySelectorAll('.slicer-btn');
             const fairCardsContainer = document.getElementById('fairCardsContainer');
             const seeAllBtn = document.getElementById('seeAllBtn');
-            const modal = document.getElementById('fair-modal');
-            const modalCloseBtn = document.getElementById('modal-close');
+            // --- ALTERAÇÃO IMPORTANTE: Variáveis do Modal Removidas ---
+            // const modal = document.getElementById('fair-modal');
+            // const modalCloseBtn = document.getElementById('modal-close');
+            // --- FIM DA ALTERAÇÃO ---
 
             // --- Address search elements ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
@@ -1096,7 +1026,6 @@
                     allFairsData.livre = await livreRes.json();
 
                     renderFairs(activeCategory);
-                    // Chamada para a nova função do carrossel
                     setupProximasFeirasCarousel();
                 } catch (error) {
                     console.error('Falha ao carregar dados de todas as feiras:', error);
@@ -1112,7 +1041,6 @@
                 const shortDescription = fullDescription.split('.')[0] + '.';
                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
 
-                // Lógica para exibir a data do evento ou o dia da semana
                 let dateInfo;
                 if (feira.data_inicio) {
                     const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
@@ -1139,7 +1067,12 @@
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
                             <p class="fair-card-description">${shortDescription}</p>
-                            <a href="#" class="button ver-mais-btn">Ver mais</a>
+                            
+                            <!-- --- ALTERAÇÃO IMPORTANTE: Botão "Ver mais" --- -->
+                            <!-- Agora ele é um link real para a URL que vem da API -->
+                            <a href="${feira.url}" class="button">Ver mais</a>
+                            <!-- --- FIM DA ALTERAÇÃO --- -->
+
                         </div>
                     </div>
                 `;
@@ -1158,13 +1091,18 @@
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
                             <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
                             <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
-                            <a href="#" class="button ver-mais-btn">Ver mais</a>
+                            
+                            <!-- --- ALTERAÇÃO IMPORTANTE: Botão "Ver mais" --- -->
+                            <!-- Este botão agora aponta para a página de detalhes da feira -->
+                            <!-- AINDA USANDO UMA URL FICTÍCIA, você precisará ajustar a API /api/feiras para enviar a 'url' também -->
+                            <a href="/feiras-livres/${feira.id}" class="button">Ver mais</a>
+                            <!-- --- FIM DA ALTERAÇÃO --- -->
+                            
                         </div>
                     </div>
                 `;
             }
             
-            // --- NOVA FUNÇÃO: Lógica do Carrossel Próximas Feiras ---
             function setupProximasFeirasCarousel() {
                 const combinedFairs = [...allFairsData.gastronomica, ...allFairsData.artesanal];
                 if (combinedFairs.length === 0) {
@@ -1173,29 +1111,22 @@
                 }
                 
                 const hoje = new Date();
-                hoje.setHours(0, 0, 0, 0); // Zera o tempo para comparar apenas as datas
+                hoje.setHours(0, 0, 0, 0);
 
                 const upcomingFairs = combinedFairs
                     .filter(feira => {
-                        // A feira deve ter data de início e fim
                         if (!feira.data_inicio || !feira.data_fim) {
                             return false;
                         }
-                        // A data final deve ser igual ou maior que hoje para a feira ser exibida
-                        // Adiciona 'T00:00:00' para tratar a data como local, evitando problemas de fuso horário
                         const dataFinal = new Date(feira.data_fim + 'T00:00:00');
                         return dataFinal >= hoje;
                     })
                     .map(feira => ({
                         ...feira,
-                        // Adiciona um objeto Date para facilitar a ordenação
                         startDateObj: new Date(feira.data_inicio + 'T00:00:00')
                     }))
-                    // Ordena pela data de início mais próxima
                     .sort((a, b) => a.startDateObj - b.startDateObj);
 
-
-                // Renderiza os cards ordenados no carrossel
                 proximasFeirasContainer.innerHTML = '';
                 if (upcomingFairs.length > 0) {
                     upcomingFairs.forEach(fair => {
@@ -1206,17 +1137,14 @@
                 }
             }
             
-            // --- Render Logic ---
             function renderFairs(category) {
                 activeCategory = category;
 
-                // INÍCIO DA ALTERAÇÃO: Adiciona/remove classe para o carrossel mobile
                 if (category === 'livre') {
                     fairCardsContainer.classList.add('mobile-carousel');
                 } else {
                     fairCardsContainer.classList.remove('mobile-carousel');
                 }
-                // FIM DA ALTERAÇÃO
 
                 let fairsToProcess = [...allFairsData[category]];
                 
@@ -1253,102 +1181,11 @@
                 seeAllBtn.href = pageMap[category] || '#';
             }
 
-            // --- Modal Logic ---
-            function abrirModal(feiraId, category) {
-                let feira;
-                
-                // Se uma categoria for fornecida, busca nela.
-                // Se não, busca em gastronomicas e artesanais (para o carrossel de próximas feiras).
-                if (category) {
-                    feira = allFairsData[category]?.find(f => String(f.id) === String(feiraId));
-                } else {
-                    feira = allFairsData.gastronomica.find(f => String(f.id) === String(feiraId)) ||
-                            allFairsData.artesanal.find(f => String(f.id) === String(feiraId));
-                }
-
-                if (!feira) {
-                    console.error("Feira não encontrada com o ID:", feiraId);
-                    return;
-                }
-
-                const modalBody = document.getElementById('modal-body');
-                let modalHtml = '';
-                const isFeiraLivre = category === 'livre';
-
-                if (isFeiraLivre) {
-                    const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
-                    modalHtml = `
-                        <h2 class="modal-title">${feira.nome_feira ?? 'Nome não informado'}</h2>
-                        ${distanciaHtml}
-                        <p><i class="fas fa-map-marked-alt"></i><strong>Endereço:</strong> ${feira.endereco || 'Não informado'}</p>
-                        <p><i class="fas fa-map-pin"></i><strong>Bairro:</strong> ${feira.bairro || 'Não informado'}</p>
-                        <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_feira || 'Não informado'}</p>
-                        <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h (estimado)</p>
-                        <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
-                    `;
-                } else {
-                    // Lógica detalhada do modal para Gastronômicas/Artesanais
-                    const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                    const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
-                    const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
-                    const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
-
-                     // Lógica para exibir a data do evento ou o dia da semana
-                    let dateInfo;
-                    if (feira.data_inicio) {
-                        const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
-                        const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
-                        if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
-                            const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
-                            dateInfo = `De ${inicio} a ${fim}`;
-                        } else {
-                            dateInfo = inicio;
-                        }
-                    } else {
-                        dateInfo = feira.dia_semana || 'Não informado';
-                    }
-                    
-                    modalHtml = `
-                        <img class="modal-image" src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
-                        <h2 class="modal-title">${feira.nome_feira}</h2>
-                        <p style="white-space: pre-wrap;">${feira.descricao || 'Descrição não disponível.'}</p>
-                        ${distanciaHtml}
-                        <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
-                        <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} às ${formatTime(feira.horario_fim)}</p>
-                        <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}, ${feira.bairro || ''} - ${regiaoFormatada}</p>
-                        <a href="${googleMapsUrl}" target="_blank" class="button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}><i class="fas fa-map-marked-alt"></i> Ver no mapa</a>
-                    `;
-                }
-                modalBody.innerHTML = modalHtml;
-                modal.style.display = 'flex';
-            }
-
-            function fecharModal() {
-                modal.style.display = 'none';
-            }
-            modalCloseBtn.addEventListener('click', fecharModal);
-            modal.addEventListener('click', (e) => { if (e.target === modal) fecharModal(); });
-            
-            fairCardsContainer.addEventListener('click', (e) => {
-                const button = e.target.closest('.ver-mais-btn');
-                if (button) {
-                    e.preventDefault();
-                    const card = button.closest('.fair-card');
-                    const feiraId = card.dataset.id;
-                    abrirModal(feiraId, activeCategory);
-                }
-            });
-
-            // NOVO: Event listener para o carrossel de próximas feiras
-            proximasFeirasContainer.addEventListener('click', (e) => {
-                const button = e.target.closest('.ver-mais-btn');
-                if (button) {
-                    e.preventDefault();
-                    const card = button.closest('.fair-card');
-                    const feiraId = card.dataset.id;
-                    abrirModal(feiraId); // Chama o modal sem categoria específica
-                }
-            });
+            // --- ALTERAÇÃO IMPORTANTE: Modal Logic Removida ---
+            // A função 'abrirModal' foi removida.
+            // A função 'fecharModal' foi removida.
+            // Os event listeners do modal foram removidos.
+            // --- FIM DA ALTERAÇÃO ---
 
             // --- Slicer Button Listeners ---
             slicerBtns.forEach(btn => {
@@ -1519,5 +1356,3 @@
     </script>
 </body>
 </html>
-
-

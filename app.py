@@ -1,7 +1,10 @@
 import os
 import psycopg2
 import psycopg2.extras
-from flask import Flask, jsonify, request, send_from_directory
+# --- NOVA IMPORTAÇÃO ---
+# Importamos o render_template para gerar HTML no servidor
+from flask import Flask, jsonify, request, send_from_directory, render_template
+# --- FIM DA NOVA IMPORTAÇÃO ---
 from dotenv import load_dotenv
 from flask_cors import CORS
 import datetime
@@ -9,10 +12,9 @@ import datetime
 # Carrega as variáveis de ambiente do arquivo .env
 load_dotenv()
 
-# --- ALTERAÇÃO 1: Configurar a pasta estática ---
-# Diz ao Flask que os arquivos estáticos (html, css, js, imagens) 
-# estão na mesma pasta raiz do projeto.
-app = Flask(__name__, static_folder='.', static_url_path='')
+# --- ALTERAÇÃO 1: Configurar a pasta estática E A PASTA DE TEMPLATES ---
+# O Flask agora procurará por templates na pasta "templates"
+app = Flask(__name__, static_folder='.', static_url_path='', template_folder='templates') # --- ALTERADO ---
 CORS(app, resources={r"/api/*": {"origins": "*"}, r"/submit-fair": {"origins": "*"}})
 
 # Função para obter a conexão com o banco de dados
@@ -20,7 +22,7 @@ def get_db_connection():
     conn = psycopg2.connect(os.getenv('DATABASE_URL'))
     return conn
 
-# Mapeamento de Bairros para Regiões
+# Mapeamento de Bairros para Regiões (seu código original)
 BAIRRO_REGIAO_MAP = {
     'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
     'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
@@ -46,6 +48,7 @@ BAIRRO_REGIAO_MAP = {
 
 @app.route('/api/filtros')
 def get_filtros():
+    # Seu código original de filtros (sem alteração)
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
@@ -66,24 +69,75 @@ def get_filtros():
     except Exception as e:
         return jsonify({'error': str(e)}), 500
 
-# --- ALTERAÇÃO 2: Rota para servir o index.html ---
-# Esta rota garante que ao acessar a raiz do site, o index.html é servido.
+# --- Rota para servir o index.html ---
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
 
-# --- ALTERAÇÃO 3: Rota "coringa" para servir TODOS os outros arquivos ---
-# Esta nova rota captura qualquer outra URL (ex: /gastronomicas.html, /assets/logo.png)
-# e tenta encontrar e servir o arquivo correspondente na pasta raiz.
-@app.route('/<path:path>')
-def serve_static_files(path):
-    # Medida de segurança: não permite que a rota acesse o próprio app.py
-    if path == "app.py":
-        return "Not Found", 404
-    return send_from_directory('.', path)
+# --- NOVAS ROTAS DE SEO (SSR) ---
+# Esta é a mágica! O Google vai ver esta página.
+
+def format_feira_data(feira_dict):
+    """Função auxiliar para formatar datas e horas para o template."""
+    for key, value in feira_dict.items():
+        if isinstance(value, datetime.date):
+            # Formata data para DD/MM/AAAA
+            feira_dict[key] = value.strftime('%d/%m/%Y')
+        elif isinstance(value, datetime.time):
+            # Formata hora para HH:MM
+            feira_dict[key] = value.strftime('%H:%M')
+    return feira_dict
+
+@app.route('/gastronomicas/<int:feira_id>')
+def feira_gastronomica_detalhe(feira_id):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute('SELECT * FROM gastronomicas WHERE id = %s;', (feira_id,))
+        feira = cur.fetchone()
+        cur.close()
+        
+        if feira:
+            feira_formatada = format_feira_data(dict(feira))
+            # O Flask vai procurar por 'feira-detalhe.html' na pasta 'templates'
+            return render_template('feira-detalhe.html', feira=feira_formatada)
+        else:
+            return "Feira não encontrada", 404
+    except Exception as e:
+        print(f"Erro na rota /gastronomicas/{feira_id}: {e}")
+        return "Erro ao carregar a página", 500
+    finally:
+        if conn: conn.close()
+
+@app.route('/artesanais/<int:feira_id>')
+def feira_artesanal_detalhe(feira_id):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        cur.execute('SELECT * FROM artesanais WHERE id = %s;', (feira_id,))
+        feira = cur.fetchone()
+        cur.close()
+        
+        if feira:
+            feira_formatada = format_feira_data(dict(feira))
+            # Reutilizamos o mesmo template!
+            return render_template('feira-detalhe.html', feira=feira_formatada)
+        else:
+            return "Feira não encontrada", 404
+    except Exception as e:
+        print(f"Erro na rota /artesanais/{feira_id}: {e}")
+        return "Erro ao carregar a página", 500
+    finally:
+        if conn: conn.close()
+
+# --- FIM DAS NOVAS ROTAS DE SEO ---
+
 
 @app.route('/api/feiras')
 def get_feiras():
+    # Seu código original (sem alteração)
     try:
         limite_query = request.args.get('limite', default=1000, type=int) 
         conn = get_db_connection()
@@ -105,12 +159,19 @@ def get_gastronomicas():
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
+        
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = dict(feira)
             for key, value in feira_dict.items():
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
+            
+            # --- ALTERAÇÃO NA API ---
+            # Adicionamos a URL da página de detalhes no JSON
+            feira_dict['url'] = f'/gastronomicas/{feira_dict["id"]}'
+            # --- FIM DA ALTERAÇÃO ---
+            
             feiras_processadas.append(feira_dict)
         return jsonify(feiras_processadas)
     except Exception as e:
@@ -126,12 +187,19 @@ def get_artesanais():
         feiras_raw = cur.fetchall()
         cur.close()
         conn.close()
+        
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = dict(feira)
             for key, value in feira_dict.items():
                 if isinstance(value, (datetime.date, datetime.time)):
                     feira_dict[key] = value.isoformat() if value else None
+            
+            # --- ALTERAÇÃO NA API ---
+            # Adicionamos a URL da página de detalhes no JSON
+            feira_dict['url'] = f'/artesanais/{feira_dict["id"]}'
+            # --- FIM DA ALTERAÇÃO ---
+            
             feiras_processadas.append(feira_dict)
         return jsonify(feiras_processadas)
     except Exception as e:
@@ -140,6 +208,7 @@ def get_artesanais():
 
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
+    # Seu código original (sem alteração)
     try:
         conn = get_db_connection()
         cur = conn.cursor()
@@ -162,6 +231,15 @@ def handle_submission():
         return jsonify({'error': str(e)}), 500
     finally:
         if conn: conn.close()
+
+# --- Rota "coringa" para servir TODOS os outros arquivos ---
+# Esta rota DEVE ser a última, antes do 'if __name__'
+@app.route('/<path:path>')
+def serve_static_files(path):
+    # Medida de segurança: não permite que a rota acesse o próprio app.py
+    if path == "app.py":
+        return "Not Found", 404
+    return send_from_directory('.', path)
 
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 5000))
