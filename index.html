@@ -447,11 +447,28 @@
         }
 
         .fair-cards-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            display: flex;
+            overflow-x: auto;
+            scroll-snap-type: x mandatory;
             gap: 35px;
-            justify-content: center;
-            min-height: 450px; /* Reserve space for cards */
+            padding-bottom: 20px;
+            min-height: 450px;
+            scrollbar-width: thin;
+            scrollbar-color: var(--medium-gray) transparent;
+        }
+
+        .fair-cards-container::-webkit-scrollbar {
+            height: 8px;
+        }
+        .fair-cards-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .fair-cards-container::-webkit-scrollbar-thumb {
+            background: var(--medium-gray);
+            border-radius: 10px;
+        }
+        .fair-cards-container::-webkit-scrollbar-thumb:hover {
+            background: var(--dark-gray);
         }
 
         /* --- CARD STYLES (COMBINED) --- */
@@ -465,6 +482,8 @@
             display: flex;
             flex-direction: column;
             border: 1px solid var(--medium-gray);
+            scroll-snap-align: start;
+            flex: 0 0 320px;
         }
 
         .fair-card:hover {
@@ -600,7 +619,7 @@
 
         /* --- NOVA SEÇÃO: ESTILOS DO CARROSSEL PRÓXIMAS FEIRAS --- */
         .proximas-feiras {
-            padding: 60px 20px 80px;
+            padding: 30px 20px 80px;
             background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('proximas.png');
             background-size: cover;
             background-position: center;
@@ -764,32 +783,23 @@
             #input-endereco { min-width: auto; width: 100%; }
             #btn-buscar-endereco { width: 100%; margin-top: 10px; }
             #address-suggestions { top: 110px; }
-            .fair-cards-container { grid-template-columns: 1fr; gap: 25px; }
-            .fair-card { max-width: 450px; margin: 0 auto; }
-
-            /* INÍCIO DA ALTERAÇÃO: Estilos do Carrossel para Feira Livre no Mobile */
-            .fair-cards-container.mobile-carousel {
-                grid-template-columns: none; /* Remove a configuração de grid */
-                display: flex;
-                overflow-x: auto; /* Permite o scroll horizontal */
-                scroll-snap-type: x mandatory; /* Efeito de "ímã" ao rolar */
+            
+            .fair-cards-container {
+                gap: 15px;
                 padding: 0 20px 20px 20px;
                 margin: 0 -20px;
-                gap: 15px; /* Espaçamento entre os cards */
-                scrollbar-width: none; /* Oculta a barra de rolagem (Firefox) */
+                scrollbar-width: none;
             }
 
-            .fair-cards-container.mobile-carousel::-webkit-scrollbar {
-                display: none; /* Oculta a barra de rolagem (Chrome, Safari) */
+            .fair-cards-container::-webkit-scrollbar {
+                display: none;
             }
             
-            .fair-cards-container.mobile-carousel .fair-card {
-                scroll-snap-align: center; /* Centraliza o card no "ímã" */
-                flex: 0 0 85%; /* Define a largura de cada card */
+            .fair-card {
+                scroll-snap-align: center;
+                flex: 0 0 85%;
                 max-width: 85%;
-                margin: 0;
             }
-            /* FIM DA ALTERAÇÃO */
 
             /* Responsividade para o novo carrossel */
             .carousel-container {
@@ -818,7 +828,7 @@
 
         /* --- NOVOS ESTILOS PARA O BLOG --- */
         .blog-section { 
-            padding: 80px 20px; 
+            padding: 40px 20px 80px; 
             background-color: var(--white); /* Fundo branco, como solicitado */
         }
         .blog-section h2 { 
@@ -985,8 +995,6 @@
                     <div class="carousel-container" id="blogCarouselContainer">
                         <!-- Cards do blog serão injetados aqui pelo JS -->
                     </div>
-                    <button class="carousel-btn prev" id="prevBlogPost">&#10094;</button>
-                    <button class="carousel-btn next" id="nextBlogPost">&#10095;</button>
                 </div>
             </div>
         </section>
@@ -1042,8 +1050,6 @@
             
             // --- Adicione estas linhas abaixo das constantes existentes ---
             const blogCarouselContainer = document.getElementById('blogCarouselContainer');
-            const prevBlogPostBtn = document.getElementById('prevBlogPost');
-            const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
             // --- API and Data Handling ---
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
@@ -1243,12 +1249,6 @@
             
             function renderFairs(category) {
                 activeCategory = category;
-
-                if (category === 'livre') {
-                    fairCardsContainer.classList.add('mobile-carousel');
-                } else {
-                    fairCardsContainer.classList.remove('mobile-carousel');
-                }
 
                 let fairsToProcess = [...allFairsData[category]];
                 
@@ -1450,22 +1450,6 @@
                 const cardWidth = card.offsetWidth;
                 const gap = 35; // O mesmo gap definido no CSS
                 proximasFeirasContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
-            });
-            
-            prevBlogPostBtn.addEventListener('click', () => {
-                const card = blogCarouselContainer.querySelector('.blog-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35;
-                blogCarouselContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
-            });
-
-            nextBlogPostBtn.addEventListener('click', () => {
-                const card = blogCarouselContainer.querySelector('.blog-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35;
-                blogCarouselContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
             });
 
             // --- Initial Page Load ---
