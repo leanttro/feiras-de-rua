@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Programa Fundadores - Feiras de Rua SP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <style>
+        /* Copiando os estilos principais do seu index.html para consistência */
+        :root {
+            --primary-green: #4CAF50;
+            --dark-green: #388E3C;
+            --light-green: #DCEDC8;
+            --light-gray: #f8f9fa;
+            --medium-gray: #e0e0e0;
+            --dark-gray: #343a40;
+            --text-color: #495057;
+            --white: #ffffff;
+            --shadow-light: rgba(0, 0, 0, 0.08);
+            --shadow-medium: rgba(0, 0, 0, 0.15);
+            --accent-gold: #FFC107;
+        }
+
+        body {
+            font-family: 'Roboto', sans-serif;
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            background-color: var(--light-gray);
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        /* CABEÇALHO E RODAPÉ (Padrão do seu site) */
+        header {
+            background-color: var(--primary-green);
+            padding: 15px 0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: relative;
+        }
+        header .logo { display: flex; align-items: center; padding-left: 20px; }
+        header .logo img { height: 60px; margin-right: 10px; }
+        header nav.desktop-nav ul { list-style: none; margin: 0; padding: 0; display: flex; padding-right: 20px; }
+        header nav.desktop-nav ul li { margin-left: 35px; }
+        header nav.desktop-nav ul li a { text-decoration: none; color: var(--white); font-weight: 500; transition: color 0.3s ease; }
+        header nav.desktop-nav ul li a:hover { color: var(--light-green); }
+        .hamburger-menu { display: none; font-size: 1.8em; color: var(--white); cursor: pointer; padding: 10px 20px; z-index: 1001; }
+        .mobile-nav-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.8); z-index: 1000; justify-content: center; align-items: center; opacity: 0; transition: opacity 0.3s ease; }
+        .mobile-nav-overlay.active { display: flex; opacity: 1; }
+        .mobile-nav-overlay nav ul { flex-direction: column; text-align: center; padding: 0; list-style: none; }
+        .mobile-nav-overlay nav ul li { margin: 20px 0; }
+        .mobile-nav-overlay nav ul li a { color: var(--white); font-size: 1.8em; font-weight: 700; text-decoration: none; }
+        footer { background-color: #212529; color: var(--medium-gray); text-align: center; padding: 25px; font-size: 0.9em; }
+        footer .linkedin-btn { display: inline-flex; align-items: center; gap: 8px; background-color: #0077B5; color: white; padding: 8px 15px; border-radius: 6px; text-decoration: none; font-weight: 500; transition: background-color 0.3s ease; margin-top: 15px; }
+        footer .linkedin-btn:hover { background-color: #005582; }
+
+        /* SEÇÃO HERO (Adaptada do seu index.html) */
+        .hero-section {
+            color: var(--white);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            height: 550px; /* Altura ajustável */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('anuncie.png') no-repeat center center/cover;
+        }
+
+        .hero-banner {
+            background-color: rgba(76, 175, 80, 0.85);
+            padding: 20px 40px;
+            display: inline-block;
+            border-radius: 8px;
+            margin-bottom: 30px;
+        }
+
+        .hero-section h1 {
+            font-size: 2.8em;
+            margin: 0;
+            font-weight: 700;
+            line-height: 1.2;
+            color: var(--white);
+        }
+
+        .hero-section h1 .subtitle {
+            display: block;
+            font-size: 0.6em;
+            font-weight: 400;
+            margin-top: 5px;
+        }
+
+        .hero-section p.hero-subtext {
+            font-size: 1.3em;
+            max-width: 700px;
+            margin: 0 auto;
+            line-height: 1.7;
+            text-shadow: 1px 1px 3px rgba(0,0,0,0.5);
+        }
+
+        /* SEÇÃO DO CARD */
+        .section {
+            padding: 60px 0;
+            margin-top: -80px; /* Efeito para sobrepor o Hero */
+            position: relative;
+            z-index: 10;
+        }
+        
+        .plan-card {
+            background: var(--white);
+            border: 2px solid var(--accent-gold);
+            border-radius: 12px;
+            padding: 40px;
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        .plan-card h3 { font-size: 2em; color: var(--accent-gold); margin: 0 0 15px 0; }
+        .plan-card .price { font-size: 1.8em; font-weight: 700; color: var(--dark-green); margin-bottom: 30px; }
+        .plan-card p { font-size: 1.1em; }
+        .plan-card ul { list-style: none; padding: 0; margin: 30px 0; text-align: left; display: inline-block; }
+        .plan-card ul li { margin-bottom: 15px; display: flex; align-items: center; gap: 10px; font-size: 1.1em; }
+        .plan-card ul li i { color: var(--primary-green); }
+        .cta-button {
+            display: inline-block;
+            background-color: var(--accent-gold);
+            color: var(--dark-gray);
+            padding: 15px 40px;
+            border-radius: 8px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 1.2em;
+            transition: all 0.3s ease;
+        }
+        .cta-button:hover { background-color: #e6b300; transform: translateY(-3px); }
+
+        /* RESPONSIVIDADE */
+        @media (max-width: 768px) {
+            header .logo img { height: 50px; }
+            .hero-section { height: 450px; }
+            .hero-section h1 { font-size: 2.2em; }
+            .hero-section p.hero-subtext { font-size: 1.1em; padding: 0 10px; }
+            .section { padding: 40px 0; margin-top: -60px; }
+            .plan-card { padding: 30px; }
+        }
+        @media (max-width: 992px) {
+            nav.desktop-nav { display: none; }
+            .hamburger-menu { display: block; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">
+            <a href="index.html"><img src="assets/logo.png" alt="Logo FeirasSP"></a>
+        </div>
+        <nav class="desktop-nav">
+            <ul>
+                <li><a href="index.html">Início</a></li>
+                <li><a href="gastronomicas.html">Gastronômicas</a></li>
+                <li><a href="feiras-livres.html">Feiras Livres</a></li>
+                <li><a href="artesanais.html">Artesanais</a></li>
+                <!-- ALTERAÇÃO: Removido o estilo extra e o "Aqui" -->
+                <li><a href="anuncie.html">Anuncie</a></li>
+                <li><a href="contato.html">Contato</a></li>
+            </ul>
+        </nav>
+        <div class="hamburger-menu" id="hamburgerMenu">
+            <i class="fas fa-bars"></i>
+        </div>
+        <div class="mobile-nav-overlay" id="mobileNavOverlay">
+            <div class="hamburger-menu" id="closeMobileMenu">
+                <i class="fas fa-times"></i>
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Início</a></li>
+                    <li><a href="gastronomicas.html">Gastronômicas</a></li>
+                    <li><a href="feiras-livres.html">Feiras Livres</a></li>
+                    <li><a href="artesanais.html">Artesanais</a></li>
+                    <!-- ALTERAÇÃO: Removido o "Aqui" -->
+                    <li><a href="anuncie.html">Anuncie</a></li>
+                    <li><a href="contato.html">Contato</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section class="hero-section">
+            <div class="container">
+                <div class="hero-banner">
+                    <h1>Faça Parte do Nosso <span class="subtitle">Programa de Fundadores</span></h1>
+                </div>
+                <p class="hero-subtext">Estamos selecionando as melhores feiras de São Paulo para um lançamento exclusivo. Tenha sua feira em destaque, de graça.</p>
+            </div>
+        </section>
+
+        <section class="section">
+            <div class="container">
+                <div class="plan-card">
+                    <i class="fas fa-star" style="font-size: 2.5em; color: var(--accent-gold); margin-bottom: 20px;"></i>
+                    <h3>Destaque Premium (Convite)</h3>
+                    <div class="price">Custo: Grátis por 60 dias</div>
+                    <p>Para o lançamento do nosso site, estamos oferecendo todos os benefícios do nosso plano premium, sem custo algum.</p>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> <b>Posição Privilegiada</b> no topo do seu bairro.</li>
+                        <li><i class="fas fa-check-circle"></i> <b>Selo "Feira Fundadora"</b> de exclusividade.</li>
+                        <li><i class="fas fa-check-circle"></i> Galeria de Fotos e Redes Sociais.</li>
+                        <li><i class="fas fa-check-circle"></i> Botão de WhatsApp para contato direto.</li>
+                        <li><i class="fas fa-check-circle"></i> Divulgação nas nossas redes sociais.</li>
+                    </ul>
+                    <p>Esta é uma oportunidade única e por tempo limitado. Se você tem uma feira incrível, queremos você conosco.</p>
+                    <a href="contato.html" class="cta-button">Quero Ser um Fundador!</a>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 - FeirasDeRua.com - Todos os direitos reservados.</p>
+            <div class="footer-bottom">
+                <p class="developer-credit">Desenvolvido por Leandro Andrade</p>
+                <a href="https://www.linkedin.com/in/leanttro" target="_blank" class="linkedin-btn">
+                    <i class="fab fa-linkedin"></i> LinkedIn
+                </a>
+            </div>
+        </div>
+    </footer>
+    
+    <script>
+        // Script do menu mobile (copiado do seu index.html)
+        document.addEventListener('DOMContentLoaded', () => {
+            const hamburgerMenu = document.getElementById('hamburgerMenu');
+            const mobileNavOverlay = document.getElementById('mobileNavOverlay');
+            const closeMobileMenu = document.getElementById('closeMobileMenu');
+            
+            hamburgerMenu.addEventListener('click', () => mobileNavOverlay.classList.add('active'));
+            closeMobileMenu.addEventListener('click', () => mobileNavOverlay.classList.remove('active'));
+        });
+    </script>
+
+</body>
+</html>
+
