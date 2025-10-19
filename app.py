@@ -6,6 +6,7 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 import datetime
 import traceback # Importar para logar erros detalhados
+import decimal # Adicionado para converter tipos de dados do banco
 
 load_dotenv()
 
@@ -310,23 +311,21 @@ def process_feiras_com_slug(feiras_raw, tipo_rota):
     feiras_processadas = []
     for feira in feiras_raw:
         feira_dict = dict(feira)
-        # Formata datas/horas para ISO standard para o JSON
+        # Formata datas/horas para ISO e converte Decimals para float
         for key, value in feira_dict.items():
             if isinstance(value, (datetime.date, datetime.time)):
                 feira_dict[key] = value.isoformat() if value else None
+            elif isinstance(value, decimal.Decimal):
+                feira_dict[key] = float(value)
 
-        # --- PONTO CRÍTICO ---
-        # Tenta pegar o slug, se não existir, loga um aviso e pula essa feira
+        # Tenta pegar o slug, se não existir, loga um aviso
         slug = feira_dict.get('slug')
         if slug:
             feira_dict['url'] = f'/{tipo_rota}/{slug}'
             feiras_processadas.append(feira_dict)
         else:
             print(f"AVISO: Feira ID {feira_dict.get('id')} na tabela '{tipo_rota}' não possui um 'slug'. Não será incluída na API.")
-            # Você pode decidir incluir com uma URL '#' ou pular completamente
-            # feira_dict['url'] = '#' # Exemplo se quiser incluir mesmo sem slug
-            # feiras_processadas.append(feira_dict)
-
+            
     return feiras_processadas
 
 @app.route('/api/gastronomicas')
@@ -335,8 +334,8 @@ def get_gastronomicas():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # A query agora seleciona explicitamente as colunas necessárias, incluindo slug
-        cur.execute('SELECT id, nome_feira, descricao, imagem_url, latitude, longitude, data_inicio, data_fim, horario_inicio, horario_fim, dia_semana, rua, bairro, regiao, slug FROM gastronomicas ORDER BY id;')
+        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
+        cur.execute('SELECT * FROM gastronomicas ORDER BY id;')
         feiras_raw = cur.fetchall()
         cur.close()
         feiras_processadas = process_feiras_com_slug(feiras_raw, 'gastronomicas')
@@ -361,8 +360,8 @@ def get_artesanais():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # A query agora seleciona explicitamente as colunas necessárias, incluindo slug
-        cur.execute('SELECT id, nome_feira, descricao, imagem_url, latitude, longitude, data_inicio, data_fim, horario_inicio, horario_fim, dia_semana, rua, bairro, regiao, slug FROM artesanais ORDER BY id;')
+        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
+        cur.execute('SELECT * FROM artesanais ORDER BY id;')
         feiras_raw = cur.fetchall()
         cur.close()
         feiras_processadas = process_feiras_com_slug(feiras_raw, 'artesanais')
@@ -387,8 +386,8 @@ def get_outrasfeiras():
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # A query agora seleciona explicitamente as colunas necessárias, incluindo slug
-        cur.execute('SELECT id, nome_feira, descricao, imagem_url, latitude, longitude, data_inicio, data_fim, horario_inicio, horario_fim, dia_semana, rua, bairro, regiao, slug FROM outrasfeiras ORDER BY id;')
+        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
+        cur.execute('SELECT * FROM outrasfeiras ORDER BY id;')
         feiras_raw = cur.fetchall()
         cur.close()
         feiras_processadas = process_feiras_com_slug(feiras_raw, 'outrasfeiras')
@@ -477,3 +476,4 @@ if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     # debug=False é crucial para produção no Render. Use True só localmente.
     app.run(host="0.0.0.0", port=port, debug=False)
+
