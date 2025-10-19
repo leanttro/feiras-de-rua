@@ -265,6 +265,34 @@ def get_artesanais():
     finally:
         if conn: conn.close()
 
+@app.route('/api/outrasfeiras')
+def get_outrasfeiras():
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        # Busca na nova tabela 'outrasfeiras'
+        cur.execute('SELECT * FROM outrasfeiras ORDER BY id;')
+        feiras_raw = cur.fetchall()
+        cur.close()
+        
+        feiras_processadas = []
+        for feira in feiras_raw:
+            feira_dict = dict(feira)
+            for key, value in feira_dict.items():
+                if isinstance(value, (datetime.date, datetime.time)):
+                    feira_dict[key] = value.isoformat() if value else None
+            # Assumindo que 'outrasfeiras' também terá uma página de detalhes
+            feira_dict['url'] = f'/outrasfeiras/{feira_dict["slug"]}' 
+            feiras_processadas.append(feira_dict)
+            
+        return jsonify(feiras_processadas)
+    except Exception as e:
+        print(f"Erro no endpoint /api/outrasfeiras: {e}")
+        return jsonify({'error': str(e)}), 500
+    finally:
+        if conn: conn.close()
+
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
     # ... (Seu código original, sem alterações) ...
