@@ -350,7 +350,7 @@
         }
         /* SLIDER STYLES END */
         
-        /* --- ADDRESS SEARCH SECTION (FROM GASTRONOMICAS.HTML) --- */
+        /* --- ADDRESS SEARCH SECTION --- */
         #busca-local {
             padding: 50px 0;
             background-color: var(--white);
@@ -491,7 +491,6 @@
             box-shadow: var(--shadow-medium);
         }
 
-        /* Style for Gastronomica/Artesanal cards */
         .fair-card-image {
             height: 200px;
             background-color: var(--light-gray);
@@ -506,7 +505,6 @@
             margin-top: 5px;
         }
 
-        /* Style for Feira Livre cards */
         .fair-card-header {
             background-color: var(--primary-green);
             color: var(--white);
@@ -517,7 +515,6 @@
             font-size: 1.4em;
         }
 
-        /* Common content style */
         .fair-card-content {
             padding: 20px;
             display: flex;
@@ -530,15 +527,14 @@
             font-size: 1.4em;
             color: var(--dark-gray);
         }
-        /* UPDATED: Based on feiras-livres.html for consistency */
         .fair-card-content p {
             margin: 0;
             font-size: 1em;
             display: flex;
-            align-items: center; /* Changed to center */
+            align-items: center; 
             gap: 10px;
             color: var(--text-color);
-            min-height: 2.5em; /* Ensures enough space for two lines of text, keeping cards aligned */
+            min-height: 2.5em; 
         }
         .fair-card-content p i {
             color: var(--primary-green);
@@ -1049,12 +1045,11 @@
 
         <section class="featured-fairs">
             <div class="container">
-                <!-- NEW Slicer Filter -->
-                <div class="slicer-filter-container">
-                    <button class="slicer-btn active" data-category="gastronomica">Gastronômicas</button>
-                    <button class="slicer-btn" data-category="artesanal">Artesanais</button>
-                    <button class="slicer-btn" data-category="livre">Feiras Livres</button>
-                    <button class="slicer-btn" data-category="outrasfeiras">Outras Feiras</button>
+                
+                <!-- ATUALIZADO: Container para os filtros dinâmicos -->
+                <div class="slicer-filter-container" id="slicer-filter-container">
+                    <!-- Botões do filtro serão injetados aqui pelo JS -->
+                    <p class="loading-message">Carregando filtros...</p>
                 </div>
 
                 <!-- Cards Container -->
@@ -1063,8 +1058,8 @@
                 </div>
 
                 <!-- "Ver Todas" Button -->
-                <div class="see-all-container">
-                    <a href="gastronomicas.html" class="button" id="seeAllBtn">Ver Todas</a>
+                <div class="see-all-container" style="display: none;"> <!-- Começa escondido -->
+                    <a href="#" class="button" id="seeAllBtn">Ver Todas</a>
                 </div>
             </div>
         </section>
@@ -1113,6 +1108,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            
             // --- General page elements ---
             const hamburgerMenu = document.getElementById('hamburgerMenu');
             const mobileNavOverlay = document.getElementById('mobileNavOverlay');
@@ -1120,7 +1116,7 @@
             const mobileNavLinks = document.querySelectorAll('.mobile-nav-overlay nav ul li a');
             
             // --- Slicer & Card Elements ---
-            const slicerBtns = document.querySelectorAll('.slicer-btn');
+            const slicerContainer = document.getElementById('slicer-filter-container');
             const fairCardsContainer = document.getElementById('fairCardsContainer');
             const seeAllBtn = document.getElementById('seeAllBtn');
             const seeAllContainer = document.querySelector('.see-all-container');
@@ -1135,147 +1131,45 @@
             const suggestionsContainer = document.getElementById('address-suggestions');
             const btnBuscarEndereco = document.getElementById('btn-buscar-endereco');
 
-            // --- NOVA SEÇÃO: Próximas Feiras Carousel Elements ---
+            // --- Carousel Elements ---
             const proximasFeirasContainer = document.getElementById('proximasFeirasCarousel');
             const prevProximaFeiraBtn = document.getElementById('prevProximaFeira');
             const nextProximaFeiraBtn = document.getElementById('nextProximaFeira');
-            
-            // --- Blog Carousel Elements ---
             const blogCarouselContainer = document.getElementById('blogCarouselContainer');
             const prevBlogPostBtn = document.getElementById('prevBlogPost');
             const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
-            // --- API and Data Handling ---
-            const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
-            
-            const apiEndpoints = {
-                gastronomica: `${BASE_API_URL}/api/gastronomicas`,
-                artesanal: `${BASE_API_URL}/api/artesanais`,
-                livre: `${BASE_API_URL}/api/feiras`,
-                outrasfeiras: `${BASE_API_URL}/api/outrasfeiras`,
-                blog: `${BASE_API_URL}/api/blog` 
-            };
+            // --- State and Config ---
+            const BASE_API_URL = ''; // Usar URLs relativas, já que o JS está no mesmo domínio
+            let userCoordinates = null;
+            let currentFairsData = []; // Armazena os dados da categoria ativa
 
-            const allFairsData = {
-                gastronomica: [],
-                artesanal: [],
-                livre: [],
-                outrasfeiras: [],
-                blog: []
-            };
-
-            let activeCategory = 'gastronomica';
-            let userCoordinates = null; // State for user location
-
+            // --- Funções Auxiliares ---
             async function fetchWithRetry(url, options = {}, maxRetries = 3) {
                 for (let i = 0; i < maxRetries; i++) {
                     try {
-                        const response = await fetch(url, {...options, mode: 'cors' });
+                        const response = await fetch(url, options);
                         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
-                        return response;
+                        return response.json();
                     } catch (error) {
-                        if (i === maxRetries - 1) throw error;
+                        if (i === maxRetries - 1) {
+                            console.error(`Falha final ao buscar ${url}:`, error);
+                            throw error;
+                        }
                         await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
                     }
                 }
             }
 
-            async function loadAllFairs() {
-                fairCardsContainer.innerHTML = '<p class="loading-message">A carregar feiras...</p>';
-
-                const endpointsToFetch = [
-                    { key: 'gastronomica', url: apiEndpoints.gastronomica },
-                    { key: 'artesanal', url: apiEndpoints.artesanal },
-                    { key: 'livre', url: apiEndpoints.livre },
-                    { key: 'outrasfeiras', url: apiEndpoints.outrasfeiras },
-                    { key: 'blog', url: apiEndpoints.blog }
-                ];
-
-                const promises = endpointsToFetch.map(ep => fetchWithRetry(ep.url));
-                const results = await Promise.allSettled(promises);
-
-                let hasCriticalError = false;
-
-                for (let i = 0; i < results.length; i++) {
-                    const result = results[i];
-                    const key = endpointsToFetch[i].key;
-
-                    if (result.status === 'fulfilled') {
-                        try {
-                            const data = await result.value.json();
-                            allFairsData[key] = data;
-                        } catch (jsonError) {
-                            console.error(`AVISO: Falha ao processar JSON do endpoint '${key}'. A resposta pode não ser um JSON válido.`, jsonError);
-                            // Não define hasCriticalError aqui, permite que o site continue com os dados que funcionaram
-                        }
-                    } else { // status === 'rejected'
-                        console.error(`AVISO: Falha ao buscar dados do endpoint '${key}'. O endpoint pode estar offline.`, result.reason);
-                        // Não quebra o site, apenas avisa na consola
-                    }
-                }
-
-                // Renderiza o site com os dados que foram carregados com sucesso
-                try {
-                    renderFairs(activeCategory);
-                    setupProximasFeirasCarousel();
-                    setupBlogCarousel();
-                } catch (renderError) {
-                    console.error("Erro ao renderizar componentes:", renderError);
-                    fairCardsContainer.innerHTML = '<p class="error-message">Ocorreu um erro ao exibir os dados na página.</p>';
-                }
-            }
-
-            function createBlogPostCard(post) {
-                const subtitulo = post.subtitulo || '';
-                const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
-                return `
-                    <div class="blog-card">
-                        <a href="${post.url}">
-                            <div class="blog-card-image">
-                                <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
-                            </div>
-                            <div class="blog-card-content">
-                                <h3>${post.titulo}</h3>
-                                <p>${shortSubtitulo}</p>
-                                <span class="button">Leia Mais</span>
-                            </div>
-                        </a>
-                    </div>
-                `;
-            }
-
-            function setupBlogCarousel() {
-                if (!allFairsData.blog || allFairsData.blog.length === 0) {
-                    blogCarouselContainer.innerHTML = '<p class="info-message" style="color: var(--dark-gray); width: 100%; text-align: center;">Nenhum post no blog encontrado ainda.</p>';
-                    return;
-                }
-                blogCarouselContainer.innerHTML = '';
-                allFairsData.blog.forEach(post => {
-                    blogCarouselContainer.innerHTML += createBlogPostCard(post);
-                });
-            }
-
-            // --- Card Creation Functions ---
-            function createGenericCard(feira) { // Renamed for broader use
+            // --- Funções de Criação de Cards ---
+            function createGenericCard(feira) {
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
                 const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
-                const shortDescription = fullDescription.split('.')[0] + '.';
-                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
+                const shortDescription = fullDescription.length > 100 ? fullDescription.substring(0, 97) + '...' : fullDescription;
+                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(1)} km de distância</p>` : '';
 
-                let dateInfo;
-                if (feira.data_inicio) {
-                    const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
-                    const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
-                    if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
-                        const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
-                        dateInfo = `De ${inicio} a ${fim}`;
-                    } else {
-                        dateInfo = inicio;
-                    }
-                } else {
-                    dateInfo = feira.dia_semana || 'Não informado';
-                }
+                let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
 
                 return `
                     <div class="fair-card" data-id="${feira.id}">
@@ -1294,158 +1188,150 @@
                     </div>
                 `;
             }
-
-            function createFeiraLivreCard(feira) {
-                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` : '';
-                 return `
-                    <div class="fair-card" data-id="${feira.id}">
-                        <div class="fair-card-header">
-                            <h3>${feira.nome_feira ?? 'Nome não informado'}</h3>
-                        </div>
-                        <div class="fair-card-content">
-                            ${distanciaHtml}
-                            <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro ?? 'Bairro não informado'}</p>
-                            <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
-                            <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
-                            <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
-                            <a href="#" class="button ver-mais-btn">Ver mais</a>
-                        </div>
-                    </div>
-                `;
-            }
             
-            function setupProximasFeirasCarousel() {
-                const combinedFairs = [
-                    ...(allFairsData.gastronomica || []), 
-                    ...(allFairsData.artesanal || []), 
-                    ...(allFairsData.outrasfeiras || [])
-                ];
+            // --- Funções Principais de Carregamento e Renderização ---
 
-                if (combinedFairs.length === 0) {
-                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma próxima feira encontrada.</p>';
-                    return;
-                }
-                
-                const hoje = new Date();
-                hoje.setHours(0, 0, 0, 0);
-
-                const upcomingFairs = combinedFairs
-                    .filter(feira => {
-                        if (!feira.data_inicio) return false; // Feiras sem data de início não são consideradas
-                        const dataFinal = feira.data_fim ? new Date(feira.data_fim + 'T00:00:00') : new Date(feira.data_inicio + 'T00:00:00');
-                        return dataFinal >= hoje;
-                    })
-                    .map(feira => ({
-                        ...feira,
-                        startDateObj: new Date(feira.data_inicio + 'T00:00:00')
-                    }))
-                    .sort((a, b) => a.startDateObj - b.startDateObj);
-
-                proximasFeirasContainer.innerHTML = '';
-                if (upcomingFairs.length > 0) {
-                    upcomingFairs.forEach(fair => {
-                        // Usando a função genérica aqui também
-                        proximasFeirasContainer.innerHTML += createGenericCard(fair);
-                    });
-                } else {
-                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma próxima feira com data definida foi encontrada.</p>';
-                }
-            }
-            
-            function renderFairs(category) {
-                activeCategory = category;
-                let fairsToProcess = [...(allFairsData[category] || [])];
-
-                // Lógica de distância
-                if (userCoordinates) {
-                    fairsToProcess = fairsToProcess.map(feira => {
-                        const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
-                        const distancia = haversineDistance(userCoordinates, feiraLocation);
-                        return { ...feira, distancia };
-                    }).sort((a, b) => a.distancia - b.distancia);
-                }
-
-                fairCardsContainer.innerHTML = '';
-
-                // Lógica de exibição (slice ou não)
-                if (category === 'gastronomica' || category === 'artesanal') {
-                    const fairsToDisplay = fairsToProcess.slice(0, 3);
-                    if (fairsToDisplay.length > 0) {
-                        fairsToDisplay.forEach(fair => {
-                            fairCardsContainer.innerHTML += createGenericCard(fair);
-                        });
+            async function loadSlicerFilters() {
+                try {
+                    const tipos = await fetchWithRetry('/api/feiras/tipos');
+                    slicerContainer.innerHTML = ''; // Limpa a mensagem "Carregando..."
+                    
+                    if (!tipos || tipos.length === 0) {
+                        slicerContainer.innerHTML = '<p class="info-message">Nenhum tipo de feira encontrado.</p>';
+                        return;
                     }
-                    seeAllContainer.style.display = 'block';
-                    const pageMap = {
-                        'gastronomica': 'gastronomicas.html',
-                        'artesanal': 'artesanais.html'
-                    };
-                    seeAllBtn.href = pageMap[category];
-                } else { // Para 'livre' e 'outrasfeiras'
-                    if (fairsToProcess.length > 0) {
-                        fairsToProcess.forEach(fair => {
-                            let cardHtml = '';
-                            if (category === 'livre') {
-                                cardHtml = createFeiraLivreCard(fair);
-                            } else { // 'outrasfeiras'
-                                cardHtml = createGenericCard(fair);
-                            }
-                            fairCardsContainer.innerHTML += cardHtml;
-                        });
-                    }
-                    seeAllContainer.style.display = 'none';
-                }
 
-                if (fairCardsContainer.innerHTML === '') {
-                     fairCardsContainer.innerHTML = `<p class="info-message">Nenhuma feira encontrada para a categoria "${category}".</p>`;
-                }
-            }
+                    tipos.forEach((tipo, index) => {
+                        const btn = document.createElement('button');
+                        btn.className = 'slicer-btn';
+                        btn.textContent = tipo; // Ex: "Gastronômica"
+                        btn.dataset.tipo = tipo; // Armazena o nome original para a API
 
-            // --- Modal Logic (Unificada) ---
-            function abrirModal(feira) {
-                const modalBody = document.getElementById('modal-body');
-                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
-                
-                if (activeCategory === 'livre') {
-                     modalBody.innerHTML = `
-                        <h2>${feira.nome_feira ?? 'Nome não informado'}</h2>
-                        ${distanciaHtml}
-                        <p><i class="fas fa-map-marked-alt"></i><strong>Endereço:</strong> ${feira.endereco || 'Não informado'}</p>
-                        <p><i class="fas fa-map-pin"></i><strong>Bairro:</strong> ${feira.bairro || 'Não informado'}</p>
-                        <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_feira || 'Não informado'}</p>
-                        <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h (estimado)</p>
-                        <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
-                    `;
-                } else { // Para gastronomicas, artesanais, outrasfeiras
-                    const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                    const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
-                    const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
-                    let dateInfo;
-                    if (feira.data_inicio) {
-                        const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
-                        const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
-                        if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
-                            const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
-                            dateInfo = `De ${inicio} a ${fim}`;
-                        } else {
-                            dateInfo = inicio;
+                        // Opcional: Adicionar um botão 'Todos' no início
+                        if (index === 0) {
+                           // Adiciona o botão 'Todos'
+                           const allBtn = document.createElement('button');
+                           allBtn.className = 'slicer-btn active';
+                           allBtn.textContent = 'Todas';
+                           allBtn.dataset.tipo = ''; // Sem filtro
+                           allBtn.addEventListener('click', handleSlicerClick);
+                           slicerContainer.appendChild(allBtn);
                         }
-                    } else {
-                        dateInfo = feira.dia_semana || 'Não informado';
+                        
+                        btn.addEventListener('click', handleSlicerClick);
+                        slicerContainer.appendChild(btn);
+                    });
+                    
+                    // Carrega a categoria inicial (Todas)
+                    await fetchAndRenderFairs('');
+
+                } catch (error) {
+                    slicerContainer.innerHTML = '<p class="error-message">Erro ao carregar filtros.</p>';
+                }
+            }
+
+            function handleSlicerClick(event) {
+                const clickedBtn = event.target;
+                // Remove a classe 'active' de todos os botões
+                slicerContainer.querySelectorAll('.slicer-btn').forEach(btn => btn.classList.remove('active'));
+                // Adiciona a classe 'active' ao botão clicado
+                clickedBtn.classList.add('active');
+                
+                const tipoParaFiltrar = clickedBtn.dataset.tipo;
+                fetchAndRenderFairs(tipoParaFiltrar);
+            }
+
+            async function fetchAndRenderFairs(tipo) {
+                fairCardsContainer.innerHTML = '<p class="loading-message">A carregar feiras...</p>';
+                seeAllContainer.style.display = 'none'; // Esconde o botão "Ver Todas" por padrão
+                
+                try {
+                    let apiUrl = '/api/feiras';
+                    if (tipo) {
+                        apiUrl += `?tipo=${encodeURIComponent(tipo)}`;
+                    }
+                    
+                    let fairs = await fetchWithRetry(apiUrl);
+                    currentFairsData = fairs; // Atualiza o estado global com os dados atuais
+                    
+                    if (userCoordinates) {
+                         currentFairsData.forEach(feira => {
+                            const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
+                            feira.distancia = haversineDistance(userCoordinates, feiraLocation);
+                        });
+                        currentFairsData.sort((a, b) => a.distancia - b.distancia);
+                    }
+                    
+                    fairCardsContainer.innerHTML = ''; // Limpa o container
+                    if (currentFairsData.length === 0) {
+                        fairCardsContainer.innerHTML = '<p class="info-message">Nenhuma feira encontrada para esta categoria.</p>';
+                        return;
                     }
 
-                    modalBody.innerHTML = `
-                        <img class="modal-image" src="${feira.imagem_url || 'https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
-                        <h2 class="modal-title">${feira.nome_feira}</h2>
-                        <p class="modal-description">${feira.descricao || 'Descrição não disponível.'}</p>
-                        ${distanciaHtml}
-                        <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
-                        <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                        <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}, <strong>${regiaoFormatada}</strong></p>
-                        <a href="${googleMapsUrl}" target="_blank" class="button maps-button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}>
-                            <i class="fas fa-map-marked-alt"></i> Ver no mapa
-                        </a>`;
+                    // Limita a exibição a 4 cards na página inicial
+                    const fairsToDisplay = currentFairsData.slice(0, 4);
+                    fairsToDisplay.forEach(feira => {
+                        fairCardsContainer.innerHTML += createGenericCard(feira);
+                    });
+                    
+                    // Mostra o botão "Ver Todas" se houver mais de 4 feiras e um tipo for selecionado
+                    if (currentFairsData.length > 4 && tipo) {
+                        const pageMap = {
+                            'Gastronômica': 'gastronomicas.html',
+                            'Artesanal': 'artesanais.html',
+                            'Cultural': 'artesanais.html', // Exemplo
+                            'Feira Livre': 'feiras-livres.html'
+                            // Adicione outros mapeamentos conforme necessário
+                        };
+                        const linkPagina = pageMap[tipo]; // Encontra o link correspondente
+                        if(linkPagina){
+                            seeAllBtn.href = linkPagina;
+                            seeAllContainer.style.display = 'block';
+                        }
+                    }
+
+                } catch (error) {
+                    fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar as feiras. Tente novamente mais tarde.</p>';
                 }
+            }
+            
+            // Lógica do Modal (permanece a mesma, mas usa `currentFairsData`)
+            fairCardsContainer.addEventListener('click', (event) => {
+                const verMaisBtn = event.target.closest('.ver-mais-btn');
+                if (verMaisBtn) {
+                    event.preventDefault();
+                    const card = event.target.closest('.fair-card');
+                    const feiraId = card.dataset.id;
+                    const feira = currentFairsData.find(f => String(f.id) === feiraId);
+                    if (feira) {
+                        abrirModal(feira);
+                    } else {
+                        console.error("Feira não encontrada nos dados atuais. ID:", feiraId);
+                    }
+                }
+            });
+
+            // ... (O resto da sua lógica de modal, busca de endereço, etc., continua aqui)
+             function abrirModal(feira) {
+                const modalBody = document.getElementById('modal-body');
+                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(1)} km</p>` : '';
+                const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
+                const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
+                let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
+                
+                modalBody.innerHTML = `
+                    <img class="modal-image" src="${feira.imagem_url || 'https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                    <h2 class="modal-title">${feira.nome_feira}</h2>
+                    <pre class="modal-description">${feira.descricao || 'Descrição não disponível.'}</pre>
+                    ${distanciaHtml}
+                    <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
+                    <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
+                    <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}</p>
+                     <p><i class="fas fa-tag"></i> <strong>Tipo:</strong> ${feira.tipo_feira || 'Não informado'}</p>
+                    <a href="${googleMapsUrl}" target="_blank" class="button maps-button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}>
+                        <i class="fas fa-map-marked-alt"></i> Ver no mapa
+                    </a>`;
+                
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
             }
@@ -1461,33 +1347,8 @@
                     fecharModal();
                 }
             });
-
-            fairCardsContainer.addEventListener('click', (event) => {
-                const verMaisBtn = event.target.closest('.ver-mais-btn');
-                if (verMaisBtn) {
-                    event.preventDefault();
-                    const card = event.target.closest('.fair-card');
-                    const feiraId = card.dataset.id;
-                    // Procura a feira em todos os arrays de dados
-                    const feira = allFairsData[activeCategory].find(f => String(f.id) === feiraId);
-                    if (feira) {
-                        abrirModal(feira);
-                    }
-                }
-            });
-
-
-            // --- Slicer Button Listeners ---
-            slicerBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    slicerBtns.forEach(b => b.classList.remove('active'));
-                    btn.classList.add('active');
-                    const category = btn.dataset.category;
-                    renderFairs(category);
-                });
-            });
-
-            // --- Address Search Logic ---
+            
+             // --- Address Search Logic ---
             function haversineDistance(coords1, coords2) {
                 function toRad(x) { return x * Math.PI / 180; }
                 if (!coords1 || !coords2 || isNaN(coords1.latitude) || isNaN(coords1.longitude) || isNaN(coords2.latitude) || isNaN(coords2.longitude)) return Infinity;
@@ -1501,21 +1362,28 @@
 
             function handleLocationFound(coords) {
                 userCoordinates = coords;
-                renderFairs(activeCategory); 
+                const activeBtn = slicerContainer.querySelector('.slicer-btn.active');
+                if (activeBtn) {
+                     fetchAndRenderFairs(activeBtn.dataset.tipo); 
+                }
             }
             
             btnMeuLocal.addEventListener('click', () => {
+                btnMeuLocal.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
                         handleLocationFound({ 
                             latitude: position.coords.latitude, 
                             longitude: position.coords.longitude 
                         });
+                        btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     }, () => {
                          alert('Não foi possível obter sua localização.');
+                         btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     });
                 } else {
                      alert('Geolocalização não é suportada por este navegador.');
+                     btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                 }
             });
 
@@ -1589,12 +1457,10 @@
                 }
             });
 
-            // --- Mobile Menu Functionality ---
-            hamburgerMenu.addEventListener('click', () => mobileNavOverlay.classList.add('active'));
-            closeMobileMenu.addEventListener('click', () => mobileNavOverlay.classList.remove('active'));
-            mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileNavOverlay.classList.remove('active')));
 
-            // --- Hero Slider Functionality ---
+            // Funções de carrossel e inicialização
+            // (a lógica do slider do hero e dos carrosséis permanece a mesma)
+             // --- Hero Slider Functionality ---
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
             const prev = document.querySelector('.prev-slide');
@@ -1620,46 +1486,98 @@
             dots.forEach((dot, index) => {
                 dot.addEventListener('click', () => { showHeroSlide(index); startHeroSlideShow(); });
             });
-
-            // --- Event Listeners for Carousels ---
-            prevProximaFeiraBtn.addEventListener('click', () => {
-                const card = proximasFeirasContainer.querySelector('.fair-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35; // O mesmo gap definido no CSS
-                proximasFeirasContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
-            });
-
-            nextProximaFeiraBtn.addEventListener('click', () => {
-                const card = proximasFeirasContainer.querySelector('.fair-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35; // O mesmo gap definido no CSS
-                proximasFeirasContainer.scrollBy({ left: cardWidth + gap), behavior: 'smooth' });
-            });
             
-            prevBlogPostBtn.addEventListener('click', () => {
-                const card = blogCarouselContainer.querySelector('.blog-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35;
-                blogCarouselContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
-            });
+             // --- Mobile Menu Functionality ---
+            hamburgerMenu.addEventListener('click', () => mobileNavOverlay.classList.add('active'));
+            closeMobileMenu.addEventListener('click', () => mobileNavOverlay.classList.remove('active'));
+            mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileNavOverlay.classList.remove('active')));
 
-            nextBlogPostBtn.addEventListener('click', () => {
-                const card = blogCarouselContainer.querySelector('.blog-card');
-                if (!card) return;
-                const cardWidth = card.offsetWidth;
-                const gap = 35;
-                blogCarouselContainer.scrollBy({ left: cardWidth + gap), behavior: 'smooth' });
-            });
+            // --- Carousels ---
+            async function setupProximasFeirasCarousel() {
+                try {
+                    const allFairs = await fetchWithRetry('/api/feiras');
+                    const hoje = new Date();
+                    hoje.setHours(0, 0, 0, 0);
+
+                    const upcomingFairs = allFairs
+                        .filter(feira => feira.data_inicio)
+                        .map(feira => ({ ...feira, startDateObj: new Date(feira.data_inicio.split('/').reverse().join('-') + 'T00:00:00') }))
+                        .filter(feira => feira.startDateObj >= hoje)
+                        .sort((a, b) => a.startDateObj - b.startDateObj);
+
+                    proximasFeirasContainer.innerHTML = '';
+                    if (upcomingFairs.length > 0) {
+                        upcomingFairs.forEach(fair => proximasFeirasContainer.innerHTML += createGenericCard(fair));
+                    } else {
+                        proximasFeirasContainer.innerHTML = '<p class="info-message" style="color:white; grid-column: initial;">Nenhuma próxima feira com data definida foi encontrada.</p>';
+                    }
+                } catch(error) {
+                    proximasFeirasContainer.innerHTML = '<p class="error-message" style="color:white; grid-column: initial;">Erro ao carregar próximas feiras.</p>';
+                }
+            }
+
+            async function setupBlogCarousel() {
+                try {
+                    const blogPosts = await fetchWithRetry('/api/blog');
+                     blogCarouselContainer.innerHTML = '';
+                    if (blogPosts && blogPosts.length > 0) {
+                         blogPosts.forEach(post => {
+                            const subtitulo = post.subtitulo || '';
+                            const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
+                            blogCarouselContainer.innerHTML += `
+                                <div class="blog-card">
+                                    <a href="${post.url}">
+                                        <div class="blog-card-image">
+                                            <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
+                                        </div>
+                                        <div class="blog-card-content">
+                                            <h3>${post.titulo}</h3>
+                                            <p>${shortSubtitulo}</p>
+                                            <span class="button">Leia Mais</span>
+                                        </div>
+                                    </a>
+                                </div>`;
+                         });
+                    } else {
+                        blogCarouselContainer.innerHTML = '<p class="info-message">Nenhum post no blog encontrado.</p>';
+                    }
+                } catch(error) {
+                    blogCarouselContainer.innerHTML = '<p class="error-message">Erro ao carregar posts do blog.</p>';
+                }
+            }
+            
+            // Generic carousel navigation
+            function setupCarouselNavigation(container, prevBtn, nextBtn) {
+                 prevBtn.addEventListener('click', () => {
+                    const card = container.querySelector('.fair-card, .blog-card');
+                    if (!card) return;
+                    const cardWidth = card.offsetWidth;
+                    const gap = parseInt(window.getComputedStyle(container).gap) || 35;
+                    container.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+                });
+
+                nextBtn.addEventListener('click', () => {
+                     const card = container.querySelector('.fair-card, .blog-card');
+                    if (!card) return;
+                    const cardWidth = card.offsetWidth;
+                    const gap = parseInt(window.getComputedStyle(container).gap) || 35;
+                    container.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+                });
+            }
 
             // --- Initial Page Load ---
-            loadAllFairs();
-            showHeroSlide(currentHeroSlide);
-            startHeroSlideShow();
+            function initializePage() {
+                loadSlicerFilters(); // Carrega os filtros e a primeira categoria de feiras
+                setupProximasFeirasCarousel();
+                setupBlogCarousel();
+                setupCarouselNavigation(proximasFeirasContainer, prevProximaFeiraBtn, nextProximaFeiraBtn);
+                setupCarouselNavigation(blogCarouselContainer, prevBlogPostBtn, nextBlogPostBtn);
+                showHeroSlide(currentHeroSlide);
+                startHeroSlideShow();
+            }
+
+            initializePage();
         });
     </script>
 </body>
 </html>
-
