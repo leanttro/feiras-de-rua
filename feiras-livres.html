@@ -771,7 +771,8 @@
             mobileNavLinks.forEach(link => link.addEventListener('click', closeMenu));
             
             // --- Lógica dos Filtros e Busca ---
-            const API_URL = 'https://feiras-de-rua.onrender.com/api/feiras';
+            // ALTERAÇÃO CRÍTICA: Puxando dados da nova tabela 'feiras_livres'
+            const API_URL = 'https://feiras-de-rua.onrender.com/api/feiras_livres'; 
             const API_FILTROS_URL = 'https://feiras-de-rua.onrender.com/api/filtros';
             const filtroBairroSelect = document.getElementById('filtro-bairro-select');
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
@@ -908,12 +909,14 @@
             function abrirModal(feira) {
                 const modalBody = document.getElementById('modal-body');
                  const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
+                
+                // CORREÇÃO: Usando 'nome_da_feira' e 'dia_da_feira' da nova estrutura da tabela
                 modalBody.innerHTML = `
-                    <h2>${feira.nome_feira ?? 'Nome não informado'}</h2>
+                    <h2>${feira.nome_da_feira ?? 'Nome não informado'}</h2>
                     ${distanciaHtml}
                     <p><i class="fas fa-map-marked-alt"></i><strong>Endereço:</strong> ${feira.endereco || 'Não informado'}</p>
                     <p><i class="fas fa-map-pin"></i><strong>Bairro:</strong> ${feira.bairro || 'Não informado'}</p>
-                    <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_feira || 'Não informado'}</p>
+                    <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_da_feira || 'Não informado'}</p>
                     <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h</p>
                     <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
                 `;
@@ -972,16 +975,17 @@
                 const distanciaHtml = feira.distancia !== undefined 
                     ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(2)} km de distância</p>` 
                     : '';
-
+                
+                // CORREÇÃO: Usando 'nome_da_feira' e 'dia_da_feira' da nova estrutura da tabela
                 return `
                     <div class="fair-card" data-feira-id="${feira.id}">
                         <div class="fair-card-header">
-                            <h3>${feira.nome_feira ?? 'Nome não informado'}</h3>
+                            <h3>${feira.nome_da_feira ?? 'Nome não informado'}</h3>
                         </div>
                         <div class="fair-card-content">
                             ${distanciaHtml}
                             <p><i class="fas fa-map-marked-alt"></i> ${feira.bairro ?? 'Bairro não informado'}</p>
-                            <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
+                            <p><i class="fas fa-calendar-day"></i> ${feira.dia_da_feira ?? 'Dia não informado'}</p>
                             <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
                             <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
                             <a href="#" class="button ver-mais-btn">Ver mais</a>
