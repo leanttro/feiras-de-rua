@@ -766,9 +766,6 @@
                 font-size: 1.1em;
             }
 
-            .fair-cards-container {
-                grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* Adjust card size */
-            }
         }
 
         @media (max-width: 768px) {
@@ -857,6 +854,90 @@
         .blog-card-content p { margin: 0 0 20px 0; font-size: 0.95em; color: var(--text-color); flex-grow: 1; }
         .blog-card-content .button { margin-top: auto; align-self: flex-start; background-color: var(--dark-green); color: var(--white); padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
         .carousel-container .blog-card { scroll-snap-align: start; flex: 0 0 320px; }
+
+        /* --- Estilos do Modal --- */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            overflow: auto;
+            background-color: rgba(0,0,0,0.6);
+            align-items: center;
+            justify-content: center;
+        }
+        .modal-content {
+            background-color: var(--white);
+            margin: auto;
+            padding: 25px;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 600px;
+            position: relative;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            animation: fadeIn 0.3s;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.95); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        .modal-close-btn {
+            color: #aaa;
+            position: absolute;
+            top: 10px;
+            right: 20px;
+            font-size: 28px;
+            font-weight: bold;
+            border: none;
+            background: none;
+            cursor: pointer;
+        }
+        .modal-close-btn:hover,
+        .modal-close-btn:focus {
+            color: black;
+        }
+
+        #modal-body {
+            text-align: left;
+        }
+        .modal-image {
+            width: 100%;
+            height: 250px;
+            object-fit: cover;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+        .modal-title {
+            font-size: 2em;
+            color: var(--dark-gray);
+            margin: 0 0 15px 0;
+        }
+        .modal-description {
+            white-space: pre-wrap;
+            margin-bottom: 20px;
+        }
+        #modal-body p {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 12px;
+        }
+        #modal-body p i {
+            color: var(--primary-green);
+            width: 20px;
+            text-align: center;
+        }
+        .maps-button {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            margin-top: 15px;
+        }
     </style>
 </head>
 <body>
@@ -973,6 +1054,7 @@
                     <button class="slicer-btn active" data-category="gastronomica">Gastronômicas</button>
                     <button class="slicer-btn" data-category="artesanal">Artesanais</button>
                     <button class="slicer-btn" data-category="livre">Feiras Livres</button>
+                    <button class="slicer-btn" data-category="outrasfeiras">Outras Feiras</button>
                 </div>
 
                 <!-- Cards Container -->
@@ -995,6 +1077,9 @@
                     <div class="carousel-container" id="blogCarouselContainer">
                         <!-- Cards do blog serão injetados aqui pelo JS -->
                     </div>
+                    <!-- CORREÇÃO: Botões de navegação do blog que estavam em falta -->
+                    <button class="carousel-btn prev" id="prevBlogPost">&#10094;</button>
+                    <button class="carousel-btn next" id="nextBlogPost">&#10095;</button>
                 </div>
             </div>
         </section>
@@ -1002,9 +1087,15 @@
 
     </main>
 
-    <!-- --- ALTERAÇÃO IMPORTANTE --- -->
-    <!-- O Modal foi removido daqui. O HTML e o JavaScript dele foram apagados. -->
-    <!-- --- FIM DA ALTERAÇÃO --- -->
+    <!-- Modal para detalhes da feira -->
+    <div id="fair-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button id="modal-close" class="modal-close-btn">&times;</button>
+            <div id="modal-body">
+                <!-- Conteúdo do modal será injetado aqui -->
+            </div>
+        </div>
+    </div>
 
 
     <!-- UPDATED FOOTER -->
@@ -1032,10 +1123,11 @@
             const slicerBtns = document.querySelectorAll('.slicer-btn');
             const fairCardsContainer = document.getElementById('fairCardsContainer');
             const seeAllBtn = document.getElementById('seeAllBtn');
-            // --- ALTERAÇÃO IMPORTANTE: Variáveis do Modal Removidas ---
-            // const modal = document.getElementById('fair-modal');
-            // const modalCloseBtn = document.getElementById('modal-close');
-            // --- FIM DA ALTERAÇÃO ---
+            const seeAllContainer = document.querySelector('.see-all-container');
+            
+            // --- Modal Elements ---
+            const modal = document.getElementById('fair-modal');
+            const modalCloseBtn = document.getElementById('modal-close');
 
             // --- Address search elements ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
@@ -1048,25 +1140,27 @@
             const prevProximaFeiraBtn = document.getElementById('prevProximaFeira');
             const nextProximaFeiraBtn = document.getElementById('nextProximaFeira');
             
-            // --- Adicione estas linhas abaixo das constantes existentes ---
+            // --- Blog Carousel Elements ---
             const blogCarouselContainer = document.getElementById('blogCarouselContainer');
+            const prevBlogPostBtn = document.getElementById('prevBlogPost');
+            const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
             // --- API and Data Handling ---
             const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
             
-            // --- No objeto apiEndpoints, adicione a linha do blog ---
             const apiEndpoints = {
                 gastronomica: `${BASE_API_URL}/api/gastronomicas`,
                 artesanal: `${BASE_API_URL}/api/artesanais`,
                 livre: `${BASE_API_URL}/api/feiras`,
+                outrasfeiras: `${BASE_API_URL}/api/outrasfeiras`,
                 blog: `${BASE_API_URL}/api/blog` 
             };
 
-            // --- No objeto allFairsData, adicione a linha do blog ---
             const allFairsData = {
                 gastronomica: [],
                 artesanal: [],
                 livre: [],
+                outrasfeiras: [],
                 blog: []
             };
 
@@ -1087,29 +1181,47 @@
             }
 
             async function loadAllFairs() {
-                fairCardsContainer.innerHTML = '<p class="loading-message">Carregando feiras...</p>';
+                fairCardsContainer.innerHTML = '<p class="loading-message">A carregar feiras...</p>';
+
+                const endpointsToFetch = [
+                    { key: 'gastronomica', url: apiEndpoints.gastronomica },
+                    { key: 'artesanal', url: apiEndpoints.artesanal },
+                    { key: 'livre', url: apiEndpoints.livre },
+                    { key: 'outrasfeiras', url: apiEndpoints.outrasfeiras },
+                    { key: 'blog', url: apiEndpoints.blog }
+                ];
+
+                const promises = endpointsToFetch.map(ep => fetchWithRetry(ep.url));
+                const results = await Promise.allSettled(promises);
+
+                let hasCriticalError = false;
+
+                for (let i = 0; i < results.length; i++) {
+                    const result = results[i];
+                    const key = endpointsToFetch[i].key;
+
+                    if (result.status === 'fulfilled') {
+                        try {
+                            const data = await result.value.json();
+                            allFairsData[key] = data;
+                        } catch (jsonError) {
+                            console.error(`AVISO: Falha ao processar JSON do endpoint '${key}'. A resposta pode não ser um JSON válido.`, jsonError);
+                            // Não define hasCriticalError aqui, permite que o site continue com os dados que funcionaram
+                        }
+                    } else { // status === 'rejected'
+                        console.error(`AVISO: Falha ao buscar dados do endpoint '${key}'. O endpoint pode estar offline.`, result.reason);
+                        // Não quebra o site, apenas avisa na consola
+                    }
+                }
+
+                // Renderiza o site com os dados que foram carregados com sucesso
                 try {
-                    // --- Dentro da função loadAllFairs, modifique o Promise.all e a atribuição ---
-                    // DE: const [gastronomicaRes, artesanalRes, livreRes] = await Promise.all([...]);
-                    // PARA:
-                    const [gastronomicaRes, artesanalRes, livreRes, blogRes] = await Promise.all([
-                        fetchWithRetry(apiEndpoints.gastronomica),
-                        fetchWithRetry(apiEndpoints.artesanal),
-                        fetchWithRetry(apiEndpoints.livre),
-                        fetchWithRetry(apiEndpoints.blog) // Adicione esta linha
-                    ]);
-
-                    allFairsData.gastronomica = await gastronomicaRes.json();
-                    allFairsData.artesanal = await artesanalRes.json();
-                    allFairsData.livre = await livreRes.json();
-                    allFairsData.blog = await blogRes.json(); // Adicione esta linha
-
                     renderFairs(activeCategory);
                     setupProximasFeirasCarousel();
-                    setupBlogCarousel(); // Adicione esta linha
-                } catch (error) {
-                    console.error('Falha ao carregar dados de todas as feiras:', error);
-                    fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Tente novamente mais tarde.</p>';
+                    setupBlogCarousel();
+                } catch (renderError) {
+                    console.error("Erro ao renderizar componentes:", renderError);
+                    fairCardsContainer.innerHTML = '<p class="error-message">Ocorreu um erro ao exibir os dados na página.</p>';
                 }
             }
 
@@ -1144,7 +1256,7 @@
             }
 
             // --- Card Creation Functions ---
-            function createGastronomicaArtesanalCard(feira) {
+            function createGenericCard(feira) { // Renamed for broader use
                 const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
                 const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
@@ -1177,12 +1289,7 @@
                             <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                             <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
                             <p class="fair-card-description">${shortDescription}</p>
-                            
-                            <!-- --- ALTERAÇÃO IMPORTANTE: Botão "Ver mais" --- -->
-                            <!-- Agora ele é um link real para a URL que vem da API -->
-                            <a href="${feira.url}" class="button">Ver mais</a>
-                            <!-- --- FIM DA ALTERAÇÃO --- -->
-
+                            <a href="#" class="button ver-mais-btn">Ver mais</a>
                         </div>
                     </div>
                 `;
@@ -1201,22 +1308,21 @@
                             <p><i class="fas fa-calendar-day"></i> ${feira.dia_feira ?? 'Dia não informado'}</p>
                             <p><i class="fas fa-users"></i> ${feira.qnt_feirantes ?? '?'} feirantes</p>
                             <p><i class="fas fa-map-pin"></i> ${feira.endereco || 'Endereço não informado'}</p>
-                            
-                            <!-- --- ALTERAÇÃO IMPORTANTE: Botão "Ver mais" --- -->
-                            <!-- Este botão agora aponta para a página de detalhes da feira -->
-                            <!-- AINDA USANDO UMA URL FICTÍCIA, você precisará ajustar a API /api/feiras para enviar a 'url' também -->
-                            <a href="/feiras-livres/${feira.id}" class="button">Ver mais</a>
-                            <!-- --- FIM DA ALTERAÇÃO --- -->
-                            
+                            <a href="#" class="button ver-mais-btn">Ver mais</a>
                         </div>
                     </div>
                 `;
             }
             
             function setupProximasFeirasCarousel() {
-                const combinedFairs = [...allFairsData.gastronomica, ...allFairsData.artesanal];
+                const combinedFairs = [
+                    ...(allFairsData.gastronomica || []), 
+                    ...(allFairsData.artesanal || []), 
+                    ...(allFairsData.outrasfeiras || [])
+                ];
+
                 if (combinedFairs.length === 0) {
-                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma feira gastronômica ou artesanal encontrada.</p>';
+                    proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma próxima feira encontrada.</p>';
                     return;
                 }
                 
@@ -1225,10 +1331,8 @@
 
                 const upcomingFairs = combinedFairs
                     .filter(feira => {
-                        if (!feira.data_inicio || !feira.data_fim) {
-                            return false;
-                        }
-                        const dataFinal = new Date(feira.data_fim + 'T00:00:00');
+                        if (!feira.data_inicio) return false; // Feiras sem data de início não são consideradas
+                        const dataFinal = feira.data_fim ? new Date(feira.data_fim + 'T00:00:00') : new Date(feira.data_inicio + 'T00:00:00');
                         return dataFinal >= hoje;
                     })
                     .map(feira => ({
@@ -1240,7 +1344,8 @@
                 proximasFeirasContainer.innerHTML = '';
                 if (upcomingFairs.length > 0) {
                     upcomingFairs.forEach(fair => {
-                        proximasFeirasContainer.innerHTML += createGastronomicaArtesanalCard(fair);
+                        // Usando a função genérica aqui também
+                        proximasFeirasContainer.innerHTML += createGenericCard(fair);
                     });
                 } else {
                     proximasFeirasContainer.innerHTML = '<p class="info-message" style="grid-column: initial;">Nenhuma próxima feira com data definida foi encontrada.</p>';
@@ -1249,9 +1354,9 @@
             
             function renderFairs(category) {
                 activeCategory = category;
+                let fairsToProcess = [...(allFairsData[category] || [])];
 
-                let fairsToProcess = [...allFairsData[category]];
-                
+                // Lógica de distância
                 if (userCoordinates) {
                     fairsToProcess = fairsToProcess.map(feira => {
                         const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
@@ -1259,37 +1364,118 @@
                         return { ...feira, distancia };
                     }).sort((a, b) => a.distancia - b.distancia);
                 }
-                
-                const fairsToDisplay = fairsToProcess.slice(0, 3);
+
                 fairCardsContainer.innerHTML = '';
 
-                if (fairsToDisplay.length === 0) {
-                    fairCardsContainer.innerHTML = `<p class="info-message">Nenhuma feira encontrada para a categoria "${category}".</p>`;
-                } else {
-                    fairsToDisplay.forEach(fair => {
-                        let cardHtml = '';
-                        if (category === 'livre') {
-                            cardHtml = createFeiraLivreCard(fair);
-                        } else {
-                            cardHtml = createGastronomicaArtesanalCard(fair);
-                        }
-                        fairCardsContainer.innerHTML += cardHtml;
-                    });
+                // Lógica de exibição (slice ou não)
+                if (category === 'gastronomica' || category === 'artesanal') {
+                    const fairsToDisplay = fairsToProcess.slice(0, 3);
+                    if (fairsToDisplay.length > 0) {
+                        fairsToDisplay.forEach(fair => {
+                            fairCardsContainer.innerHTML += createGenericCard(fair);
+                        });
+                    }
+                    seeAllContainer.style.display = 'block';
+                    const pageMap = {
+                        'gastronomica': 'gastronomicas.html',
+                        'artesanal': 'artesanais.html'
+                    };
+                    seeAllBtn.href = pageMap[category];
+                } else { // Para 'livre' e 'outrasfeiras'
+                    if (fairsToProcess.length > 0) {
+                        fairsToProcess.forEach(fair => {
+                            let cardHtml = '';
+                            if (category === 'livre') {
+                                cardHtml = createFeiraLivreCard(fair);
+                            } else { // 'outrasfeiras'
+                                cardHtml = createGenericCard(fair);
+                            }
+                            fairCardsContainer.innerHTML += cardHtml;
+                        });
+                    }
+                    seeAllContainer.style.display = 'none';
                 }
-                
-                const pageMap = {
-                    'gastronomica': 'gastronomicas.html',
-                    'artesanal': 'artesanais.html',
-                    'livre': 'feiras-livres.html'
-                };
-                seeAllBtn.href = pageMap[category] || '#';
+
+                if (fairCardsContainer.innerHTML === '') {
+                     fairCardsContainer.innerHTML = `<p class="info-message">Nenhuma feira encontrada para a categoria "${category}".</p>`;
+                }
             }
 
-            // --- ALTERAÇÃO IMPORTANTE: Modal Logic Removida ---
-            // A função 'abrirModal' foi removida.
-            // A função 'fecharModal' foi removida.
-            // Os event listeners do modal foram removidos.
-            // --- FIM DA ALTERAÇÃO ---
+            // --- Modal Logic (Unificada) ---
+            function abrirModal(feira) {
+                const modalBody = document.getElementById('modal-body');
+                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(2)} km</p>` : '';
+                
+                if (activeCategory === 'livre') {
+                     modalBody.innerHTML = `
+                        <h2>${feira.nome_feira ?? 'Nome não informado'}</h2>
+                        ${distanciaHtml}
+                        <p><i class="fas fa-map-marked-alt"></i><strong>Endereço:</strong> ${feira.endereco || 'Não informado'}</p>
+                        <p><i class="fas fa-map-pin"></i><strong>Bairro:</strong> ${feira.bairro || 'Não informado'}</p>
+                        <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_feira || 'Não informado'}</p>
+                        <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h (estimado)</p>
+                        <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
+                    `;
+                } else { // Para gastronomicas, artesanais, outrasfeiras
+                    const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
+                    const regiaoFormatada = feira.regiao ? feira.regiao.toLowerCase().replace(/\b\w/g, char => char.toUpperCase()) : (feira.bairro || 'Região não informada');
+                    const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
+                    let dateInfo;
+                    if (feira.data_inicio) {
+                        const options = { day: '2-digit', month: '2-digit', year: 'numeric', timeZone: 'UTC' };
+                        const inicio = new Date(feira.data_inicio).toLocaleDateString('pt-BR', options);
+                        if (feira.data_fim && feira.data_inicio !== feira.data_fim) {
+                            const fim = new Date(feira.data_fim).toLocaleDateString('pt-BR', options);
+                            dateInfo = `De ${inicio} a ${fim}`;
+                        } else {
+                            dateInfo = inicio;
+                        }
+                    } else {
+                        dateInfo = feira.dia_semana || 'Não informado';
+                    }
+
+                    modalBody.innerHTML = `
+                        <img class="modal-image" src="${feira.imagem_url || 'https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                        <h2 class="modal-title">${feira.nome_feira}</h2>
+                        <p class="modal-description">${feira.descricao || 'Descrição não disponível.'}</p>
+                        ${distanciaHtml}
+                        <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
+                        <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
+                        <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}, <strong>${regiaoFormatada}</strong></p>
+                        <a href="${googleMapsUrl}" target="_blank" class="button maps-button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}>
+                            <i class="fas fa-map-marked-alt"></i> Ver no mapa
+                        </a>`;
+                }
+                modal.style.display = 'flex';
+                document.body.style.overflow = 'hidden';
+            }
+
+            function fecharModal() {
+                modal.style.display = 'none';
+                document.body.style.overflow = '';
+            }
+
+            modalCloseBtn.addEventListener('click', fecharModal);
+            modal.addEventListener('click', (event) => {
+                if (event.target === modal) {
+                    fecharModal();
+                }
+            });
+
+            fairCardsContainer.addEventListener('click', (event) => {
+                const verMaisBtn = event.target.closest('.ver-mais-btn');
+                if (verMaisBtn) {
+                    event.preventDefault();
+                    const card = event.target.closest('.fair-card');
+                    const feiraId = card.dataset.id;
+                    // Procura a feira em todos os arrays de dados
+                    const feira = allFairsData[activeCategory].find(f => String(f.id) === feiraId);
+                    if (feira) {
+                        abrirModal(feira);
+                    }
+                }
+            });
+
 
             // --- Slicer Button Listeners ---
             slicerBtns.forEach(btn => {
@@ -1435,7 +1621,7 @@
                 dot.addEventListener('click', () => { showHeroSlide(index); startHeroSlideShow(); });
             });
 
-            // --- NOVO: Event Listeners para o carrossel de Próximas Feiras ---
+            // --- Event Listeners for Carousels ---
             prevProximaFeiraBtn.addEventListener('click', () => {
                 const card = proximasFeirasContainer.querySelector('.fair-card');
                 if (!card) return;
@@ -1449,7 +1635,23 @@
                 if (!card) return;
                 const cardWidth = card.offsetWidth;
                 const gap = 35; // O mesmo gap definido no CSS
-                proximasFeirasContainer.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
+                proximasFeirasContainer.scrollBy({ left: cardWidth + gap), behavior: 'smooth' });
+            });
+            
+            prevBlogPostBtn.addEventListener('click', () => {
+                const card = blogCarouselContainer.querySelector('.blog-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35;
+                blogCarouselContainer.scrollBy({ left: -(cardWidth + gap), behavior: 'smooth' });
+            });
+
+            nextBlogPostBtn.addEventListener('click', () => {
+                const card = blogCarouselContainer.querySelector('.blog-card');
+                if (!card) return;
+                const cardWidth = card.offsetWidth;
+                const gap = 35;
+                blogCarouselContainer.scrollBy({ left: cardWidth + gap), behavior: 'smooth' });
             });
 
             // --- Initial Page Load ---
@@ -1460,5 +1662,4 @@
     </script>
 </body>
 </html>
-
 
