@@ -45,7 +45,41 @@ def format_db_data(data_dict):
     return formatted_dict
 
 
-# --- NOVA ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
+# --- NOVA ROTA PARA BUSCAR POSTS DO BLOG ---
+@app.route('/api/blog')
+def get_api_blog():
+    """Retorna uma lista JSON de todos os posts da tabela 'blog'."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        # Busca todos os campos da tabela 'blog'
+        query = "SELECT * FROM blog ORDER BY data_publicacao DESC, id DESC;"
+        
+        cur.execute(query)
+        posts_raw = cur.fetchall()
+        cur.close()
+
+        # Processa os dados (formatação de datas, etc.)
+        posts_processados = [format_db_data(dict(post)) for post in posts_raw]
+
+        return jsonify(posts_processados)
+        
+    except psycopg2.errors.UndefinedTable:
+        # Adicione este tratamento caso a tabela 'blog' ainda não exista no seu banco
+        print("ERRO: A tabela 'blog' não foi encontrada no banco de dados.")
+        # Retorna uma lista vazia, mas com erro 500 para o console
+        return jsonify({'error': 'Tabela blog não encontrada.'}), 500
+    except Exception as e:
+        print(f"ERRO no endpoint /api/blog: {e}")
+        traceback.print_exc()
+        return jsonify({'error': 'Erro interno ao buscar posts do blog.'}), 500
+    finally:
+        if conn: conn.close()
+        
+
+# --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
 @app.route('/api/feiras/tipos')
 def get_tipos_feira():
     """Retorna uma lista JSON com todos os valores únicos de 'tipo_feira'."""
@@ -148,7 +182,6 @@ def get_api_feiras():
         
 # --- ROTAS ANTIGAS PARA COMPATIBILIDADE ---
 # Estas rotas agora apenas chamam a nova API com o filtro correto.
-# Isso evita que você tenha que mudar o JavaScript do seu site imediatamente.
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
     return get_api_feiras_filtrado('Gastronômica')
@@ -160,7 +193,6 @@ def get_artesanais_compat():
 @app.route('/api/outrasfeiras')
 def get_outrasfeiras_compat():
     # Exemplo: busca por qualquer coisa que não seja gastronomica ou artesanal
-    # (Você pode ajustar esta lógica se precisar)
     return get_api_feiras_filtrado(None, exclude=['Gastronômica', 'Artesanal'])
 
 def get_api_feiras_filtrado(tipo_feira, exclude=None):
@@ -215,4 +247,3 @@ def serve_static_files(path):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
-
