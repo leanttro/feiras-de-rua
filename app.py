@@ -39,13 +39,54 @@ def format_db_data(data_dict):
         elif isinstance(value, datetime.time):
             formatted_dict[key] = value.strftime('%H:%M') if value else None
         elif isinstance(value, decimal.Decimal):
-            formatted_dict[key] = float(value) # Converte Decimal para float para ser compatível com JSON
+            # Converte Decimal para float para ser compatível com JSON, tratando None/NaN
+            try:
+                formatted_dict[key] = float(value)
+            except (TypeError, ValueError):
+                formatted_dict[key] = None
         else:
             formatted_dict[key] = value
     return formatted_dict
 
 
-# --- NOVA ROTA PARA BUSCAR POSTS DO BLOG ---
+# --- NOVA ROTA PARA FEIRAS LIVRES ---
+@app.route('/api/feiras_livres')
+def get_api_feiras_livres():
+    """Retorna uma lista JSON de todas as feiras livres da tabela 'feiras_livres'."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        # Seleciona todas as colunas
+        query = """
+        SELECT id, nome_da_feira, dia_da_feira, categoria, qnt_feirantes, 
+               endereco, bairro, latitude, longitude
+        FROM feiras_livres
+        ORDER BY dia_da_feira, nome_da_feira;
+        """
+        
+        cur.execute(query)
+        feiras_raw = cur.fetchall()
+        cur.close()
+
+        # Processa os dados
+        feiras_processadas = [format_db_data(dict(feira)) for feira in feiras_raw]
+
+        return jsonify(feiras_processadas)
+        
+    except psycopg2.errors.UndefinedTable:
+        print("ERRO: A tabela 'feiras_livres' não foi encontrada no banco de dados.")
+        return jsonify({'error': 'Tabela feiras_livres não encontrada.'}), 500
+    except Exception as e:
+        print(f"ERRO no endpoint /api/feiras_livres: {e}")
+        traceback.print_exc()
+        return jsonify({'error': 'Erro interno ao buscar feiras livres.'}), 500
+    finally:
+        if conn: conn.close()
+
+
+# --- ROTA PARA BUSCAR POSTS DO BLOG ---
 @app.route('/api/blog')
 def get_api_blog():
     """Retorna uma lista JSON de todos os posts da tabela 'blog'."""
@@ -101,7 +142,7 @@ def get_tipos_feira():
         if conn: conn.close()
 
 
-# --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
+# --- ROTA DE DETALHE ÚNICA PARA FEIRAS (FEIRAS GASTRONOMICAS/ARTESANAIS) ---
 # Esta rota agora lida com TODAS as feiras, buscando pelo 'slug' na URL.
 # Ex: /feiras/feira-da-liberdade
 @app.route('/feiras/<slug>')
@@ -131,7 +172,7 @@ def feira_detalhe(slug):
         if conn: conn.close()
 
 
-# --- ROTAS DE API PARA O FRONTEND ---
+# --- ROTAS DE API PARA O FRONTEND (FEIRAS GASTRONOMICAS/ARTESANAIS) ---
 
 # Endpoint principal que agora busca na tabela 'feiras' e pode filtrar por tipo
 # Ex: /api/feiras?tipo=gastronomica
@@ -169,7 +210,10 @@ def get_api_feiras():
                 feira_dict['url'] = url_relativa
                 feiras_processadas.append(feira_dict)
             else:
-                 print(f"AVISO: Feira ID {feira_dict.get('id')} não possui URL. Omitida da API.")
+                 # Adiciona um placeholder de URL se o campo estiver vazio para não quebrar o front
+                 feira_dict['url'] = f'/feiras/{feira_dict.get("slug", feira_dict.get("id"))}'
+                 feiras_processadas.append(feira_dict)
+
 
         return jsonify(feiras_processadas)
 
@@ -184,10 +228,12 @@ def get_api_feiras():
 # Estas rotas agora apenas chamam a nova API com o filtro correto.
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
+    # Esta função está obsoleta. O frontend deve usar /api/feiras?tipo=Gastronômica
     return get_api_feiras_filtrado('Gastronômica')
 
 @app.route('/api/artesanais')
 def get_artesanais_compat():
+    # Esta função está obsoleta. O frontend deve usar /api/feiras?tipo=Artesanal
     return get_api_feiras_filtrado('Artesanal')
 
 @app.route('/api/outrasfeiras')
