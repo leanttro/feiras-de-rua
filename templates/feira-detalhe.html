@@ -2,40 +2,42 @@
 <html lang="pt-BR">
 <head>
     <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
-<script>
-  window.dataLayer = window.dataLayer || [];
-  function gtag(){dataLayer.push(arguments);}
-  gtag('js', new Date());
-
-  gtag('config', 'G-5SDJYV66KE');
-</script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5SDJYV66KE');
+    </script>
+    
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
+    <!-- Título e Descrição Dinâmicos para SEO -->
     <title>{{ feira.nome_feira }} | Feiras de Rua SP</title>
-    
     <meta name="description" content="{{ feira.descricao | truncate(155, True, '...') }}">
 
+    <!-- Fontes e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     
     <style>
-        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f8f9fa; }
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f8f9fa; color: #343a40; }
         .container { max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .header-detalhe { text-align: center; }
-        .header-detalhe .voltar-link { display: inline-block; margin-bottom: 20px; color: #4CAF50; text-decoration: none; font-weight: 500; }
+        .header-detalhe .voltar-link { display: inline-block; margin-bottom: 20px; color: #4CAF50; text-decoration: none; font-weight: 500; font-size: 1.1em; }
         .header-detalhe .voltar-link:hover { text-decoration: underline; }
-        .header-detalhe h1 { font-size: 2.5em; margin: 0 0 20px 0; color: #343a40; }
+        .header-detalhe h1 { font-size: 2.5em; margin: 0 0 20px 0; }
         .feira-imagem { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 25px; }
         .feira-descricao { font-size: 1.1em; line-height: 1.7; white-space: pre-wrap; margin-bottom: 30px; }
         .feira-info { list-style: none; padding: 0; }
-        .feira-info li { display: flex; align-items: center; font-size: 1.1em; margin-bottom: 15px; }
-        .feira-info li i { color: #4CAF50; width: 30px; text-align: center; font-size: 1.2em; }
+        .feira-info li { display: flex; align-items: flex-start; font-size: 1.1em; margin-bottom: 15px; }
+        .feira-info li i { color: #4CAF50; width: 30px; text-align: center; font-size: 1.2em; margin-top: 3px; }
         .map-button { display: inline-block; background-color: #4CAF50; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s; }
         .map-button:hover { background-color: #388E3C; }
     </style>
 
+    <!-- Schema.org JSON-LD para SEO avançado -->
     <script type="application/ld+json">
     {
       "@context": "https://schema.org",
@@ -63,7 +65,7 @@
       },
       "image": [
         "{{ feira.imagem_url }}"
-      ],
+       ],
       "description": "{{ feira.descricao | truncate(250, True, '...') }}"
     }
     </script>
@@ -72,7 +74,15 @@
 
     <div class="container">
         <div class="header-detalhe">
-            <a href="/" class="voltar-link">❮ Voltar para o Início</a>
+            <!-- LÓGICA ATUALIZADA: Link de "Voltar" inteligente -->
+            {% set back_link = '/' %}
+            {% if feira.tipo_feira and 'gastron' in feira.tipo_feira|lower %}
+                {% set back_link = '/gastronomicas.html' %}
+            {% elif feira.tipo_feira and 'artesan' in feira.tipo_feira|lower %}
+                {% set back_link = '/artesanais.html' %}
+            {% endif %}
+            <a href="{{ back_link }}" class="voltar-link">❮ Voltar</a>
+            
             <h1>{{ feira.nome_feira }}</h1>
         </div>
 
@@ -81,21 +91,27 @@
              alt="Foto da {{ feira.nome_feira }}" 
              onerror="this.onerror=null;this.src='https://placehold.co/800x400/f8f9fa/343a40?text=Imagem+Indisponível';">
 
-        <p class="feira-descricao">{{ feira.descricao or 'Descrição não disponível.' }}</p>
+        <!-- A tag <pre> preserva quebras de linha e espaços do banco de dados -->
+        <pre class="feira-descricao">{{ feira.descricao or 'Descrição não disponível.' }}</pre>
 
         <ul class="feira-info">
+            <!-- Lógica para exibir data de evento ou dias da semana -->
             {% if feira.data_inicio %}
-                <li><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> De {{ feira.data_inicio }} a {{ feira.data_fim }}</li>
+                <li><i class="fas fa-calendar-check"></i> <strong>Data:</strong> De {{ feira.data_inicio }} a {{ feira.data_fim or feira.data_inicio }}</li>
             {% else %}
                 <li><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> {{ feira.dia_semana or 'Não informado' }}</li>
             {% endif %}
             
             <li><i class="fas fa-clock"></i> <strong>Horário:</strong> {{ feira.horario_inicio or 'N/A' }} às {{ feira.horario_fim or 'N/A' }}</li>
             <li><i class="fas fa-map-marker-alt"></i> <strong>Local:</strong> {{ feira.rua or 'Não informado' }}, {{ feira.bairro or '' }} - {{ feira.regiao or '' }}</li>
+            
+            <!-- CAMPO ADICIONADO: Exibe o tipo da feira -->
+            <li><i class="fas fa-tag"></i> <strong>Tipo:</strong> {{ feira.tipo_feira or 'Não informado' }}</li>
         </ul>
 
+        <!-- Botão "Ver no mapa" com link CORRIGIDO -->
         {% if feira.latitude and feira.longitude %}
-            <a href="https://www.google.com/maps/search/?api=1&query={{feira.latitude}},{{feira.longitude}}" 
+            <a href="https://www.google.com/maps?q={{feira.latitude}},{{feira.longitude}}" 
                target="_blank" 
                class="map-button">
                <i class="fas fa-map-marked-alt"></i> Ver no mapa
@@ -103,5 +119,5 @@
         {% endif %}
     </div>
 
-    </body>
+</body>
 </html>
