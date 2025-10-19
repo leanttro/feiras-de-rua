@@ -5,8 +5,8 @@ from flask import Flask, jsonify, request, send_from_directory, render_template,
 from dotenv import load_dotenv
 from flask_cors import CORS
 import datetime
-import traceback # Importar para logar erros detalhados
-import decimal # Adicionado para converter tipos de dados do banco
+import traceback
+import decimal
 
 load_dotenv()
 
@@ -19,12 +19,11 @@ def get_db_connection():
         conn = psycopg2.connect(os.getenv('DATABASE_URL'))
         return conn
     except Exception as e:
-        # Loga o erro de conexão no console do Render
         print(f"ERRO CRÍTICO: Não foi possível conectar ao banco de dados: {e}")
-        # traceback.print_exc() # Descomente para detalhes completos do erro de conexão
-        raise # Re-levanta a exceção para que o Flask retorne um erro 500 claro
+        # traceback.print_exc() # Descomente para detalhes completos
+        raise
 
-# Mapeamento de Bairros (sem alteração)
+# Mapeamento Bairro -> Região (Adicione mais se precisar)
 BAIRRO_REGIAO_MAP = {
     'VL FORMOSA': 'Zona Leste', 'CIDADE AE CARVALHO': 'Zona Leste', 'ITAQUERA': 'Zona Leste',
     'SAO MIGUEL PAULISTA': 'Zona Leste', 'VILA PRUDENTE': 'Zona Leste', 'MOOCA': 'Zona Leste',
@@ -36,22 +35,38 @@ BAIRRO_REGIAO_MAP = {
     'IPIRANGA': 'Zona Sul', 'SAUDE': 'Zona Sul', 'JABAQUARA': 'Zona Sul',
     'VILA MARIANA': 'Zona Sul', 'CIDADE ADEMAR': 'Zona Sul', 'CURSINO': 'Zona Sul',
     'SOCORRO': 'Zona Sul', 'CAMPO BELO': 'Zona Sul', 'SANTO AMARO': 'Zona Sul',
-    'M BOI MIRIM': 'Zona Sul', 'GRAJAU': 'Zona Sul',
+    'M BOI MIRIM': 'Zona Sul', 'GRAJAU': 'Zona Sul', 'INDIANOPOLIS': 'Zona Sul', # Exemplo
     'PIRITUBA': 'Zona Norte', 'FREGUESIA DO O': 'Zona Norte', 'CASA VERDE': 'Zona Norte',
     'LIMAO': 'Zona Norte', 'BRASILANDIA': 'Zona Norte', 'VILA MARIA': 'Zona Norte',
     'TUCURUVI': 'Zona Norte', 'SANTANA': 'Zona Norte', 'VILA GUILHERME': 'Zona Norte',
     'TREMEMBE': 'Zona Norte', 'JAÇANA': 'Zona Norte',
     'LAPA': 'Zona Oeste', 'BUTANTA': 'Zona Oeste', 'PINHEIROS': 'Zona Oeste',
     'PERDIZES': 'Zona Oeste', 'RAPOSO TAVARES': 'Zona Oeste', 'JAGUARA': 'Zona Oeste',
-    'BARRA FUNDA': 'Zona Oeste', 'VILA LEOPOLDINA': 'Zona Oeste',
+    'BARRA FUNDA': 'Zona Oeste', 'VILA LEOPOLDINA': 'Zona Oeste', 'ITAIM BIBI': 'Zona Oeste', # Exemplo
     'SE': 'Centro', 'BOM RETIRO': 'Centro', 'REPUBLICA': 'Centro', 'CONSOLACAO': 'Centro',
     'LIBERDADE': 'Centro', 'BELA VISTA': 'Centro', 'CAMBUCI': 'Centro', 'ACLIMACAO': 'Centro',
-    # Adicionando bairro faltante da feira de exemplo
-    'CANINDE': 'Centro'
+    'CANINDE': 'Centro', 'PARI': 'Centro' # Exemplo
 }
 
+def format_db_data(data_dict):
+    """Formata datas, horas e decimais para exibição JSON/HTML."""
+    if not isinstance(data_dict, dict):
+        return data_dict
 
-# --- ROTA DO SITEMAP.XML (ATUALIZADA com try-except) ---
+    formatted_dict = {}
+    for key, value in data_dict.items():
+        if isinstance(value, datetime.date):
+            formatted_dict[key] = value.strftime('%d/%m/%Y') if value else None
+        elif isinstance(value, datetime.time):
+            formatted_dict[key] = value.strftime('%H:%M') if value else None
+        elif isinstance(value, decimal.Decimal):
+             formatted_dict[key] = float(value) # Converte Decimal para float para JSON
+        else:
+            formatted_dict[key] = value
+    return formatted_dict
+
+
+# --- ROTA DO SITEMAP.XML (Atualizada para tabela única 'feiras') ---
 @app.route('/sitemap.xml')
 def sitemap():
     conn = None
@@ -59,68 +74,81 @@ def sitemap():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
 
-        # Usando .get() para segurança caso a coluna 'slug' não exista
-        cur.execute('SELECT slug FROM gastronomicas WHERE slug IS NOT NULL;')
-        gastronomicas = cur.fetchall()
+        # Busca URLs da tabela 'feiras'
+        cur.execute('SELECT url FROM feiras WHERE url IS NOT NULL;')
+        feiras_urls = cur.fetchall() # Lista de DictRows, cada um com uma chave 'url'
 
-        cur.execute('SELECT slug FROM artesanais WHERE slug IS NOT NULL;')
-        artesanais = cur.fetchall()
-
+        # Busca slugs da tabela 'blog'
         cur.execute('SELECT slug FROM blog WHERE slug IS NOT NULL;')
-        blog_posts = cur.fetchall()
+        blog_posts = cur.fetchall() # Lista de DictRows, cada um com uma chave 'slug'
 
         cur.close()
         hoje = datetime.datetime.now().strftime("%Y-%m-%d")
 
+        # Ajuste no template sitemap_template.xml será necessário
+        # para iterar sobre feiras_urls e construir a URL completa
+        # (O template precisa saber que o URL já está completo ou só tem o slug)
+        # Assumindo que o template espera apenas o slug para construir a URL:
+        feiras_slugs = [{'slug': f['url'].split('/')[-1]} for f in feiras_urls if f['url']]
+
+
         sitemap_xml = render_template(
             'sitemap_template.xml',
-            gastronomicas=gastronomicas,
-            artesanais=artesanais,
+            # Passa slugs para compatibilidade ou ajuste o template
+            gastronomicas=[fs for fs in feiras_slugs], # Exemplo: passa todos para 'gastronomicas' no template
+            artesanais=[], # Ou filtre por tipo_feira se o template precisar
+            outrasfeiras=[], # Ou filtre por tipo_feira se o template precisar
+            feiras_geral=feiras_slugs, # Passa uma lista geral se o template for ajustado
             blog_posts=blog_posts,
             hoje=hoje,
-            base_url="https://www.feirasderua.com.br"
+            base_url="https://www.feirasderua.com.br" # Base URL ainda útil
         )
 
         response = make_response(sitemap_xml)
         response.headers['Content-Type'] = 'application/xml'
-
         return response
 
+    except psycopg2.errors.UndefinedTable:
+        print(f"ERRO SITEMAP: Tabela 'feiras' ou 'blog' não encontrada.")
+        return "Erro ao gerar sitemap (tabela não encontrada)", 500
+    except psycopg2.errors.UndefinedColumn:
+        print(f"ERRO SITEMAP: Coluna 'url' ou 'slug' não encontrada.")
+        return "Erro ao gerar sitemap (coluna não encontrada)", 500
     except Exception as e:
         print(f"ERRO AO GERAR SITEMAP: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        traceback.print_exc()
         return "Erro ao gerar sitemap", 500
     finally:
         if conn: conn.close()
-# --- FIM DA ATUALIZAÇÃO SITEMAP ---
 
-
-# --- ROTAS DO BLOG (ATUALIZADAS com try-except) ---
+# --- ROTAS DO BLOG (sem alteração significativa, mas com logs) ---
 @app.route('/api/blog')
 def get_blog_posts():
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Assumindo que a tabela blog e a coluna slug existem
         cur.execute('SELECT id, titulo, subtitulo, imagem_url, slug FROM blog ORDER BY data_publicacao DESC, id DESC LIMIT 6;')
         posts_raw = cur.fetchall()
         cur.close()
 
         posts_processados = []
         for post in posts_raw:
-            post_dict = dict(post)
-            slug = post_dict.get('slug') # Usar .get() para segurança
+            post_dict = format_db_data(dict(post)) # Formata aqui
+            slug = post_dict.get('slug')
             if slug:
-                post_dict['url'] = f'/blog/{slug}'
+                post_dict['url'] = f'/blog/{slug}' # URL relativa para o frontend
             else:
-                 post_dict['url'] = '#' # Ou alguma URL padrão/erro
+                 post_dict['url'] = '#'
                  print(f"AVISO: Post do blog com ID {post_dict.get('id')} não tem slug.")
             posts_processados.append(post_dict)
         return jsonify(posts_processados)
+    except psycopg2.errors.UndefinedTable:
+        print(f"ERRO em /api/blog: Tabela 'blog' não encontrada.")
+        return jsonify({'error': "Erro interno (tabela 'blog' ausente)."}), 500
     except Exception as e:
         print(f"ERRO no endpoint /api/blog: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        traceback.print_exc()
         return jsonify({'error': 'Erro interno ao buscar posts do blog.'}), 500
     finally:
         if conn: conn.close()
@@ -131,282 +159,180 @@ def blog_post_detalhe(slug):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Assumindo que a tabela blog e a coluna slug existem
         cur.execute('SELECT * FROM blog WHERE slug = %s;', (slug,))
         post = cur.fetchone()
         cur.close()
 
         if post:
-            post_formatado = format_feira_data(dict(post)) # Reutiliza a função de formatação
+            post_formatado = format_db_data(dict(post))
+            # Você precisa de um template 'post-detalhe.html' na pasta 'templates'
             return render_template('post-detalhe.html', post=post_formatado)
         else:
             return "Post não encontrado", 404
+    except psycopg2.errors.UndefinedTable:
+        print(f"ERRO em /blog/<slug>: Tabela 'blog' não encontrada.")
+        return "Erro interno (tabela 'blog' ausente)", 500
     except Exception as e:
         print(f"ERRO na rota /blog/{slug}: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        traceback.print_exc()
         return "Erro ao carregar a página do post", 500
     finally:
         if conn: conn.close()
-# --- FIM DAS ROTAS DO BLOG ---
 
-@app.route('/')
-def index():
-    # O Flask já serve o index.html por padrão se static_folder='.'
-    return send_from_directory('.', 'index.html')
-
-
-def format_feira_data(data_dict):
-    """Formata datas e horas para exibição no HTML (DD/MM/YYYY e HH:MM)."""
-    if not isinstance(data_dict, dict):
-        return data_dict # Retorna se não for um dicionário
-
-    formatted_dict = {}
-    for key, value in data_dict.items():
-        if isinstance(value, datetime.date):
-            formatted_dict[key] = value.strftime('%d/%m/%Y') if value else None
-        elif isinstance(value, datetime.time):
-            formatted_dict[key] = value.strftime('%H:%M') if value else None
-        else:
-            formatted_dict[key] = value
-    return formatted_dict
-
-# --- ROTAS DE DETALHE (ATUALIZADAS com try-except) ---
-@app.route('/gastronomicas/<slug>')
-def feira_gastronomica_detalhe(slug):
+# --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
+@app.route('/feiras/<slug>')
+def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Assumindo que a tabela gastronomicas e a coluna slug existem
-        cur.execute('SELECT * FROM gastronomicas WHERE slug = %s;', (slug,))
+        # Busca na tabela única 'feiras' pelo slug
+        cur.execute('SELECT * FROM feiras WHERE slug = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
-        if feira:
-            feira_formatada = format_feira_data(dict(feira))
-            return render_template('feira-detalhe.html', feira=feira_formatada)
-        else:
-            return "Feira gastronômica não encontrada", 404
-    except Exception as e:
-        print(f"ERRO na rota /gastronomicas/{slug}: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return "Erro ao carregar a página da feira", 500
-    finally:
-        if conn: conn.close()
 
-@app.route('/artesanais/<slug>')
-def feira_artesanal_detalhe(slug):
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Assumindo que a tabela artesanais e a coluna slug existem
-        cur.execute('SELECT * FROM artesanais WHERE slug = %s;', (slug,))
-        feira = cur.fetchone()
-        cur.close()
         if feira:
-            feira_formatada = format_feira_data(dict(feira))
+            feira_formatada = format_db_data(dict(feira))
+            # Usa o mesmo template 'feira-detalhe.html'
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
-            return "Feira artesanal não encontrada", 404
-    except Exception as e:
-        print(f"ERRO na rota /artesanais/{slug}: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return "Erro ao carregar a página da feira", 500
-    finally:
-        if conn: conn.close()
-
-# --- NOVA ROTA DE DETALHE PARA OUTRASFEIRAS ---
-@app.route('/outrasfeiras/<slug>')
-def feira_outras_detalhe(slug):
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        cur.execute('SELECT * FROM outrasfeiras WHERE slug = %s;', (slug,))
-        feira = cur.fetchone()
-        cur.close()
-        if feira:
-            feira_formatada = format_feira_data(dict(feira))
-            # Reutiliza o mesmo template
-            return render_template('feira-detalhe.html', feira=feira_formatada)
-        else:
+            # Pode verificar em tabelas antigas como fallback se quiser, mas idealmente não
+            print(f"Feira com slug '{slug}' não encontrada na tabela 'feiras'.")
             return "Feira não encontrada", 404
     except psycopg2.errors.UndefinedTable:
-         print(f"ERRO: A tabela 'outrasfeiras' não foi encontrada no banco de dados.")
-         return "Erro: Categoria de feira não encontrada.", 500
+        print(f"ERRO em /feiras/<slug>: Tabela 'feiras' não encontrada.")
+        return "Erro interno (tabela 'feiras' ausente)", 500
     except psycopg2.errors.UndefinedColumn:
-         print(f"ERRO: A coluna 'slug' não foi encontrada na tabela 'outrasfeiras'.")
-         return "Erro: Estrutura da tabela de feiras incorreta.", 500
+        print(f"ERRO em /feiras/<slug>: Coluna 'slug' não encontrada na tabela 'feiras'.")
+        return "Erro interno (estrutura da tabela 'feiras' incorreta)", 500
     except Exception as e:
-        print(f"ERRO na rota /outrasfeiras/{slug}: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        print(f"ERRO na rota /feiras/{slug}: {e}")
+        traceback.print_exc()
         return "Erro ao carregar a página da feira", 500
     finally:
         if conn: conn.close()
 
-# --- ROTAS API (ATUALIZADAS COM MAIS TRY-EXCEPT E LOGS) ---
 
+# --- ROTAS DE API PARA FEIRAS (Consolidadas) ---
+
+@app.route('/api/feiras/tipos') # Endpoint para listar os tipos de feira disponíveis
+def get_tipos_feira():
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT DISTINCT tipo_feira FROM feiras WHERE tipo_feira IS NOT NULL AND tipo_feira != '' ORDER BY tipo_feira;")
+        tipos = [row[0] for row in cur.fetchall()]
+        cur.close()
+        return jsonify(tipos)
+    except Exception as e:
+        print(f"ERRO em /api/feiras/tipos: {e}")
+        traceback.print_exc()
+        return jsonify({'error': 'Erro ao buscar tipos de feira'}), 500
+    finally:
+        if conn: conn.close()
+
+
+@app.route('/api/feiras') # Endpoint principal para buscar feiras, com filtro opcional por tipo
+def get_api_feiras():
+    conn = None
+    try:
+        tipo_feira_filtro = request.args.get('tipo') # Pega o parâmetro ?tipo= da URL
+        limite = request.args.get('limite', default=None, type=int) # Limite opcional
+
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+
+        query = "SELECT * FROM feiras"
+        params = []
+
+        if tipo_feira_filtro:
+            query += " WHERE tipo_feira ILIKE %s" # ILIKE para case-insensitive
+            params.append(f"%{tipo_feira_filtro}%") # Busca parcial pelo tipo
+
+        query += " ORDER BY id" # Ou outra ordenação desejada
+
+        if limite:
+            query += " LIMIT %s"
+            params.append(limite)
+
+        cur.execute(query + ";", tuple(params))
+        feiras_raw = cur.fetchall()
+        cur.close()
+
+        # Processa os dados antes de retornar (formata, adiciona URL relativa)
+        feiras_processadas = []
+        for feira in feiras_raw:
+            feira_dict = format_db_data(dict(feira))
+            slug = feira_dict.get('slug')
+            if slug:
+                 # URL relativa para o frontend usar
+                feira_dict['url'] = f'/feiras/{slug}'
+                feiras_processadas.append(feira_dict)
+            else:
+                 print(f"AVISO: Feira ID {feira_dict.get('id')} não possui slug. Omitida da API /api/feiras.")
+
+        return jsonify(feiras_processadas)
+
+    except psycopg2.errors.UndefinedTable:
+        print(f"ERRO em /api/feiras: Tabela 'feiras' não encontrada.")
+        return jsonify({'error': "Erro interno (tabela 'feiras' ausente)."}), 500
+    except Exception as e:
+        print(f"ERRO no endpoint /api/feiras: {e}")
+        traceback.print_exc()
+        return jsonify({'error': 'Erro interno ao buscar feiras.'}), 500
+    finally:
+        if conn: conn.close()
+
+# --- ROTAS ANTIGAS /api/gastronomicas, /api/artesanais - Removidas ou Redirecionadas ---
+# Você pode remover essas rotas ou fazê-las apenas chamar a nova /api/feiras?tipo=...
+# Exemplo de remoção (recomendado):
+# @app.route('/api/gastronomicas') ... (REMOVER)
+# @app.route('/api/artesanais') ... (REMOVER)
+# @app.route('/api/outrasfeiras') ... (REMOVER)
+
+
+# --- ROTA /api/filtros (Mantida, mas usando a tabela 'feiras') ---
 @app.route('/api/filtros')
 def get_filtros():
-    conn = None # Definir conn como None inicialmente
+    conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Usando a tabela 'feiras' original para filtros, assumindo que ela ainda existe
-        cur.execute('SELECT DISTINCT bairro FROM feiras ORDER BY bairro;')
+        # Busca bairros distintos da tabela 'feiras'
+        cur.execute('SELECT DISTINCT bairro FROM feiras WHERE bairro IS NOT NULL ORDER BY bairro;')
         bairros_db = cur.fetchall()
         cur.close()
 
         filtros = {}
         for item in bairros_db:
-            bairro = item.get('bairro') # Usar .get()
-            if bairro: # Ignorar bairros nulos ou vazios
-                regiao = BAIRRO_REGIAO_MAP.get(bairro.strip().upper(), 'Outras') # Normalizar bairro
+            bairro = item.get('bairro')
+            if bairro:
+                # Usa o mapeamento para encontrar a região
+                regiao = BAIRRO_REGIAO_MAP.get(bairro.strip().upper(), 'Outras')
                 if regiao not in filtros:
                     filtros[regiao] = []
-                if bairro not in filtros[regiao]: # Evitar duplicados se houver casing diferente
+                # Adiciona bairro se ainda não estiver na lista da região
+                if bairro not in filtros[regiao]:
                      filtros[regiao].append(bairro)
 
-        # Ordenar os bairros dentro de cada região
+        # Ordena bairros dentro de cada região
         for regiao in filtros:
             filtros[regiao].sort()
 
         return jsonify(filtros)
     except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /api/filtros: A tabela 'feiras' não foi encontrada no banco.")
-         return jsonify({'error': "Erro interno ao buscar filtros (tabela 'feiras' ausente)."}), 500
+         print(f"ERRO em /api/filtros: Tabela 'feiras' não encontrada.")
+         return jsonify({'error': "Erro interno (tabela 'feiras' ausente)."}), 500
     except Exception as e:
         print(f"ERRO no endpoint /api/filtros: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        traceback.print_exc()
         return jsonify({'error': 'Erro interno ao buscar filtros.'}), 500
     finally:
         if conn: conn.close()
 
 
-@app.route('/api/feiras')
-def get_feiras():
-    conn = None # Definir conn como None inicialmente
-    try:
-        limite_query = request.args.get('limite', default=1000, type=int)
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        cur.execute('SELECT * FROM feiras ORDER BY id LIMIT %s;', (limite_query,))
-        feiras = cur.fetchall()
-        cur.close()
-        # Formata datas/horas antes de enviar JSON (se houver colunas de data/hora)
-        feiras_processadas = [format_feira_data(dict(f)) for f in feiras]
-        return jsonify(feiras_processadas)
-    except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /api/feiras: A tabela 'feiras' não foi encontrada no banco.")
-         return jsonify({'error': "Erro interno ao buscar feiras livres (tabela 'feiras' ausente)."}), 500
-    except Exception as e:
-        print(f"ERRO no endpoint /api/feiras: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return jsonify({'error': 'Erro interno ao buscar feiras livres.'}), 500
-    finally:
-        if conn: conn.close()
-
-# --- FUNÇÃO HELPER PARA PROCESSAR FEIRAS COM SLUG ---
-def process_feiras_com_slug(feiras_raw, tipo_rota):
-    feiras_processadas = []
-    for feira in feiras_raw:
-        feira_dict = dict(feira)
-        # Formata datas/horas para ISO e converte Decimals para float
-        for key, value in feira_dict.items():
-            if isinstance(value, (datetime.date, datetime.time)):
-                feira_dict[key] = value.isoformat() if value else None
-            elif isinstance(value, decimal.Decimal):
-                feira_dict[key] = float(value)
-
-        # Tenta pegar o slug, se não existir, loga um aviso
-        slug = feira_dict.get('slug')
-        if slug:
-            feira_dict['url'] = f'/{tipo_rota}/{slug}'
-            feiras_processadas.append(feira_dict)
-        else:
-            print(f"AVISO: Feira ID {feira_dict.get('id')} na tabela '{tipo_rota}' não possui um 'slug'. Não será incluída na API.")
-            
-    return feiras_processadas
-
-@app.route('/api/gastronomicas')
-def get_gastronomicas():
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
-        cur.execute('SELECT * FROM gastronomicas ORDER BY id;')
-        feiras_raw = cur.fetchall()
-        cur.close()
-        feiras_processadas = process_feiras_com_slug(feiras_raw, 'gastronomicas')
-        return jsonify(feiras_processadas)
-    except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /api/gastronomicas: A tabela 'gastronomicas' não foi encontrada.")
-         return jsonify({'error': "Erro interno ao buscar feiras (tabela 'gastronomicas' ausente)."}), 500
-    except psycopg2.errors.UndefinedColumn as e:
-         print(f"ERRO em /api/gastronomicas: Coluna não encontrada - {e}")
-         traceback.print_exc() # Log detalhado no Render
-         return jsonify({'error': "Erro interno: Estrutura da tabela 'gastronomicas' incorreta."}), 500
-    except Exception as e:
-        print(f"ERRO no endpoint /api/gastronomicas: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return jsonify({'error': 'Erro interno ao buscar feiras gastronômicas.'}), 500
-    finally:
-        if conn: conn.close()
-
-@app.route('/api/artesanais')
-def get_artesanais():
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
-        cur.execute('SELECT * FROM artesanais ORDER BY id;')
-        feiras_raw = cur.fetchall()
-        cur.close()
-        feiras_processadas = process_feiras_com_slug(feiras_raw, 'artesanais')
-        return jsonify(feiras_processadas)
-    except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /api/artesanais: A tabela 'artesanais' não foi encontrada.")
-         return jsonify({'error': "Erro interno ao buscar feiras (tabela 'artesanais' ausente)."}), 500
-    except psycopg2.errors.UndefinedColumn as e:
-         print(f"ERRO em /api/artesanais: Coluna não encontrada - {e}")
-         traceback.print_exc() # Log detalhado no Render
-         return jsonify({'error': "Erro interno: Estrutura da tabela 'artesanais' incorreta."}), 500
-    except Exception as e:
-        print(f"ERRO no endpoint /api/artesanais: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return jsonify({'error': 'Erro interno ao buscar feiras artesanais.'}), 500
-    finally:
-        if conn: conn.close()
-
-@app.route('/api/outrasfeiras')
-def get_outrasfeiras():
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # CORREÇÃO: Alterado de SELECT explícito para SELECT * para evitar erro se a coluna 'slug' não existir.
-        cur.execute('SELECT * FROM outrasfeiras ORDER BY id;')
-        feiras_raw = cur.fetchall()
-        cur.close()
-        feiras_processadas = process_feiras_com_slug(feiras_raw, 'outrasfeiras')
-        return jsonify(feiras_processadas)
-    except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /api/outrasfeiras: A tabela 'outrasfeiras' não foi encontrada.")
-         return jsonify({'error': "Erro interno ao buscar feiras (tabela 'outrasfeiras' ausente)."}), 500
-    except psycopg2.errors.UndefinedColumn as e:
-         print(f"ERRO em /api/outrasfeiras: Coluna não encontrada - {e}")
-         traceback.print_exc() # Log detalhado no Render
-         return jsonify({'error': "Erro interno: Estrutura da tabela 'outrasfeiras' incorreta."}), 500
-    except Exception as e:
-        print(f"ERRO no endpoint /api/outrasfeiras: {e}")
-        traceback.print_exc() # Log detalhado no Render
-        return jsonify({'error': 'Erro interno ao buscar outras feiras.'}), 500
-    finally:
-        if conn: conn.close()
-
-# --- ROTA DE SUBMISSÃO (ATUALIZADA com try-except) ---
+# --- ROTA DE SUBMISSÃO (Sem alteração, continua usando a tabela 'contato') ---
 @app.route('/submit-fair', methods=['POST'])
 def handle_submission():
     conn = None
@@ -415,13 +341,13 @@ def handle_submission():
         if not data:
             return jsonify({'success': False, 'message': 'Nenhum dado recebido.'}), 400
 
-        # Validação simples
-        required_fields = ['nomeFeira', 'enderecoCompleto']
+        required_fields = ['nomeFeira', 'enderecoCompleto'] # Adapte se necessário
         if not all(field in data and data[field] for field in required_fields):
             return jsonify({'success': False, 'message': 'Campos obrigatórios ausentes.'}), 400
 
         conn = get_db_connection()
         cur = conn.cursor()
+        # Insere na tabela 'contato' (ou 'submissoes' se você preferir)
         sql = """
             INSERT INTO contato (nome_feira, regiao, endereco, dias_funcionamento, categoria, nome_responsavel, email_contato, whatsapp, descricao)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s);
@@ -436,44 +362,48 @@ def handle_submission():
         return jsonify({'success': True, 'message': 'Feira submetida com sucesso!'})
 
     except psycopg2.errors.UndefinedTable:
-         print(f"ERRO em /submit-fair: A tabela 'contato' não foi encontrada.")
+         print(f"ERRO em /submit-fair: Tabela 'contato' não encontrada.")
          if conn: conn.rollback()
-         return jsonify({'success': False, 'message': "Erro interno ao processar submissão (tabela 'contato' ausente)."}), 500
+         return jsonify({'success': False, 'message': "Erro interno (tabela 'contato' ausente)."}), 500
     except Exception as e:
         print(f"ERRO no endpoint /submit-fair: {e}")
-        traceback.print_exc() # Log detalhado no Render
+        traceback.print_exc()
         if conn: conn.rollback()
         return jsonify({'success': False, 'message': 'Erro interno ao processar submissão.'}), 500
     finally:
         if conn: conn.close()
 
-# --- ROTA CORINGA E EXECUÇÃO (SEM ALTERAÇÃO) ---
-# A ROTA CORINGA FOI REMOVIDA PARA RESTAURAR O COMPORTAMENTO PADRÃO DO FLASK
-# E CORRIGIR O PROBLEMA DE ROTEAMENTO.
-
-
-# O Flask, por padrão, já serve os arquivos da pasta definida em 'static_folder'.
-# Como definimos static_folder='.', ele automaticamente servirá 'gastronomicas.html',
-# 'artesanais.html', etc., quando o navegador solicitar.
-# As rotas específicas como '/gastronomicas/<slug>' continuarão funcionando normalmente.
+# --- ROTA PARA SERVIR ARQUIVOS ESTÁTICOS E INDEX ---
+@app.route('/')
+def index():
+    # Servir o index.html principal
+    return send_from_directory('.', 'index.html')
 
 @app.route('/<path:path>')
 def serve_static_files(path):
-    # Evita servir o próprio app.py ou arquivos .env
-    if path == "app.py" or path.endswith(".env"):
-        return "Not Found", 404
-    # Se o caminho solicitado for um arquivo que existe, sirva-o
-    if os.path.isfile(os.path.join('.', path)):
-        return send_from_directory('.', path)
-    # Se não for um arquivo, retorna 404
+    # Lista de arquivos/pastas permitidos no diretório raiz
+    allowed_files_folders = ['index.html', 'anuncie.html','artesanais.html', 'gastronomicas.html', 'feiras-livres.html', 'contato.html', 'assets', 'templates'] # Adicione outros arquivos HTML ou pastas se necessário
+
+    # Extrai a primeira parte do caminho para verificar se é uma pasta permitida
+    base_path = path.split('/')[0]
+
+    # Verifica se é um arquivo/pasta permitido ou se está dentro de uma pasta permitida
+    if path in allowed_files_folders or base_path in allowed_files_folders:
+         # Evita servir o próprio app.py ou arquivos sensíveis
+        if path == "app.py" or path.endswith((".env", ".pyc")):
+             return "Not Found", 404
+        # Tenta servir o arquivo/diretório
+        if os.path.exists(os.path.join('.', path)):
+             return send_from_directory('.', path)
+
+    # Se não for encontrado ou não for permitido, retorna 404
     return "Not Found", 404
 
+
+# --- EXECUÇÃO ---
 if __name__ == '__main__':
-    # Configura o log para ser mais detalhado
     import logging
     logging.basicConfig(level=logging.INFO)
-    # Usa a porta definida pelo Render ou 10000 para desenvolvimento local se compatível
     port = int(os.environ.get("PORT", 10000))
-    # debug=False é crucial para produção no Render. Use True só localmente.
+    # debug=False é crucial para produção no Render.
     app.run(host="0.0.0.0", port=port, debug=False)
-
