@@ -150,12 +150,8 @@ def blog_post_detalhe(slug):
 
 @app.route('/')
 def index():
-    # Verifica se o arquivo existe antes de tentar enviar
-    if os.path.exists('index.html'):
-        return send_from_directory('.', 'index.html')
-    else:
-        print("ERRO: Arquivo index.html não encontrado no diretório raiz.")
-        return "Página inicial não encontrada.", 404
+    # O Flask já serve o index.html por padrão se static_folder='.'
+    return send_from_directory('.', 'index.html')
 
 
 def format_feira_data(data_dict):
@@ -453,34 +449,25 @@ def handle_submission():
         if conn: conn.close()
 
 # --- ROTA CORINGA E EXECUÇÃO (SEM ALTERAÇÃO) ---
+# A ROTA CORINGA FOI REMOVIDA PARA RESTAURAR O COMPORTAMENTO PADRÃO DO FLASK
+# E CORRIGIR O PROBLEMA DE ROTEAMENTO.
+
+
+# O Flask, por padrão, já serve os arquivos da pasta definida em 'static_folder'.
+# Como definimos static_folder='.', ele automaticamente servirá 'gastronomicas.html',
+# 'artesanais.html', etc., quando o navegador solicitar.
+# As rotas específicas como '/gastronomicas/<slug>' continuarão funcionando normalmente.
+
 @app.route('/<path:path>')
 def serve_static_files(path):
     # Evita servir o próprio app.py ou arquivos .env
     if path == "app.py" or path.endswith(".env"):
         return "Not Found", 404
-    # Verifica se o caminho solicitado é um diretório
-    full_path = os.path.join('.', path)
-    if os.path.isdir(full_path):
-         # Se for um diretório e existir um index.html dentro dele, sirva-o
-        index_path = os.path.join(full_path, 'index.html')
-        if os.path.isfile(index_path):
-            return send_from_directory(full_path, 'index.html')
-        else:
-            # Se for um diretório sem index.html, retorna 404 (ou 403 Forbidden)
-            return "Directory listing not allowed or index.html not found.", 404
-    # Se for um arquivo e existir, sirva-o
-    elif os.path.isfile(full_path):
+    # Se o caminho solicitado for um arquivo que existe, sirva-o
+    if os.path.isfile(os.path.join('.', path)):
         return send_from_directory('.', path)
-    # Se não existir como arquivo nem diretório com index.html
-    else:
-        # Tenta servir index.html da raiz como fallback para SPA (Single Page App)
-        # Se você não usa roteamento no frontend, pode remover isso ou ajustar
-        if os.path.exists('index.html'):
-             print(f"INFO: Rota '{path}' não encontrada, servindo index.html como fallback.")
-             return send_from_directory('.', 'index.html')
-        else:
-             return "Not Found", 404
-
+    # Se não for um arquivo, retorna 404
+    return "Not Found", 404
 
 if __name__ == '__main__':
     # Configura o log para ser mais detalhado
