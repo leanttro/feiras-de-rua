@@ -1,8 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
 <head>
-    <!-- Google tag (gtag.js) -->
-<script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
@@ -697,8 +696,7 @@
                     </button>
                     <div class="busca-endereco">
                         <input type="text" id="input-endereco" placeholder="Digite um endereço em São Paulo...">
-                        <button style="display: none;">Buscar</button> <!-- Botão ocultado, a busca é automática -->
-                        <div id="address-suggestions"></div>
+                        <button style="display: none;">Buscar</button> <div id="address-suggestions"></div>
                     </div>
                 </div>
             </div>
@@ -726,13 +724,11 @@
             </div>
         </section>
 
-        <!-- Modal para detalhes da feira -->
         <div id="fair-modal" class="modal-overlay">
             <div class="modal-content">
                 <button id="modal-close" class="modal-close-btn">&times;</button>
                 <div id="modal-body">
-                    <!-- Conteúdo dos detalhes da feira será injetado aqui pelo JavaScript -->
-                </div>
+                    </div>
             </div>
         </div>
 
@@ -773,7 +769,7 @@
             // --- Lógica dos Filtros e Busca ---
             // ALTERAÇÃO CRÍTICA: Puxando dados da nova tabela 'feiras_livres'
             const API_URL = 'https://feiras-de-rua.onrender.com/api/feiras_livres'; 
-            const API_FILTROS_URL = 'https://feiras-de-rua.onrender.com/api/filtros';
+            // API_FILTROS_URL removida, buscaremos os bairros diretamente da API principal
             const filtroBairroSelect = document.getElementById('filtro-bairro-select');
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             
@@ -893,10 +889,16 @@
             
             filtroBairroSelect.addEventListener('change', () => {
                 const bairroSelecionado = filtroBairroSelect.value;
-                const listaBase = feirasExibidas.length > 0 ? feirasExibidas : todasAsFeiras;
+                // A lista base deve ser sempre todas as feiras no início, 
+                // para que o filtro funcione independente da ordem
+                const listaBase = todasAsFeiras; 
+                
                 if (bairroSelecionado === 'todos') {
-                    renderizarFeiras(listaBase);
+                    // Se estiver ordenado por distância, exibe essa lista, se não, exibe todas
+                    const listaParaExibir = feirasExibidas.length > 0 && feirasExibidas !== todasAsFeiras ? feirasExibidas : todasAsFeiras;
+                    renderizarFeiras(listaParaExibir);
                 } else {
+                    // Filtra na lista original
                     const feirasFiltradas = listaBase.filter(feira => feira.bairro === bairroSelecionado);
                     renderizarFeiras(feirasFiltradas);
                 }
@@ -1008,36 +1010,41 @@
                 resultadosDiv.innerHTML = '<p class="loading-message">Buscando feiras e bairros...</p>';
                 try {
                     const fetchOptions = { cache: 'no-cache' };
-                    const feirasPromise = fetch(API_URL + '?limite=1000', fetchOptions);
-                    const filtrosPromise = fetch(API_FILTROS_URL, fetchOptions);
-
-                    const [feirasResponse, filtrosResponse] = await Promise.all([feirasPromise, filtrosPromise]);
+                    // Apenas uma chamada para buscar todas as feiras
+                    const feirasResponse = await fetch(API_URL + '?limite=1000', fetchOptions);
 
                     if (!feirasResponse.ok) throw new Error(`Erro na rede (feiras): ${feirasResponse.statusText}`);
                     
                     todasAsFeiras = await feirasResponse.json();
                     
-                    if (filtrosResponse && filtrosResponse.ok) {
-                        const filtrosData = await filtrosResponse.json();
-                        const todosOsBairros = Object.values(filtrosData).flat();
-                        const bairrosUnicos = [...new Set(todosOsBairros)].filter(b => b).sort();
-                        
-                        while (filtroBairroSelect.options.length > 1) {
-                            filtroBairroSelect.remove(1);
-                        }
-
-                        bairrosUnicos.forEach(bairro => {
-                            const option = document.createElement('option');
-                            option.value = bairro;
-                            option.textContent = bairro;
-                            filtroBairroSelect.appendChild(option);
-                        });
+                    // --- NOVA LÓGICA DE FILTRO DE BAIRROS ---
+                    // 1. Coleta todos os bairros únicos da lista de feiras
+                    const bairrosUnicos = [...new Set(
+                        todasAsFeiras
+                            .map(f => f.bairro) // Extrai apenas o bairro
+                            .filter(b => b && b.trim() !== '') // Remove valores nulos ou vazios
+                    )].sort(); // Ordena alfabeticamente
+                    
+                    // 2. Limpa o select, mantendo a opção "Todos"
+                    while (filtroBairroSelect.options.length > 1) {
+                        filtroBairroSelect.remove(1);
                     }
+
+                    // 3. Adiciona as novas opções ao select
+                    bairrosUnicos.forEach(bairro => {
+                        const option = document.createElement('option');
+                        option.value = bairro;
+                        option.textContent = bairro;
+                        filtroBairroSelect.appendChild(option);
+                    });
+                    
+                    // --- FIM NOVA LÓGICA DE FILTRO DE BAIRROS ---
                     
                     renderizarFeiras(todasAsFeiras);
 
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
+                    // Use a mensagem de erro que você já tinha:
                     resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Verifique a conexão com o servidor.</p>';
                 }
             }
