@@ -1374,16 +1374,39 @@
             mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileNavOverlay.classList.remove('active')));
 
             // --- Carousels ---
+            // Função CORRIGIDA para filtrar e ordenar feiras com datas futuras/presentes
             async function setupProximasFeirasCarousel() {
                 try {
                     const allFairs = await fetchWithRetry('/api/feiras');
+                    
+                    // Cria um objeto Date para o início do dia de hoje (meia-noite)
                     const hoje = new Date();
                     hoje.setHours(0, 0, 0, 0);
 
                     const upcomingFairs = allFairs
+                        // 1. Filtra APENAS as feiras que possuem o campo data_inicio (não nulo)
                         .filter(feira => feira.data_inicio)
-                        .map(feira => ({ ...feira, startDateObj: new Date(feira.data_inicio.split('/').reverse().join('-') + 'T00:00:00') }))
-                        .filter(feira => feira.startDateObj >= hoje)
+                        .map(feira => {
+                            // 2. Converte as datas (esperadas em formato dd/mm/yyyy) para objetos Date
+                            const [dayStart, monthStart, yearStart] = feira.data_inicio.split('/');
+                            const startDateObj = new Date(`${yearStart}-${monthStart}-${dayStart}T00:00:00`);
+
+                            // Usa data_fim se existir, caso contrário usa data_inicio
+                            let endDateObj;
+                            if (feira.data_fim) {
+                                const [dayEnd, monthEnd, yearEnd] = feira.data_fim.split('/');
+                                endDateObj = new Date(`${yearEnd}-${monthEnd}-${dayEnd}T23:59:59`); // Inclui o dia todo
+                            } else {
+                                // Se não tem data_fim, considera que a feira termina no final do dia de data_inicio
+                                endDateObj = new Date(`${yearStart}-${monthStart}-${dayStart}T23:59:59`); 
+                            }
+                            
+                            return { ...feira, startDateObj, endDateObj };
+                        })
+                        // 3. Filtra as feiras cuja data de TÉRMINO (endDateObj) seja MAIOR OU IGUAL a hoje
+                        // Isso garante que feiras que começaram no passado, mas ainda estão ativas, sejam incluídas.
+                        .filter(feira => feira.endDateObj >= hoje)
+                        // 4. Ordena as feiras pela data de início mais próxima (ascendente)
                         .sort((a, b) => a.startDateObj - b.startDateObj);
 
                     proximasFeirasContainer.innerHTML = '';
@@ -1449,7 +1472,7 @@
             // --- Initial Page Load ---
             function initializePage() {
                 loadSlicerFilters(); // Carrega os filtros e a primeira categoria de feiras
-                setupProximasFeirasCarousel();
+                setupProximasFeirasCarousel(); // AGORA COM FILTRAGEM DE DATA ATUALIZADA
                 setupBlogCarousel();
                 setupCarouselNavigation(proximasFeirasContainer, prevProximaFeiraBtn, nextProximaFeiraBtn);
                 setupCarouselNavigation(blogCarouselContainer, prevBlogPostBtn, nextBlogPostBtn);
