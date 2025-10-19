@@ -435,7 +435,7 @@
         }
         
         .loading-message, .error-message, .info-message {
-            grid-column: 1 / -1;
+            grid-column: 1 / -1; 
             text-align: center;
             font-size: 1.2em;
             color: #666;
@@ -446,29 +446,46 @@
             justify-content: center;
         }
 
+        /* --- VISUALIZAÇÃO PADRÃO: CARROSSEL (FLEX/SCROLL) --- */
         .fair-cards-container {
-            display: flex;
-            overflow-x: auto;
+            display: flex; /* VAI VOLTAR PARA O CARROSSEL POR PADRÃO */
+            overflow-x: scroll; /* Scroll horizontal obrigatório */
             scroll-snap-type: x mandatory;
             gap: 35px;
             padding-bottom: 20px;
             min-height: 450px;
             scrollbar-width: thin;
-            scrollbar-color: var(--medium-gray) transparent;
+            scrollbar-color: var(--medium-gray) var(--light-gray); /* Barra de rolagem mais visível */
         }
-
+        
         .fair-cards-container::-webkit-scrollbar {
-            height: 8px;
+            height: 10px; /* Aumenta a altura da barra para destaque */
         }
         .fair-cards-container::-webkit-scrollbar-track {
-            background: transparent;
+            background: var(--medium-gray); /* Fundo da barra */
+            border-radius: 10px;
         }
         .fair-cards-container::-webkit-scrollbar-thumb {
-            background: var(--medium-gray);
+            background: var(--dark-green); /* Cor do "polegar" da barra */
             border-radius: 10px;
         }
         .fair-cards-container::-webkit-scrollbar-thumb:hover {
-            background: var(--dark-gray);
+            background: var(--primary-green);
+        }
+
+        /* --- VISUALIZAÇÃO GRADE (GRID) --- */
+        .fair-cards-container.grid-view {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 35px;
+            overflow-x: hidden; /* Remove o scroll horizontal na grade */
+            scroll-snap-type: none;
+            padding-bottom: 0;
+            scrollbar-width: none;
+        }
+
+        .fair-cards-container.grid-view::-webkit-scrollbar {
+            display: none;
         }
 
         /* --- CARD STYLES (COMBINED) --- */
@@ -482,8 +499,15 @@
             display: flex;
             flex-direction: column;
             border: 1px solid var(--medium-gray);
+            /* Estilo Carrossel: Largura fixa para scroll */
+            flex: 0 0 320px; 
             scroll-snap-align: start;
-            flex: 0 0 320px;
+        }
+        
+        /* Ajuste para o modo Grade */
+        .fair-cards-container.grid-view .fair-card {
+            flex: 0 0 auto;
+            width: 100%;
         }
 
         /* Envolve o card inteiro com o link */
@@ -600,10 +624,36 @@
             box-shadow: 0 4px 10px rgba(76, 175, 80, 0.3);
         }
 
+        /* --- Container para os botões de visualização --- */
+        .view-toggle-container {
+            margin-bottom: 25px;
+            text-align: right;
+            padding: 0 10px; /* Espaço para não encostar na borda */
+        }
+        .view-toggle-btn {
+            background-color: var(--white);
+            color: var(--primary-green);
+            border: 1px solid var(--primary-green);
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            margin-left: 10px;
+        }
+        .view-toggle-btn.active {
+            background-color: var(--primary-green);
+            color: var(--white);
+        }
+        .view-toggle-btn:hover:not(.active) {
+            background-color: var(--light-green);
+        }
+
         /* --- Container for the "Ver Todas" button --- */
         .see-all-container {
             margin-top: 50px;
             text-align: center;
+            display: none !important; /* Esconder o botão "Ver Todas" pois agora a seção mostra todas */
         }
 
         .see-all-container .button {
@@ -646,7 +696,7 @@
 
         .carousel-container {
             display: flex;
-            overflow-x: scroll; /* Alterado de 'auto' para 'scroll' para sempre mostrar a barra */
+            overflow-x: scroll; /* Scroll horizontal */
             scroll-snap-type: x mandatory;
             gap: 35px;
             padding-bottom: 20px; /* Espaço para a barra de rolagem, se visível */
@@ -786,24 +836,37 @@
             #btn-buscar-endereco { width: 100%; margin-top: 10px; }
             #address-suggestions { top: 110px; }
             
+            /* Ajuste para o carrossel no mobile (mantendo scroll) */
             .fair-cards-container {
                 gap: 15px;
                 padding: 0 20px 20px 20px;
                 margin: 0 -20px;
-                scrollbar-width: none;
+                overflow-x: scroll; 
+                display: flex;
             }
-
             .fair-cards-container::-webkit-scrollbar {
-                display: none;
+                height: 8px;
             }
             
             .fair-card {
-                scroll-snap-align: center;
+                scroll-snap-align: start;
                 flex: 0 0 85%;
                 max-width: 85%;
             }
+            
+            /* Ajuste para a grade no mobile */
+            .fair-cards-container.grid-view {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 15px;
+                overflow-x: hidden;
+            }
+            .fair-cards-container.grid-view .fair-card {
+                flex: 0 0 auto;
+                max-width: none;
+            }
 
-            /* Responsividade para o novo carrossel */
+            /* Responsividade para o carrossel de Próximas Feiras */
             .carousel-container {
                 gap: 20px;
             }
@@ -817,6 +880,11 @@
             }
             .carousel-btn.prev { left: 5px; }
             .carousel-btn.next { right: 5px; }
+            
+            .view-toggle-container {
+                text-align: center;
+                margin-bottom: 20px;
+            }
         }
 
         @media (max-width: 480px) {
@@ -979,8 +1047,18 @@
                     <!-- Botões do filtro serão injetados aqui pelo JS -->
                     <p class="loading-message">Carregando filtros...</p>
                 </div>
+                
+                <!-- NOVO: Botões de alternância de visualização -->
+                <div class="view-toggle-container">
+                    <button class="view-toggle-btn active" id="btnCarouselView">
+                        <i class="fas fa-stream"></i> Carrossel
+                    </button>
+                    <button class="view-toggle-btn" id="btnGridView">
+                        <i class="fas fa-th-large"></i> Grade
+                    </button>
+                </div>
 
-                <!-- Cards Container -->
+                <!-- Cards Container (Voltou a ser Carrossel por padrão) -->
                 <div class="fair-cards-container" id="fairCardsContainer">
                     <!-- Cards will be injected here by JS -->
                 </div>
@@ -1041,6 +1119,10 @@
             const fairCardsContainer = document.getElementById('fairCardsContainer');
             const seeAllBtn = document.getElementById('seeAllBtn');
             const seeAllContainer = document.querySelector('.see-all-container');
+            
+            // --- View Toggle Elements ---
+            const btnCarouselView = document.getElementById('btnCarouselView');
+            const btnGridView = document.getElementById('btnGridView');
             
             // --- Address search elements ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
@@ -1168,10 +1250,26 @@
                 const tipoParaFiltrar = clickedBtn.dataset.tipo;
                 fetchAndRenderFairs(tipoParaFiltrar);
             }
+            
+            // --- Função de Alternância de Visualização ---
+            function toggleView(view) {
+                if (view === 'grid') {
+                    fairCardsContainer.classList.add('grid-view');
+                    btnGridView.classList.add('active');
+                    btnCarouselView.classList.remove('active');
+                } else { // 'carousel'
+                    fairCardsContainer.classList.remove('grid-view');
+                    btnCarouselView.classList.add('active');
+                    btnGridView.classList.remove('active');
+                }
+            }
+            
+            btnCarouselView.addEventListener('click', () => toggleView('carousel'));
+            btnGridView.addEventListener('click', () => toggleView('grid'));
+            
 
             async function fetchAndRenderFairs(tipo) {
                 fairCardsContainer.innerHTML = '<p class="loading-message">A carregar feiras...</p>';
-                seeAllContainer.style.display = 'none'; // Esconde o botão "Ver Todas" por padrão
                 
                 try {
                     let apiUrl = '/api/feiras';
@@ -1182,12 +1280,16 @@
                     let fairs = await fetchWithRetry(apiUrl);
                     currentFairsData = fairs; // Atualiza o estado global com os dados atuais
                     
+                    // 1. Aplica ordenação. Prioriza distância se coordenadas do usuário existirem.
                     if (userCoordinates) {
                          currentFairsData.forEach(feira => {
                             const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
                             feira.distancia = haversineDistance(userCoordinates, feiraLocation);
                         });
                         currentFairsData.sort((a, b) => a.distancia - b.distancia);
+                    } else {
+                        // Ordenação alfabética pelo nome da feira se não houver coordenadas
+                        currentFairsData.sort((a, b) => a.nome_feira.localeCompare(b.nome_feira));
                     }
                     
                     fairCardsContainer.innerHTML = ''; // Limpa o container
@@ -1196,27 +1298,15 @@
                         return;
                     }
 
-                    // Limita a exibição a 4 cards na página inicial
-                    const fairsToDisplay = currentFairsData.slice(0, 4);
-                    fairsToDisplay.forEach(feira => {
-                        fairCardsContainer.innerHTML += createGenericCard(feira);
-                    });
-                    
-                    // Mostra o botão "Ver Todas" se houver mais de 4 feiras e um tipo for selecionado
-                    if (currentFairsData.length > 4 && tipo) {
-                        const pageMap = {
-                            'Gastronômica': 'gastronomicas.html',
-                            'Artesanal': 'artesanais.html',
-                            'Cultural': 'artesanais.html', // Exemplo
-                            'Feira Livre': 'feiras-livres.html'
-                            // Adicione outros mapeamentos conforme necessário
-                        };
-                        const linkPagina = pageMap[tipo]; // Encontra o link correspondente
-                        if(linkPagina){
-                            seeAllBtn.href = linkPagina;
-                            seeAllContainer.style.display = 'block';
+                    // 2. Renderiza TODAS as feiras da categoria/filtro
+                    currentFairsData.forEach(feira => {
+                        // Garante que APENAS feiras com dia_semana OU data_inicio/data_fim sejam exibidas aqui.
+                        // Feiras que não tem nenhuma informação de data/frequência não devem aparecer.
+                        if (feira.dia_semana || feira.data_inicio) {
+                            fairCardsContainer.innerHTML += createGenericCard(feira);
                         }
-                    }
+                    });
+
 
                 } catch (error) {
                     fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar as feiras. Tente novamente mais tarde.</p>';
@@ -1374,7 +1464,7 @@
             mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileNavOverlay.classList.remove('active')));
 
             // --- Carousels ---
-            // Função CORRIGIDA para filtrar e ordenar feiras com datas futuras/presentes
+            // Função para filtrar e ordenar feiras ATIVAS (com data de término futura/presente)
             async function setupProximasFeirasCarousel() {
                 try {
                     const allFairs = await fetchWithRetry('/api/feiras');
@@ -1389,6 +1479,7 @@
                         .map(feira => {
                             // 2. Converte as datas (esperadas em formato dd/mm/yyyy) para objetos Date
                             const [dayStart, monthStart, yearStart] = feira.data_inicio.split('/');
+                            // Usa data_inicio para ordenação
                             const startDateObj = new Date(`${yearStart}-${monthStart}-${dayStart}T00:00:00`);
 
                             // Usa data_fim se existir, caso contrário usa data_inicio
