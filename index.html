@@ -486,6 +486,15 @@
             flex: 0 0 320px;
         }
 
+        /* Envolve o card inteiro com o link */
+        .fair-card a {
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
         .fair-card:hover {
             transform: translateY(-8px);
             box-shadow: var(--shadow-medium);
@@ -851,89 +860,8 @@
         .blog-card-content .button { margin-top: auto; align-self: flex-start; background-color: var(--dark-green); color: var(--white); padding: 10px 20px; border-radius: 6px; text-decoration: none; font-weight: 600; }
         .carousel-container .blog-card { scroll-snap-align: start; flex: 0 0 320px; }
 
-        /* --- Estilos do Modal --- */
-        .modal-overlay {
-            display: none;
-            position: fixed;
-            z-index: 2000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgba(0,0,0,0.6);
-            align-items: center;
-            justify-content: center;
-        }
-        .modal-content {
-            background-color: var(--white);
-            margin: auto;
-            padding: 25px;
-            border-radius: 12px;
-            width: 90%;
-            max-width: 600px;
-            position: relative;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            animation: fadeIn 0.3s;
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; transform: scale(0.95); }
-            to { opacity: 1; transform: scale(1); }
-        }
-
-        .modal-close-btn {
-            color: #aaa;
-            position: absolute;
-            top: 10px;
-            right: 20px;
-            font-size: 28px;
-            font-weight: bold;
-            border: none;
-            background: none;
-            cursor: pointer;
-        }
-        .modal-close-btn:hover,
-        .modal-close-btn:focus {
-            color: black;
-        }
-
-        #modal-body {
-            text-align: left;
-        }
-        .modal-image {
-            width: 100%;
-            height: 250px;
-            object-fit: cover;
-            border-radius: 8px;
-            margin-bottom: 20px;
-        }
-        .modal-title {
-            font-size: 2em;
-            color: var(--dark-gray);
-            margin: 0 0 15px 0;
-        }
-        .modal-description {
-            white-space: pre-wrap;
-            margin-bottom: 20px;
-        }
-        #modal-body p {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            margin-bottom: 12px;
-        }
-        #modal-body p i {
-            color: var(--primary-green);
-            width: 20px;
-            text-align: center;
-        }
-        .maps-button {
-            display: inline-flex;
-            gap: 8px;
-            align-items: center;
-            margin-top: 15px;
-        }
+        /* --- Estilos do Modal (REMOVIDOS para navegação direta) --- */
+        .modal-overlay { display: none; }
     </style>
 </head>
 <body>
@@ -1082,15 +1010,8 @@
 
     </main>
 
-    <!-- Modal para detalhes da feira -->
-    <div id="fair-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button id="modal-close" class="modal-close-btn">&times;</button>
-            <div id="modal-body">
-                <!-- Conteúdo do modal será injetado aqui -->
-            </div>
-        </div>
-    </div>
+    <!-- O Modal (fair-modal) e seus elementos relacionados foram removidos do HTML, 
+         pois a intenção é navegar diretamente para a página de detalhes. -->
 
 
     <!-- UPDATED FOOTER -->
@@ -1121,10 +1042,6 @@
             const seeAllBtn = document.getElementById('seeAllBtn');
             const seeAllContainer = document.querySelector('.see-all-container');
             
-            // --- Modal Elements ---
-            const modal = document.getElementById('fair-modal');
-            const modalCloseBtn = document.getElementById('modal-close');
-
             // --- Address search elements ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
             const inputEndereco = document.getElementById('input-endereco');
@@ -1140,20 +1057,24 @@
             const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
             // --- State and Config ---
-            const BASE_API_URL = ''; // Usar URLs relativas, já que o JS está no mesmo domínio
+            // CORREÇÃO: Definindo a URL base como o endereço da Render
+            const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
             let userCoordinates = null;
             let currentFairsData = []; // Armazena os dados da categoria ativa
 
             // --- Funções Auxiliares ---
             async function fetchWithRetry(url, options = {}, maxRetries = 3) {
+                // CORREÇÃO: Concatena a URL base com a URL específica
+                const finalUrl = url.startsWith('http') ? url : BASE_API_URL + url;
+
                 for (let i = 0; i < maxRetries; i++) {
                     try {
-                        const response = await fetch(url, options);
+                        const response = await fetch(finalUrl, options);
                         if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
                         return response.json();
                     } catch (error) {
                         if (i === maxRetries - 1) {
-                            console.error(`Falha final ao buscar ${url}:`, error);
+                            console.error(`Falha final ao buscar ${finalUrl}:`, error);
                             throw error;
                         }
                         await new Promise(resolve => setTimeout(resolve, Math.pow(2, i) * 1000));
@@ -1168,23 +1089,29 @@
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
                 const shortDescription = fullDescription.length > 100 ? fullDescription.substring(0, 97) + '...' : fullDescription;
                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(1)} km de distância</p>` : '';
+                // Garante que a URL seja válida, ou use um fallback para '#'
+                const feiraUrl = feira.url || `#`; 
 
                 let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
 
                 return `
                     <div class="fair-card" data-id="${feira.id}">
-                        <div class="fair-card-image">
-                            <img src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
-                        </div>
-                        <div class="fair-card-content">
-                            <h3>${feira.nome_feira}</h3>
-                            ${distanciaHtml}
-                            <p><i class="fas fa-calendar-day"></i> ${dateInfo}</p>
-                            <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                            <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
-                            <p class="fair-card-description">${shortDescription}</p>
-                            <a href="#" class="button ver-mais-btn">Ver mais</a>
-                        </div>
+                        <!-- O card inteiro agora é um link para a página de detalhes -->
+                        <a href="${feiraUrl}">
+                            <div class="fair-card-image">
+                                <img src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
+                            </div>
+                            <div class="fair-card-content">
+                                <h3>${feira.nome_feira}</h3>
+                                ${distanciaHtml}
+                                <p><i class="fas fa-calendar-day"></i> ${dateInfo}</p>
+                                <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
+                                <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
+                                <p class="fair-card-description">${shortDescription}</p>
+                                <!-- O botão 'Ver mais' não precisa de evento de clique, pois o <a> pai já faz o redirecionamento -->
+                                <span class="button ver-mais-btn">Ver mais</span>
+                            </div>
+                        </a>
                     </div>
                 `;
             }
@@ -1193,7 +1120,8 @@
 
             async function loadSlicerFilters() {
                 try {
-                    const tipos = await fetchWithRetry('/api/feiras/tipos');
+                    // CORREÇÃO: A URL é passada como caminho relativo (o BASE_API_URL é concatenado no fetchWithRetry)
+                    const tipos = await fetchWithRetry('/api/feiras/tipos'); 
                     slicerContainer.innerHTML = ''; // Limpa a mensagem "Carregando..."
                     
                     if (!tipos || tipos.length === 0) {
@@ -1295,58 +1223,10 @@
                 }
             }
             
-            // Lógica do Modal (permanece a mesma, mas usa `currentFairsData`)
-            fairCardsContainer.addEventListener('click', (event) => {
-                const verMaisBtn = event.target.closest('.ver-mais-btn');
-                if (verMaisBtn) {
-                    event.preventDefault();
-                    const card = event.target.closest('.fair-card');
-                    const feiraId = card.dataset.id;
-                    const feira = currentFairsData.find(f => String(f.id) === feiraId);
-                    if (feira) {
-                        abrirModal(feira);
-                    } else {
-                        console.error("Feira não encontrada nos dados atuais. ID:", feiraId);
-                    }
-                }
-            });
-
-            // ... (O resto da sua lógica de modal, busca de endereço, etc., continua aqui)
-             function abrirModal(feira) {
-                const modalBody = document.getElementById('modal-body');
-                const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i><strong>Distância:</strong> ${feira.distancia.toFixed(1)} km</p>` : '';
-                const formatTime = (time) => time ? time.substring(0, 5) : 'N/A';
-                const googleMapsUrl = feira.latitude && feira.longitude ? `https://www.google.com/maps?q=${feira.latitude},${feira.longitude}` : '#';
-                let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
-                
-                modalBody.innerHTML = `
-                    <img class="modal-image" src="${feira.imagem_url || 'https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
-                    <h2 class="modal-title">${feira.nome_feira}</h2>
-                    <pre class="modal-description">${feira.descricao || 'Descrição não disponível.'}</pre>
-                    ${distanciaHtml}
-                    <p><i class="fas fa-calendar-day"></i> <strong>Dias:</strong> ${dateInfo}</p>
-                    <p><i class="fas fa-clock"></i> <strong>Horário:</strong> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
-                    <p><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> ${feira.rua || 'Não informado'}</p>
-                     <p><i class="fas fa-tag"></i> <strong>Tipo:</strong> ${feira.tipo_feira || 'Não informado'}</p>
-                    <a href="${googleMapsUrl}" target="_blank" class="button maps-button" ${!feira.latitude || !feira.longitude ? 'style="display:none;"' : ''}>
-                        <i class="fas fa-map-marked-alt"></i> Ver no mapa
-                    </a>`;
-                
-                modal.style.display = 'flex';
-                document.body.style.overflow = 'hidden';
-            }
-
-            function fecharModal() {
-                modal.style.display = 'none';
-                document.body.style.overflow = '';
-            }
-
-            modalCloseBtn.addEventListener('click', fecharModal);
-            modal.addEventListener('click', (event) => {
-                if (event.target === modal) {
-                    fecharModal();
-                }
-            });
+            // REMOÇÃO: Removendo o event listener que abria o modal,
+            // agora o clique no <a> dentro do card fará o redirecionamento
+            
+            // Remoção da função abrirModal e fecharModal, pois não são mais necessárias
             
              // --- Address Search Logic ---
             function haversineDistance(coords1, coords2) {
@@ -1378,11 +1258,12 @@
                         });
                         btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     }, () => {
-                         alert('Não foi possível obter sua localização.');
+                         // Substituindo alert() por console.error() ou uma notificação customizada se fosse uma aplicação real
+                         console.error('Não foi possível obter a localização.');
                          btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     });
                 } else {
-                     alert('Geolocalização não é suportada por este navegador.');
+                     console.error('Geolocalização não é suportada por este navegador.');
                      btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                 }
             });
@@ -1400,10 +1281,10 @@
                             longitude: parseFloat(result.lon) 
                         });
                     } else {
-                        alert(`Endereço "${address}" não encontrado.`);
+                        console.error(`Endereço "${address}" não encontrado.`);
                     }
                 } catch (error) {
-                    alert('Erro ao buscar o endereço.');
+                    console.error('Erro ao buscar o endereço.');
                 }
             }
 
