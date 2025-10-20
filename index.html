@@ -942,12 +942,12 @@
         </div>
         <nav class="desktop-nav">
             <ul>
-                <li><a href="index.html">Início</a></li>
-                <li><a href="gastronomicas.html">Gastronômicas</a></li>
-                <li><a href="feiras-livres.html">Feiras Livres</a></li>
-                <li><a href="artesanais.html">Artesanais</a></li>
-                <li><a href="anuncie.html">Anuncie</a></li>
-                <li><a href="contato.html">Contato</a></li>
+                <li><a href="/index.html">Início</a></li>
+                <li><a href="/gastronomicas.html">Gastronômicas</a></li>
+                <li><a href="/feiras-livres.html">Feiras Livres</a></li>
+                <li><a href="/artesanais.html">Artesanais</a></li>
+                <li><a href="/anuncie.html">Anuncie</a></li>
+                <li><a href="/contato.html">Contato</a></li>
             </ul>
         </nav>
         <div class="hamburger-menu" id="hamburgerMenu">
@@ -960,12 +960,12 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Início</a></li>
-                    <li><a href="gastronomicas.html">Gastronômicas</a></li>
-                    <li><a href="feiras-livres.html">Feiras Livres</a></li>
-                    <li><a href="artesanais.html">Artesanais</a></li>
-                    <li><a href="anuncie.html">Anuncie</a></li>
-                    <li><a href="contato.html">Contato</a></li>
+                    <li><a href="/index.html">Início</a></li>
+                    <li><a href="/gastronomicas.html">Gastronômicas</a></li>
+                    <li><a href="/feiras-livres.html">Feiras Livres</a></li>
+                    <li><a href="/artesanais.html">Artesanais</a></li>
+                    <li><a href="/anuncie.html">Anuncie</a></li>
+                    <li><a href="/contato.html">Contato</a></li>
                 </ul>
             </nav>
         </div>
@@ -1142,14 +1142,13 @@
             const nextBlogPostBtn = document.getElementById('nextBlogPost');
 
             // --- State and Config ---
-            // CORREÇÃO: Definindo a URL base como o endereço da Render
-            const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
+            // ############ CORREÇÃO FINAL APLICADA AQUI ############
+            const BASE_API_URL = 'https://feiras-de-rua.onrender.com';
             let userCoordinates = null;
             let currentFairsData = []; // Armazena os dados da categoria ativa
 
             // --- Funções Auxiliares ---
             async function fetchWithRetry(url, options = {}, maxRetries = 3) {
-                // CORREÇÃO: Concatena a URL base com a URL específica
                 const finalUrl = url.startsWith('http') ? url : BASE_API_URL + url;
 
                 for (let i = 0; i < maxRetries; i++) {
@@ -1174,14 +1173,12 @@
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
                 const shortDescription = fullDescription.length > 100 ? fullDescription.substring(0, 97) + '...' : fullDescription;
                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(1)} km de distância</p>` : '';
-                // Garante que a URL seja válida, ou use um fallback para '#'
                 const feiraUrl = feira.url || `#`; 
 
                 let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
 
                 return `
                     <div class="fair-card" data-id="${feira.id}">
-                        <!-- O card inteiro agora é um link para a página de detalhes -->
                         <a href="${feiraUrl}">
                             <div class="fair-card-image">
                                 <img src="${feira.imagem_url || 'assets/placeholder.png'}" alt="Foto da ${feira.nome_feira}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/f8f9fa/343a40?text=Imagem+Indisponível';">
@@ -1193,7 +1190,6 @@
                                 <p><i class="fas fa-clock"></i> ${formatTime(feira.horario_inicio)} - ${formatTime(feira.horario_fim)}</p>
                                 <p><i class="fas fa-map-marker-alt"></i> ${feira.rua || 'Endereço não informado'}, <strong>${regiaoFormatada}</strong></p>
                                 <p class="fair-card-description">${shortDescription}</p>
-                                <!-- O botão 'Ver mais' não precisa de evento de clique, pois o <a> pai já faz o redirecionamento -->
                                 <span class="button ver-mais-btn">Ver mais</span>
                             </div>
                         </a>
@@ -1205,37 +1201,30 @@
 
             async function loadSlicerFilters() {
                 try {
-                    // CORREÇÃO: A URL é passada como caminho relativo (o BASE_API_URL é concatenado no fetchWithRetry)
                     const tipos = await fetchWithRetry('/api/feiras/tipos'); 
-                    slicerContainer.innerHTML = ''; // Limpa a mensagem "Carregando..."
+                    slicerContainer.innerHTML = ''; 
                     
                     if (!tipos || tipos.length === 0) {
                         slicerContainer.innerHTML = '<p class="info-message">Nenhum tipo de feira encontrado.</p>';
                         return;
                     }
 
-                    tipos.forEach((tipo, index) => {
+                    const allBtn = document.createElement('button');
+                    allBtn.className = 'slicer-btn active';
+                    allBtn.textContent = 'Todas';
+                    allBtn.dataset.tipo = ''; 
+                    allBtn.addEventListener('click', handleSlicerClick);
+                    slicerContainer.appendChild(allBtn);
+
+                    tipos.forEach((tipo) => {
                         const btn = document.createElement('button');
                         btn.className = 'slicer-btn';
-                        btn.textContent = tipo; // Ex: "Gastronômica"
-                        btn.dataset.tipo = tipo; // Armazena o nome original para a API
-
-                        // Opcional: Adicionar um botão 'Todos' no início
-                        if (index === 0) {
-                           // Adiciona o botão 'Todos'
-                           const allBtn = document.createElement('button');
-                           allBtn.className = 'slicer-btn active';
-                           allBtn.textContent = 'Todas';
-                           allBtn.dataset.tipo = ''; // Sem filtro
-                           allBtn.addEventListener('click', handleSlicerClick);
-                           slicerContainer.appendChild(allBtn);
-                        }
-                        
+                        btn.textContent = tipo;
+                        btn.dataset.tipo = tipo;
                         btn.addEventListener('click', handleSlicerClick);
                         slicerContainer.appendChild(btn);
                     });
                     
-                    // Carrega a categoria inicial (Todas)
                     await fetchAndRenderFairs('');
 
                 } catch (error) {
@@ -1245,22 +1234,18 @@
 
             function handleSlicerClick(event) {
                 const clickedBtn = event.target;
-                // Remove a classe 'active' de todos os botões
                 slicerContainer.querySelectorAll('.slicer-btn').forEach(btn => btn.classList.remove('active'));
-                // Adiciona a classe 'active' ao botão clicado
                 clickedBtn.classList.add('active');
-                
                 const tipoParaFiltrar = clickedBtn.dataset.tipo;
                 fetchAndRenderFairs(tipoParaFiltrar);
             }
             
-            // --- Função de Alternância de Visualização ---
             function toggleView(view) {
                 if (view === 'grid') {
                     fairCardsContainer.classList.add('grid-view');
                     btnGridView.classList.add('active');
                     btnCarouselView.classList.remove('active');
-                } else { // 'carousel'
+                } else {
                     fairCardsContainer.classList.remove('grid-view');
                     btnCarouselView.classList.add('active');
                     btnGridView.classList.remove('active');
@@ -1270,20 +1255,16 @@
             btnCarouselView.addEventListener('click', () => toggleView('carousel'));
             btnGridView.addEventListener('click', () => toggleView('grid'));
             
-
             async function fetchAndRenderFairs(tipo) {
                 fairCardsContainer.innerHTML = '<p class="loading-message">A carregar feiras...</p>';
-                
                 try {
                     let apiUrl = '/api/feiras';
                     if (tipo) {
                         apiUrl += `?tipo=${encodeURIComponent(tipo)}`;
                     }
-                    
                     let fairs = await fetchWithRetry(apiUrl);
-                    currentFairsData = fairs; // Atualiza o estado global com os dados atuais
+                    currentFairsData = fairs; 
                     
-                    // 1. Aplica ordenação. Prioriza distância se coordenadas do usuário existirem.
                     if (userCoordinates) {
                          currentFairsData.forEach(feira => {
                             const feiraLocation = { latitude: parseFloat(feira.latitude), longitude: parseFloat(feira.longitude) };
@@ -1291,35 +1272,24 @@
                         });
                         currentFairsData.sort((a, b) => a.distancia - b.distancia);
                     } else {
-                        // Ordenação alfabética pelo nome da feira se não houver coordenadas
                         currentFairsData.sort((a, b) => a.nome_feira.localeCompare(b.nome_feira));
                     }
                     
-                    fairCardsContainer.innerHTML = ''; // Limpa o container
+                    fairCardsContainer.innerHTML = ''; 
                     if (currentFairsData.length === 0) {
                         fairCardsContainer.innerHTML = '<p class="info-message">Nenhuma feira encontrada para esta categoria.</p>';
                         return;
                     }
 
-                    // 2. Renderiza TODAS as feiras da categoria/filtro
                     currentFairsData.forEach(feira => {
-                        // Garante que APENAS feiras com dia_semana OU data_inicio/data_fim sejam exibidas aqui.
-                        // Feiras que não tem nenhuma informação de data/frequência não devem aparecer.
                         if (feira.dia_semana || feira.data_inicio) {
                             fairCardsContainer.innerHTML += createGenericCard(feira);
                         }
                     });
-
-
                 } catch (error) {
                     fairCardsContainer.innerHTML = '<p class="error-message">Não foi possível carregar as feiras. Tente novamente mais tarde.</p>';
                 }
             }
-            
-            // REMOÇÃO: Removendo o event listener que abria o modal,
-            // agora o clique no <a> dentro do card fará o redirecionamento
-            
-            // Remoção da função abrirModal e fecharModal, pois não são mais necessárias
             
              // --- Address Search Logic ---
             function haversineDistance(coords1, coords2) {
@@ -1345,13 +1315,9 @@
                 btnMeuLocal.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition(position => {
-                        handleLocationFound({ 
-                            latitude: position.coords.latitude, 
-                            longitude: position.coords.longitude 
-                        });
+                        handleLocationFound({ latitude: position.coords.latitude, longitude: position.coords.longitude });
                         btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     }, () => {
-                         // Substituindo alert() por console.error() ou uma notificação customizada se fosse uma aplicação real
                          console.error('Não foi possível obter a localização.');
                          btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     });
@@ -1369,10 +1335,7 @@
                     if (data && data.length > 0) {
                         const result = data[0];
                         inputEndereco.value = result.display_name;
-                        handleLocationFound({ 
-                            latitude: parseFloat(result.lat), 
-                            longitude: parseFloat(result.lon) 
-                        });
+                        handleLocationFound({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) });
                     } else {
                         console.error(`Endereço "${address}" não encontrado.`);
                     }
@@ -1414,10 +1377,7 @@
                     item.addEventListener('click', () => {
                         inputEndereco.value = item.textContent;
                         suggestionsContainer.style.display = 'none';
-                        handleLocationFound({ 
-                            latitude: parseFloat(result.lat), 
-                            longitude: parseFloat(result.lon) 
-                        });
+                        handleLocationFound({ latitude: parseFloat(result.lat), longitude: parseFloat(result.lon) });
                     });
                     suggestionsContainer.appendChild(item);
                 });
@@ -1430,10 +1390,7 @@
                     suggestionsContainer.style.display = 'none';
                 }
             });
-
-
-            // Funções de carrossel e inicialização
-            // (a lógica do slider do hero e dos carrosséis permanece a mesma)
+             
              // --- Hero Slider Functionality ---
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
@@ -1467,40 +1424,27 @@
             mobileNavLinks.forEach(link => link.addEventListener('click', () => mobileNavOverlay.classList.remove('active')));
 
             // --- Carousels ---
-            // Função para filtrar e ordenar feiras ATIVAS (com data de término futura/presente)
             async function setupProximasFeirasCarousel() {
                 try {
                     const allFairs = await fetchWithRetry('/api/feiras');
-                    
-                    // Cria um objeto Date para o início do dia de hoje (meia-noite)
                     const hoje = new Date();
                     hoje.setHours(0, 0, 0, 0);
 
                     const upcomingFairs = allFairs
-                        // 1. Filtra APENAS as feiras que possuem o campo data_inicio (não nulo)
                         .filter(feira => feira.data_inicio)
                         .map(feira => {
-                            // 2. Converte as datas (esperadas em formato dd/mm/yyyy) para objetos Date
                             const [dayStart, monthStart, yearStart] = feira.data_inicio.split('/');
-                            // Usa data_inicio para ordenação
                             const startDateObj = new Date(`${yearStart}-${monthStart}-${dayStart}T00:00:00`);
-
-                            // Usa data_fim se existir, caso contrário usa data_inicio
                             let endDateObj;
                             if (feira.data_fim) {
                                 const [dayEnd, monthEnd, yearEnd] = feira.data_fim.split('/');
-                                endDateObj = new Date(`${yearEnd}-${monthEnd}-${dayEnd}T23:59:59`); // Inclui o dia todo
+                                endDateObj = new Date(`${yearEnd}-${monthEnd}-${dayEnd}T23:59:59`);
                             } else {
-                                // Se não tem data_fim, considera que a feira termina no final do dia de data_inicio
                                 endDateObj = new Date(`${yearStart}-${monthStart}-${dayStart}T23:59:59`); 
                             }
-                            
                             return { ...feira, startDateObj, endDateObj };
                         })
-                        // 3. Filtra as feiras cuja data de TÉRMINO (endDateObj) seja MAIOR OU IGUAL a hoje
-                        // Isso garante que feiras que começaram no passado, mas ainda estão ativas, sejam incluídas.
                         .filter(feira => feira.endDateObj >= hoje)
-                        // 4. Ordena as feiras pela data de início mais próxima (ascendente)
                         .sort((a, b) => a.startDateObj - b.startDateObj);
 
                     proximasFeirasContainer.innerHTML = '';
@@ -1522,10 +1466,10 @@
                          blogPosts.forEach(post => {
                             const subtitulo = post.subtitulo || '';
                             const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
-                            // CORREÇÃO APLICADA AQUI: Trocado post.url por post.slug
+                            
                             blogCarouselContainer.innerHTML += `
                                 <div class="blog-card">
-                                    <a href="${post.slug}">
+                                    <a href="/blog/${post.slug}">
                                         <div class="blog-card-image">
                                             <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
                                         </div>
@@ -1545,7 +1489,6 @@
                 }
             }
             
-            // Generic carousel navigation
             function setupCarouselNavigation(container, prevBtn, nextBtn) {
                  prevBtn.addEventListener('click', () => {
                     const card = container.querySelector('.fair-card, .blog-card');
@@ -1566,8 +1509,8 @@
 
             // --- Initial Page Load ---
             function initializePage() {
-                loadSlicerFilters(); // Carrega os filtros e a primeira categoria de feiras
-                setupProximasFeirasCarousel(); // AGORA COM FILTRAGEM DE DATA ATUALIZADA
+                loadSlicerFilters();
+                setupProximasFeirasCarousel();
                 setupBlogCarousel();
                 setupCarouselNavigation(proximasFeirasContainer, prevProximaFeiraBtn, nextProximaFeiraBtn);
                 setupCarouselNavigation(blogCarouselContainer, prevBlogPostBtn, nextBlogPostBtn);

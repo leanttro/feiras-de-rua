@@ -86,7 +86,7 @@ def get_api_feiras_livres():
         if conn: conn.close()
 
 
-# --- ROTA PARA BUSCAR POSTS DO BLOG ---
+# --- ROTA PARA BUSCAR POSTS DO BLOG (API) ---
 @app.route('/api/blog')
 def get_api_blog():
     """Retorna uma lista JSON de todos os posts da tabela 'blog'."""
@@ -108,9 +108,7 @@ def get_api_blog():
         return jsonify(posts_processados)
         
     except psycopg2.errors.UndefinedTable:
-        # Adicione este tratamento caso a tabela 'blog' ainda não exista no seu banco
         print("ERRO: A tabela 'blog' não foi encontrada no banco de dados.")
-        # Retorna uma lista vazia, mas com erro 500 para o console
         return jsonify({'error': 'Tabela blog não encontrada.'}), 500
     except Exception as e:
         print(f"ERRO no endpoint /api/blog: {e}")
@@ -120,8 +118,9 @@ def get_api_blog():
         if conn: conn.close()
 
 # --- ROTA PARA RENDERIZAR UMA PÁGINA DE POST DO BLOG ---
-# Ex: /blog/onde-encontrar-feiras-livres-em-santana.html
-@app.route('/blog/<slug>.html')
+# ############ CORREÇÃO FINAL APLICADA AQUI ############
+# Ex: /blog/onde-encontrar-feiras-livres-em-santana (sem .html)
+@app.route('/blog/<slug>')
 def blog_post_detalhe(slug):
     conn = None
     try:
@@ -135,14 +134,13 @@ def blog_post_detalhe(slug):
 
         if post:
             post_formatado = format_db_data(dict(post))
-            # CORRIGIDO para usar o nome de arquivo correto que você mostrou
             return render_template('post-detalhe.html', post=post_formatado)
         else:
             print(f"AVISO: Post do blog com slug '{slug}' não encontrado.")
             return "Post não encontrado", 404
             
     except Exception as e:
-        print(f"ERRO na rota /blog/{slug}.html: {e}")
+        print(f"ERRO na rota /blog/{slug}: {e}")
         traceback.print_exc()
         return "Erro ao carregar a página do post", 500
     finally:
@@ -157,9 +155,7 @@ def get_tipos_feira():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        # Busca todos os valores distintos, ignorando nulos ou vazios, e ordena
         cur.execute("SELECT DISTINCT tipo_feira FROM feiras WHERE tipo_feira IS NOT NULL AND tipo_feira != '' ORDER BY tipo_feira;")
-        # Extrai os valores da tupla retornada pelo banco (ex: [('Artesanal',), ('Gastronômica',)])
         tipos = [row[0] for row in cur.fetchall()]
         cur.close()
         return jsonify(tipos)
@@ -171,8 +167,7 @@ def get_tipos_feira():
         if conn: conn.close()
 
 
-# --- ROTA DE DETALHE ÚNICA PARA FEIRAS (FEIRAS GASTRONOMICAS/ARTESANAIS) ---
-# Esta rota agora lida com TODAS as feiras, buscando pelo 'slug' na URL.
+# --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
 # Ex: /feiras/feira-da-liberdade
 @app.route('/feiras/<slug>')
 def feira_detalhe(slug):
@@ -180,14 +175,12 @@ def feira_detalhe(slug):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Busca na tabela única 'feiras' pelo slug
         cur.execute('SELECT * FROM feiras WHERE url LIKE %s;', (f'%/{slug}',))
         feira = cur.fetchone()
         cur.close()
 
         if feira:
             feira_formatada = format_db_data(dict(feira))
-            # Usa o template 'feira-detalhe.html' para renderizar a página
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
             print(f"AVISO: Feira com slug '{slug}' não encontrada.")
@@ -201,15 +194,11 @@ def feira_detalhe(slug):
         if conn: conn.close()
 
 
-# --- ROTAS DE API PARA O FRONTEND (FEIRAS GASTRONOMICAS/ARTESANAIS) ---
-
-# Endpoint principal que agora busca na tabela 'feiras' e pode filtrar por tipo
-# Ex: /api/feiras?tipo=gastronomica
+# --- ROTA DE API PRINCIPAL PARA FEIRAS ---
 @app.route('/api/feiras')
 def get_api_feiras():
     conn = None
     try:
-        # Pega o parâmetro ?tipo= da URL para filtrar
         tipo_feira_filtro = request.args.get('tipo')
         
         conn = get_db_connection()
@@ -219,27 +208,23 @@ def get_api_feiras():
         params = []
 
         if tipo_feira_filtro:
-            # ILIKE faz a busca ser case-insensitive (não diferencia maiúsculas de minúsculas)
             query += " WHERE tipo_feira ILIKE %s"
             params.append(f"%{tipo_feira_filtro}%")
 
-        query += " ORDER BY nome_feira;" # Ordena por nome
+        query += " ORDER BY nome_feira;"
 
         cur.execute(query, tuple(params))
         feiras_raw = cur.fetchall()
         cur.close()
 
-        # Processa os dados para o frontend (formata e adiciona a URL relativa)
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
             url_relativa = feira_dict.get('url')
             if url_relativa:
-                # O frontend receberá o campo 'url' pronto para usar no link
                 feira_dict['url'] = url_relativa
                 feiras_processadas.append(feira_dict)
             else:
-                 # Adiciona um placeholder de URL se o campo estiver vazio para não quebrar o front
                  feira_dict['url'] = f'/feiras/{feira_dict.get("slug", feira_dict.get("id"))}'
                  feiras_processadas.append(feira_dict)
 
@@ -253,52 +238,26 @@ def get_api_feiras():
     finally:
         if conn: conn.close()
         
-# --- ROTAS ANTIGAS PARA COMPATIBILIDADE ---
-# Estas rotas agora apenas chamam a nova API com o filtro correto.
+# --- ROTAS DE COMPATIBILIDADE ---
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
-    # Esta função está obsoleta. O frontend deve usar /api/feiras?tipo=Gastronômica
     return get_api_feiras_filtrado('Gastronômica')
 
 @app.route('/api/artesanais')
 def get_artesanais_compat():
-    # Esta função está obsoleta. O frontend deve usar /api/feiras?tipo=Artesanal
     return get_api_feiras_filtrado('Artesanal')
 
-@app.route('/api/outrasfeiras')
-def get_outrasfeiras_compat():
-    # Exemplo: busca por qualquer coisa que não seja gastronomica ou artesanal
-    return get_api_feiras_filtrado(None, exclude=['Gastronômica', 'Artesanal'])
-
-def get_api_feiras_filtrado(tipo_feira, exclude=None):
+def get_api_feiras_filtrado(tipo_feira):
+    # Esta função é para manter compatibilidade, a nova abordagem usa /api/feiras?tipo=...
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-
-        query = "SELECT * FROM feiras"
-        params = []
-        
-        if tipo_feira:
-            query += " WHERE tipo_feira ILIKE %s"
-            params.append(f"%{tipo_feira}%")
-        elif exclude:
-            exclude_conditions = " AND ".join(["tipo_feira NOT ILIKE %s" for _ in exclude])
-            query += f" WHERE {exclude_conditions}"
-            params.extend([f"%{e}%" for e in exclude])
-
-        query += " ORDER BY nome_feira;"
-        cur.execute(query, tuple(params))
+        query = "SELECT * FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
+        cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
         cur.close()
-
-        feiras_processadas = []
-        for feira in feiras_raw:
-            feira_dict = format_db_data(dict(feira))
-            url_relativa = feira_dict.get('url')
-            if url_relativa:
-                feira_dict['url'] = url_relativa
-                feiras_processadas.append(feira_dict)
+        feiras_processadas = [format_db_data(dict(f)) for f in feiras_raw]
         return jsonify(feiras_processadas)
     except Exception as e:
         print(f"ERRO em rota de compatibilidade: {e}")
@@ -306,26 +265,22 @@ def get_api_feiras_filtrado(tipo_feira, exclude=None):
     finally:
         if conn: conn.close()
 
-# Rota para servir a página principal
+# --- ROTAS PARA SERVIR ARQUIVOS ---
+
+# Rota para a página principal
 @app.route('/')
 def index():
     return send_from_directory('.', 'index.html')
 
-# --- ATENÇÃO: Rota para servir arquivos do blog ---
-# A rota genérica abaixo pode causar conflito.
-# É melhor ter uma rota específica para a pasta /blog
-@app.route('/blog/<path:filename>')
-def serve_blog_files(filename):
-    return send_from_directory('blog', filename)
-
-
-# Rota para servir outros arquivos estáticos (HTML, CSS, JS, imagens)
+# Rota para servir arquivos estáticos de pastas (assets, etc.)
+# Esta rota lida com qualquer caminho que pareça um arquivo com extensão
 @app.route('/<path:path>')
 def serve_static_files(path):
-    # Verifica se o caminho não começa com 'blog/' para evitar conflito com a rota acima
-    if not path.startswith('blog/'):
-      if os.path.exists(os.path.join('.', path)):
-          return send_from_directory('.', path)
+    # Impede que capture as rotas de slug como /feiras/feira-da-liberdade
+    # Apenas serve o arquivo se ele tiver uma extensão (ex: .css, .js, .png, .html)
+    if '.' in os.path.basename(path):
+        return send_from_directory('.', path)
+    # Se não tiver extensão, não é um arquivo estático, e as rotas de slug já foram checadas
     return "Not Found", 404
 
 # Execução do App
