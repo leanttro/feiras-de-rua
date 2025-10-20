@@ -118,6 +118,35 @@ def get_api_blog():
         return jsonify({'error': 'Erro interno ao buscar posts do blog.'}), 500
     finally:
         if conn: conn.close()
+
+# --- ROTA PARA RENDERIZAR UMA PÁGINA DE POST DO BLOG ---
+# Ex: /blog/onde-encontrar-feiras-livres-em-santana.html
+@app.route('/blog/<slug>.html')
+def blog_post_detalhe(slug):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+        
+        # Busca na tabela 'blog' pelo slug exato
+        cur.execute('SELECT * FROM blog WHERE slug = %s;', (slug,))
+        post = cur.fetchone()
+        cur.close()
+
+        if post:
+            post_formatado = format_db_data(dict(post))
+            # CORRIGIDO para usar o nome de arquivo correto que você mostrou
+            return render_template('post-detalhe.html', post=post_formatado)
+        else:
+            print(f"AVISO: Post do blog com slug '{slug}' não encontrado.")
+            return "Post não encontrado", 404
+            
+    except Exception as e:
+        print(f"ERRO na rota /blog/{slug}.html: {e}")
+        traceback.print_exc()
+        return "Erro ao carregar a página do post", 500
+    finally:
+        if conn: conn.close()
         
 
 # --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
@@ -282,14 +311,25 @@ def get_api_feiras_filtrado(tipo_feira, exclude=None):
 def index():
     return send_from_directory('.', 'index.html')
 
+# --- ATENÇÃO: Rota para servir arquivos do blog ---
+# A rota genérica abaixo pode causar conflito.
+# É melhor ter uma rota específica para a pasta /blog
+@app.route('/blog/<path:filename>')
+def serve_blog_files(filename):
+    return send_from_directory('blog', filename)
+
+
 # Rota para servir outros arquivos estáticos (HTML, CSS, JS, imagens)
 @app.route('/<path:path>')
 def serve_static_files(path):
-    if os.path.exists(os.path.join('.', path)):
-        return send_from_directory('.', path)
+    # Verifica se o caminho não começa com 'blog/' para evitar conflito com a rota acima
+    if not path.startswith('blog/'):
+      if os.path.exists(os.path.join('.', path)):
+          return send_from_directory('.', path)
     return "Not Found", 404
 
 # Execução do App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
