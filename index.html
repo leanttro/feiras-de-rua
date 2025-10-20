@@ -1522,10 +1522,10 @@
                          blogPosts.forEach(post => {
                             const subtitulo = post.subtitulo || '';
                             const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
-                            // CORREÇÃO APLICADA AQUI: Trocado post.url por post.slug
+                            // CORREÇÃO APLICADA AQUI: Adicionado o prefixo /blog/ ao slug
                             blogCarouselContainer.innerHTML += `
                                 <div class="blog-card">
-                                    <a href="${post.slug}">
+                                    <a href="/blog/${post.slug}">
                                         <div class="blog-card-image">
                                             <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
                                         </div>
