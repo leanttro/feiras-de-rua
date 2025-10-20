@@ -432,7 +432,7 @@
         }
         
         .featured-fairs {
-            padding: 40px 20px 8px;
+            padding: 40px 20px 80px;
             text-align: center;
             background-color: var(--light-gray);
         }
@@ -1522,10 +1522,10 @@
                          blogPosts.forEach(post => {
                             const subtitulo = post.subtitulo || '';
                             const shortSubtitulo = subtitulo.length > 100 ? subtitulo.substring(0, 97) + '...' : subtitulo;
-                            // CORREÇÃO APLICADA AQUI: Adicionado .html ao final do slug para apontar para o arquivo correto
+                            // CORREÇÃO APLICADA AQUI: Trocado post.url por post.slug
                             blogCarouselContainer.innerHTML += `
                                 <div class="blog-card">
-                                    <a href="/blog/${post.slug}.html">
+                                    <a href="${post.slug}">
                                         <div class="blog-card-image">
                                             <img src="${post.imagem_url || 'assets/placeholder.png'}" alt="${post.titulo}" onerror="this.onerror=null;this.src='https://placehold.co/600x400/eeeeee/343a40?text=Imagem';">
                                         </div>
