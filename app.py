@@ -85,10 +85,10 @@ REGRAS ESTRITAS:
 
 # Inicializa o modelo
 try:
-    # ############ CORREÇÃO APLICADA AQUI ############
-    # O modelo 'gemini-pro' foi descontinuado ou movido.
-    # Usando 'gemini-1.5-flash-latest' que é o modelo mais recente e rápido.
-    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+    # ############ CORREÇÃO FINAL APLICADA AQUI ############
+    # O modelo 'gemini-1.5-flash-latest' não foi encontrado na API v1beta.
+    # Usando 'gemini-1.0-pro' que é o modelo estável mais compatível.
+    model = genai.GenerativeModel('gemini-1.0-pro')
 
     # Inicia um chat com o histórico (incluindo o prompt do sistema)
     chat_session = model.start_chat(
