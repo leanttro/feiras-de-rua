@@ -7,10 +7,29 @@ from flask_cors import CORS
 import datetime
 import traceback
 import decimal
-import google.generativeai as genai # <-- ADICIONADO IMPORT DO GEMINI
+
+# --- INÍCIO DA SEÇÃO DO CHATBOT ---
+import google.generativeai as genai
+# --- FIM DA SEÇÃO DO CHATBOT ---
+
 
 # Carrega variáveis de ambiente de um arquivo .env, se existir
 load_dotenv()
+
+# --- INÍCIO DA SEÇÃO DO CHATBOT ---
+# Configura a API Key do Gemini a partir das variáveis de ambiente
+try:
+    api_key = os.getenv('GEMINI_API_KEY')
+    if not api_key:
+        print("ERRO CRÍTICO: Variável de ambiente GEMINI_API_KEY não encontrada.")
+        # Mesmo com o erro, o app Flask continua, mas a rota /api/chat vai falhar.
+    else:
+        genai.configure(api_key=api_key)
+        print("API Key do Gemini configurada com sucesso.")
+except Exception as e:
+    print(f"Erro ao configurar a API do Gemini: {e}")
+# --- FIM DA SEÇÃO DO CHATBOT ---
+
 
 # Inicializa o aplicativo Flask
 # static_folder='.' faz com que o Flask procure arquivos como CSS, JS e HTML na pasta raiz.
@@ -52,71 +71,68 @@ def format_db_data(data_dict):
 
 # --- INÍCIO DA SEÇÃO DO CHATBOT ---
 
-# 1. Configure a Chave de API a partir das variáveis de ambiente
-# No Render, defina uma "Environment Variable" chamada GEMINI_API_KEY
-try:
-    api_key = os.environ.get("GEMINI_API_KEY")
-    if not api_key:
-        print("Atenção: A variável de ambiente GEMINI_API_KEY não foi definida.")
-    else:
-        genai.configure(api_key=api_key)
-except Exception as e:
-    print(f"Erro ao configurar a API do Gemini: {e}")
-
-# 2. Defina o Prompt de Sistema (Contexto) para o "Guia Feirinha"
+# Define o "Prompt de Sistema" (personalidade) do chatbot
 SYSTEM_PROMPT = """
-Você é o "Guia Feirinha", o assistente virtual amigável do site feirasderua.com.br.
-Sua especialidade é TUDO sobre feiras de rua, feiras gastronômicas, feiras de artesanato e eventos de bairro na cidade de São Paulo.
-Sua missão é ajudar os usuários a encontrar as melhores feiras, dar dicas sobre o que encontrar nelas e informar sobre eventos no site.
-
-Regras Estritas:
-1.  Responda APENAS sobre feiras em São Paulo, eventos locais de SP, ou sobre o próprio site feirasderua.com.br.
-2.  Se perguntarem sobre qualquer outro tópico (ex: política, esportes, clima em outra cidade, outros países), recuse educadamente a resposta.
-3.  Exemplo de recusa: "Desculpe, eu sou o Guia Feirinha e minha especialidade são as feiras de São Paulo. Não consigo ajudar com [tópico perguntado]. Mas, se quiser saber onde rola um pastel de feira incrível, estou aqui!"
-4.  Seja sempre amigável, prestativo e use um tom leve e conversacional.
-5.  Mantenha as respostas relativamente curtas e diretas (ideal para um chat).
+Você é o "Feirinha - Chatbot", o assistente virtual amigável do site feirasderua.com.br.
+Sua missão é ajudar os usuários a encontrar informações sobre feiras em São Paulo.
+REGRAS ESTRITAS:
+1.  **Seja Amigável e prestativo:** Use emojis leves (como ☀️, 🧺, 🍓) quando apropriado.
+2.  **Seja Conciso:** Responda em no máximo 3 frases.
+3.  **Foco Total:** Responda *APENAS* sobre feiras de rua em São Paulo (livres, gastronômicas, artesanais), eventos relacionados ou sobre o próprio site feirasderua.com.br.
+4.  **Recuse outros assuntos:** Se o usuário perguntar sobre qualquer outro tópico (como política, esportes, receitas, como fazer um bolo, quem descobriu o Brasil, etc.), recuse educadamente e redirecione o foco.
+    * Exemplo de recusa: "Desculpe, eu sou o 'Feirinha' e meu foco é só te ajudar com as feiras de São Paulo! 🧺 Posso te ajudar a encontrar uma feira?"
 """
 
-# 3. Inicialize o Modelo Generativo com o prompt de sistema
+# Inicializa o modelo
 try:
-    model = genai.GenerativeModel(
-        model_name='gemini-pro',
-        system_instruction=SYSTEM_PROMPT
+    # ############ CORREÇÃO APLICADA AQUI ############
+    # O modelo 'gemini-pro' foi descontinuado ou movido.
+    # Usando 'gemini-1.5-flash-latest' que é o modelo mais recente e rápido.
+    model = genai.GenerativeModel('gemini-1.5-flash-latest')
+
+    # Inicia um chat com o histórico (incluindo o prompt do sistema)
+    chat_session = model.start_chat(
+        history=[
+            {
+                "role": "user",
+                "parts": [SYSTEM_PROMPT]
+            },
+            {
+                "role": "model",
+                "parts": ["Entendido! Eu sou o Feirinha - Chatbot. Estou pronto para ajudar apenas com informações sobre as feiras de rua de São Paulo e o site feirasderua.com.br."]
+            }
+        ]
     )
-    # Iniciamos um chat "vazio". Para este caso de uso simples,
-    # cada pergunta é independente, mas segue o System Prompt.
-    chat_session = model.start_chat(history=[])
 except Exception as e:
-    print(f"Erro ao inicializar o modelo Gemini: {e}")
+    print(f"ERRO CRÍTICO: Não foi possível inicializar o GenerativeModel. {e}")
     model = None
     chat_session = None
 
-# 4. Crie a nova rota da API
 @app.route('/api/chat', methods=['POST'])
-def api_chat():
-    # Verificações de segurança e inicialização
-    if not api_key:
-        return jsonify({"erro": "Chave de API do provedor de IA não configurada no servidor."}), 500
-        
+def handle_chat():
     if not model or not chat_session:
-        return jsonify({"erro": "O modelo de IA não foi inicializado corretamente."}), 500
-
-    # Obter a mensagem do usuário do JSON
-    data = request.json
-    user_message = data.get("message")
-
-    if not user_message:
-        return jsonify({"erro": "Nenhuma mensagem fornecida."}), 400
+        print("Erro: A sessão do chat com o Gemini não foi inicializada.")
+        return jsonify({'error': 'Serviço de chat indisponível.'}), 503
 
     try:
-        # Enviar a mensagem para a API do Gemini
+        data = request.json
+        user_message = data.get('message')
+
+        if not user_message:
+            return jsonify({'error': 'Mensagem não pode ser vazia.'}), 400
+
+        # Envia a mensagem para o Gemini (o histórico é mantido no 'chat_session')
         response = chat_session.send_message(user_message)
-        bot_reply = response.text
-        return jsonify({"reply": bot_reply})
+
+        # Retorna a resposta do modelo para o front-end
+        return jsonify({'reply': response.text})
 
     except Exception as e:
+        # Se der um erro (ex: 404 do log, ou outro erro da API)
         print(f"Erro ao chamar a API do Gemini: {e}")
-        return jsonify({"erro": "Ocorreu um erro ao processar sua mensagem."}), 503
+        traceback.print_exc()
+        # Retorna um erro 503 (Serviço Indisponível) para o front-end
+        return jsonify({'error': 'Ocorreu um erro ao processar sua mensagem.'}), 503
 
 # --- FIM DA SEÇÃO DO CHATBOT ---
 
@@ -355,7 +371,8 @@ def serve_static_files(path):
     # Se não tiver extensão, não é um arquivo estático, e as rotas de slug já foram checadas
     return "Not Found", 404
 
-# Execução do  App
+# Execução do App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
+
