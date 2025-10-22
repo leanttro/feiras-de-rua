@@ -355,7 +355,7 @@ def serve_static_files(path):
     # Se não tiver extensão, não é um arquivo estático, e as rotas de slug já foram checadas
     return "Not Found", 404
 
-# Execução do App
+# Execução do  App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
