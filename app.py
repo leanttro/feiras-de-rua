@@ -342,7 +342,6 @@ def get_tipos_feira():
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        # Corrigido para buscar da tabela correta 'feiras'
         cur.execute("SELECT DISTINCT tipo_feira FROM feiras WHERE tipo_feira IS NOT NULL AND tipo_feira != '' ORDER BY tipo_feira;")
         tipos = [row[0] for row in cur.fetchall()]
         cur.close()
@@ -356,15 +355,15 @@ def get_tipos_feira():
 
 
 # --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
-@app.route('/feiras/<slug>') # O parâmetro aqui ainda se chama 'slug' na URL
+@app.route('/feiras/<slug>')
 def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # ############ CORREÇÃO ERRO SLUG ############
-        # Busca pelo ID convertido para string, já que slug não existe
-        cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,)) 
+        # Ajuste para buscar pelo slug na tabela 'feiras' (você precisa ter uma coluna slug)
+        # Se não tiver, ajuste a consulta para usar outro campo único como nome_feira
+        cur.execute('SELECT * FROM feiras WHERE slug = %s;', (slug,)) 
         feira = cur.fetchone()
         cur.close()
 
@@ -372,7 +371,7 @@ def feira_detalhe(slug):
             feira_formatada = format_db_data(dict(feira))
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
-            print(f"AVISO: Feira com ID (slug da URL) '{slug}' não encontrada.")
+            print(f"AVISO: Feira com slug '{slug}' não encontrada.")
             return "Feira não encontrada", 404
             
     except Exception as e:
@@ -393,9 +392,7 @@ def get_api_feiras():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # ############ CORREÇÃO ERRO SLUG ############
-        # Remove a referência a 'slug', usa apenas o ID para 'effective_slug'
-        query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras" 
+        query = "SELECT *, COALESCE(slug, CAST(id AS VARCHAR)) as effective_slug FROM feiras" # Adiciona slug ou ID como effective_slug
         params = []
 
         if tipo_feira_filtro:
@@ -411,7 +408,7 @@ def get_api_feiras():
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            # Gera a URL baseada no slug efetivo (que agora é sempre o ID)
+            # Gera a URL baseada no slug efetivo (slug ou ID)
             feira_dict['url'] = f'/feiras/{feira_dict["effective_slug"]}' 
             feiras_processadas.append(feira_dict)
 
@@ -440,9 +437,7 @@ def get_api_feiras_filtrado(tipo_feira):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # ############ CORREÇÃO ERRO SLUG ############
-        # Remove a referência a 'slug', usa apenas o ID para 'effective_slug'
-        query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
+        query = "SELECT *, COALESCE(slug, CAST(id AS VARCHAR)) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
         cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
         cur.close()
@@ -464,7 +459,7 @@ def get_api_feiras_filtrado(tipo_feira):
 
 # Rota para a página principal
 @app.route('/')
-def index_route(): # Renomeado para evitar conflito com a função index() Python
+def index_route(): # Renomeado para evitar conflito com a função index()
     return send_from_directory('.', 'index.html')
 
 # Rota para servir arquivos estáticos de pastas (assets, etc.)
@@ -477,12 +472,10 @@ def serve_static_files(path):
     basename = os.path.basename(path)
     if '.' in basename or path.startswith('assets/'):
          # Verifica se o arquivo realmente existe antes de tentar servir
-        # Usa os.path.join para construir o caminho de forma segura
-        file_path = os.path.join(app.static_folder, path) 
-        if os.path.exists(file_path) and not os.path.isdir(file_path): # Garante que é um arquivo, não diretório
+        if os.path.exists(os.path.join('.', path)):
             return send_from_directory('.', path)
         else:
-            print(f"AVISO: Arquivo estático não encontrado ou é diretório: {path}")
+            print(f"AVISO: Arquivo estático não encontrado: {path}")
             return "Not Found", 404
     
     # Se não for um arquivo estático conhecido, assume que é uma rota de slug
