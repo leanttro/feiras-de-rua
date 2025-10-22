@@ -333,15 +333,16 @@ def blog_post_detalhe(slug):
         if conn: conn.close()
         
 # ROTA DE DETALHE ÚNICA PARA FEIRAS
-# Ex: /feiras/123
-@app.route('/feiras/<slug>') # Mantemos <slug> como nome da variável, mas ela contém o ID
+# Ex: /feiras/feira-da-praca-da-se
+# ALTERAÇÃO 1: Trocando <slug> por <path:slug>
+@app.route('/feiras/<path:slug>') 
 def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Busca pelo ID (convertido para texto) em vez de 'slug' ou 'url'
-        cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
+        # ALTERAÇÃO 2: Busca pelo campo 'url' em vez de 'CAST(id AS VARCHAR)'
+        cur.execute('SELECT * FROM feiras WHERE url = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
 
@@ -349,7 +350,18 @@ def feira_detalhe(slug):
             feira_formatada = format_db_data(dict(feira))
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
-            print(f"AVISO: Feira com slug/id '{slug}' não encontrada.")
+            print(f"AVISO: Feira com slug/url '{slug}' não encontrada.")
+            # Fallback: tentar pelo ID caso o slug seja o ID antigo
+            if slug.isdigit():
+                 conn = get_db_connection()
+                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                 cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
+                 feira_fallback = cur.fetchone()
+                 cur.close()
+                 if feira_fallback:
+                     feira_formatada = format_db_data(dict(feira_fallback))
+                     return render_template('feira-detalhe.html', feira=feira_formatada)
+
             return "Feira não encontrada", 404
             
     except Exception as e:
@@ -391,7 +403,7 @@ def get_api_feiras():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # Remove COALESCE(slug, ...) e usa apenas o ID
+        # Seleciona 'url' e usa CAST(id AS VARCHAR) como fallback slug
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras"
         params = []
 
@@ -408,8 +420,13 @@ def get_api_feiras():
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            # Gera a URL baseada no 'effective_slug' (que agora é sempre o ID)
-            feira_dict['url'] = f'/feiras/{feira_dict["effective_slug"]}' 
+            
+            # ALTERAÇÃO 3: Lógica para garantir a URL (prioriza 'url', fallback para 'id')
+            feira_slug = feira_dict.get('url') if feira_dict.get('url') else feira_dict.get('id')
+            feira_dict['url'] = f'/feiras/{feira_slug}'
+            # Mantém effective_slug como o ID para compatibilidade com a query (embora não mais usado para a url de fato)
+            feira_dict['effective_slug'] = feira_dict['id'] # Garante que effective_slug seja o ID se o banco estiver vazio
+            
             feiras_processadas.append(feira_dict)
 
 
@@ -437,7 +454,7 @@ def get_api_feiras_filtrado(tipo_feira):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Busca pelo ID (convertido para texto)
+        # Seleciona 'url' e usa CAST(id AS VARCHAR) como effective_slug
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
         cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
@@ -446,7 +463,9 @@ def get_api_feiras_filtrado(tipo_feira):
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            feira_dict['url'] = f'/feiras/{feira_dict["effective_slug"]}'
+            # Lógica de URL compatível com a nova API
+            feira_slug = feira_dict.get('url') if feira_dict.get('url') else feira_dict.get('id')
+            feira_dict['url'] = f'/feiras/{feira_slug}'
             feiras_processadas.append(feira_dict)
         return jsonify(feiras_processadas)
 
