@@ -7,6 +7,7 @@ from flask_cors import CORS
 import datetime
 import traceback
 import decimal
+import json # <--- IMPORTADO PARA O BOT
 
 # --- INÍCIO DA SEÇÃO DO CHATBOT ---
 import google.generativeai as genai
@@ -36,7 +37,7 @@ app = Flask(__name__, static_folder='.', static_url_path='', template_folder='te
 CORS(app) # Habilita CORS para todas as rotas
 
 def get_db_connection():
-# ... (código existente sem alteração) ...
+    """Cria e retorna uma conexão com o banco de dados PostgreSQL."""
     conn = None
     try:
         # Pega a URL do banco de dados das variáveis de ambiente do Render
@@ -47,6 +48,7 @@ def get_db_connection():
         raise
 
 def format_db_data(data_dict):
+    """Formata datas, horas e decimais de um dicionário para exibição em JSON/HTML."""
 # ... (código existente sem alteração) ...
     if not isinstance(data_dict, dict):
         return data_dict
@@ -70,46 +72,107 @@ def format_db_data(data_dict):
 
 # --- INÍCIO DA SEÇÃO DO CHATBOT ---
 
-# Define o "Prompt de Sistema" (personalidade) do chatbot
-SYSTEM_PROMPT = """
-Você é o "Feirinha - Chatbot", o assistente virtual amigável do site feirasderua.com.br.
-Sua missão é ajudar os usuários a encontrar informações sobre feiras em São Paulo.
-REGRAS ESTRITAS:
-1.  **Seja Amigável e prestativo:** Use emojis leves (como ☀️, 🧺, 🍓) quando apropriado.
-2.  **Seja Conciso:** Responda em no máximo 3 frases.
-3.  **Foco Total:** Responda *APENAS* sobre feiras de rua em São Paulo (livres, gastronômicas, artesanais), eventos relacionados ou sobre o próprio site feirasderua.com.br.
-4.  **Recuse outros assuntos:** Se o usuário perguntar sobre qualquer outro tópico (como política, esportes, receitas, como fazer um bolo, quem descobriu o Brasil, etc.), recuse educadamente e redirecione o foco.
-    * Exemplo de recusa: "Desculpe, eu sou o 'Feirinha' e meu foco é só te ajudar com as feiras de São Paulo! 🧺 Posso te ajudar a encontrar uma feira?"
-"""
+# --- NOVA FUNÇÃO HELPER ---
+def get_all_data_for_bot():
+    """
+    Busca dados das tabelas 'feiras' e 'feiras_livres' para alimentar o chatbot.
+    Isso garante que o bot responda APENAS com dados do seu banco.
+    """
+    all_data = {}
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        # 1. Buscar da tabela 'feiras' (artesanais, gastronomicas, etc)
+        # Selecionamos colunas relevantes para o bot.
+        cur.execute("SELECT id, nome_feira, tipo_feira, dia_semana, horario_inicio, horario_fim, rua, regiao, bairro, descricao FROM feiras ORDER BY nome_feira")
+        feiras_raw = cur.fetchall()
+        all_data['feiras_especiais'] = [format_db_data(dict(f)) for f in feiras_raw]
+        
+        # 2. Buscar da tabela 'feiras_livres' (do CSV que você mandou)
+        # Selecionamos colunas relevantes para o bot.
+        cur.execute("SELECT id, nome_da_feira, dia_da_feira, endereco, bairro FROM feiras_livres ORDER BY nome_da_feira")
+        feiras_livres_raw = cur.fetchall()
+        all_data['feiras_livres'] = [format_db_data(dict(f)) for f in feiras_livres_raw]
+        
+        cur.close()
+        print(f"Dados do Bot carregados: {len(all_data['feiras_especiais'])} feiras especiais, {len(all_data['feiras_livres'])} feiras livres.")
+        return all_data
+    except Exception as e:
+        print(f"ERRO CRÍTICO ao buscar dados para o bot: {e}")
+        traceback.print_exc()
+        return None # Retorna None se falhar
+    finally:
+        if conn: conn.close()
 
-# Inicializa o modelo
-try:
-    # ############ CORREÇÃO FINAL APLICADA ############
-    # Usando o modelo 'gemini-flash-latest' que está CONFIRMADO na sua lista.
-    model = genai.GenerativeModel('gemini-flash-latest')
+# --- FIM DA FUNÇÃO HELPER ---
+
+
+# --- INICIALIZAÇÃO DO MODELO (MODIFICADA) ---
+print("Buscando dados das feiras no DB para inicializar o bot...")
+bot_data = get_all_data_for_bot() # Chama a nova função helper
+
+model = None
+chat_session = None
+
+if bot_data:
+    # Converte os dados para strings JSON compactas
+    feiras_especiais_json = json.dumps(bot_data['feiras_especiais'], separators=(',', ':'))
+    feiras_livres_json = json.dumps(bot_data['feiras_livres'], separators=(',', ':'))
     
-    # Inicia um chat com o histórico (incluindo o prompt do sistema)
-    chat_session = model.start_chat(
-        history=[
-            {
-                "role": "user",
-                "parts": [SYSTEM_PROMPT]
-            },
-            {
-                "role": "model",
-                "parts": ["Entendido! Eu sou o Feirinha - Chatbot. Estou pronto para ajudar apenas com informações sobre as feiras de rua de São Paulo e o site feirasderua.com.br."]
-            }
-        ]
-    )
-    print("Modelo 'gemini-flash-latest' inicializado com sucesso.")
+    # O prompt agora é ENORME, pois contém todos os dados.
+    SYSTEM_PROMPT = f"""
+Você é o "Feirinha - Chatbot", o assistente virtual do site feirasderua.com.br.
+Sua missão é ser um especialista em responder perguntas USANDO APENAS A BASE DE DADOS FORNECIDA.
 
-except Exception as e:
-    print(f"ERRO CRÍTICO: Não foi possível inicializar o GenerativeModel. {e}")
-    model = None
-    chat_session = None
+REGRAS ESTRITAS:
+1.  **NÃO ALUCINE:** Você NUNCA deve inventar uma feira ou endereço. Se a feira não estiver nas listas JSON abaixo, você deve dizer "Não encontrei essa feira em nosso cadastro."
+2.  **USE OS DADOS:** Baseie 100% das suas respostas nos dados JSON fornecidos. Ao citar uma feira, use o nome, endereço/rua e bairro EXATOS da lista.
+3.  **SEJA UM ESPECIALISTA:** Aja como um especialista que conhece o banco de dados.
+    * Exemplo de Resposta Correta: "Na Zona Sul, no bairro Vila Mira, eu encontrei esta feira livre no nosso cadastro: 'JD. VILA MIRA', que fica na 'AV ENGENHEIRO GEORGE CORBISIER'."
+    * Exemplo de Resposta Errada (Alucinação): "A Feira da Benedito Calixto é ótima para artesanato na Zona Sul." (ERRADO, pois Benedito Calixto não é Zona Sul).
+4.  **SEJA AMIGÁVEL:** Mantenha o tom amigável (use ☀️, 🧺, 🍓).
+5.  **FOCO TOTAL:** Responda apenas sobre feiras. Recuse outros assuntos.
 
-# --- ROTA DE DIAGNÓSTICO (Removida) ---
-# A rota /api/check_models foi removida. O chat está ativo.
+--- BASE DE DADOS (JSON) ---
+Use estas duas listas para TODAS as suas respostas.
+
+LISTA 1: Feiras Especiais (Gastronômicas, Artesanais, etc. Tabela 'feiras')
+{feiras_especiais_json}
+
+LISTA 2: Feiras Livres (Tradicionais. Tabela 'feiras_livres')
+{feiras_livres_json}
+--- FIM DA BASE DE DADOS ---
+"""
+    
+    try:
+        # Usando o modelo que sabemos que funciona
+        model = genai.GenerativeModel('gemini-flash-latest')
+        
+        # Inicia um chat com o histórico (incluindo o prompt do sistema GIGANTE)
+        chat_session = model.start_chat(
+            history=[
+                {
+                    "role": "user",
+                    "parts": [SYSTEM_PROMPT]
+                },
+                {
+                    "role": "model",
+                    "parts": ["Entendido! Eu sou o Feirinha - Chatbot e meu conhecimento é baseado 100% nas listas de feiras que você me forneceu. Estou pronto para ajudar os usuários a encontrar feiras cadastradas! 🧺🍓"]
+                }
+            ]
+        )
+        print("Modelo 'gemini-flash-latest' inicializado com SUCESSO e alimentado com os dados do DB.")
+
+    except Exception as e:
+        print(f"ERRO CRÍTICO: Não foi possível inicializar o GenerativeModel. {e}")
+        traceback.print_exc()
+else:
+    print("ERRO CRÍTICO: Não foi possível buscar dados do DB para o bot. O chat não vai funcionar.")
+
+# --- FIM DA INICIALIZAÇÃO DO MODELO ---
+
 
 @app.route('/api/chat', methods=['POST'])
 def handle_chat():
@@ -127,6 +190,7 @@ def handle_chat():
             return jsonify({'error': 'Mensagem não pode ser vazia.'}), 400
 
         # Envia a mensagem para o Gemini (o histórico é mantido no 'chat_session')
+        # O bot agora responderá usando o contexto gigante que demos a ele.
         response = chat_session.send_message(user_message)
 
         # Retorna a resposta do modelo para o front-end
