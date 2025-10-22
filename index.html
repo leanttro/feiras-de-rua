@@ -1392,8 +1392,12 @@
                 const fullDescription = feira.descricao || 'Descrição não disponível.';
                 const shortDescription = fullDescription.length > 100 ? fullDescription.substring(0, 97) + '...' : fullDescription;
                 const distanciaHtml = feira.distancia !== undefined ? `<p><i class="fas fa-route"></i> ${feira.distancia.toFixed(1)} km de distância</p>` : '';
-                const feiraUrl = feira.url || `#`; 
-
+                
+                // ############ CORREÇÃO APLICADA AQUI ############
+                // Garante que a URL seja sempre o slug baseado no ID (ex: /feiras/8)
+                // Usando feira.url (vindo da API) como prioridade, e feira.id como fallback defensivo.
+                const feiraUrl = feira.url || (feira.id ? `/feiras/${feira.id}` : '#'); 
+                
                 let dateInfo = feira.data_inicio ? `De ${feira.data_inicio} a ${feira.data_fim || feira.data_inicio}` : (feira.dia_semana || 'Não informado');
 
                 return `
@@ -1887,4 +1891,3 @@
     </script>
 </body>
 </html>
-
