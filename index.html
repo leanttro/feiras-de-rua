@@ -899,7 +899,7 @@
             .hero-section p { font-size: 0.9em; max-width: 85%; }
         }
 
-        /* --- NOVOS ESTILOS PARA O BLOG --- */
+        /* --- NOVA SEÇÃO: ESTILOS DO BLOG --- */
         .blog-section { 
             padding: 40px 20px 80px; 
             background-color: var(--white); /* Fundo branco, como solicitado */
@@ -938,26 +938,36 @@
         /* ================================== */
         /* INÍCIO DOS ESTILOS DO CHATBOT      */
         /* ================================== */
+        
+        /* ############ ALTERAÇÃO DE UX (CSS) ############ */
+        /* Novo estilo do balão em formato "Pílula" */
         .chat-bubble {
             position: fixed;
             bottom: 25px;
             right: 25px;
-            width: 60px;
-            height: 60px;
+            /* width: 60px; (removido) */
+            /* height: 60px; (removido) */
             background-color: var(--primary-green);
             color: var(--white);
-            border-radius: 50%;
+            border-radius: 50px; /* Formato pílula */
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 28px;
+            gap: 10px; /* Espaço entre ícone e texto */
+            padding: 12px 20px; /* Padding interno */
+            font-size: 18px; /* Tamanho do ícone */
+            font-weight: 600; /* Peso da fonte */
             cursor: pointer;
             box-shadow: var(--shadow-medium);
             z-index: 998;
             transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease;
         }
+        .chat-bubble-text {
+            font-size: 16px; /* Tamanho do texto */
+            line-height: 1;
+        }
         .chat-bubble:hover {
-            transform: scale(1.1);
+            transform: scale(1.05); /* Aumenta um pouco */
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
@@ -1270,8 +1280,12 @@
     <!-- ================================== -->
     <!-- INÍCIO DO CÓDIGO DO CHATBOT (HTML) -->
     <!-- ================================== -->
+    
+    <!-- ############ ALTERAÇÃO DE UX (HTML) ############ -->
+    <!-- Novo balão de chat em formato "Pílula" com ícone de robô -->
     <div id="chat-bubble" class="chat-bubble">
-        <i class="fas fa-comments"></i>
+        <i class="fas fa-robot"></i>
+        <span class="chat-bubble-text">Feirinha - Chatbot</span>
     </div>
 
     <div id="chat-window" class="chat-window">
@@ -1706,6 +1720,8 @@
                 nextBtn.addEventListener('click', () => {
                      const card = container.querySelector('.fair-card, .blog-card');
                     if (!card) return;
+                    // ############ CORREÇÃO DO ERRO ############
+                    // Removida a declaração duplicada de 'cardWidth'
                     const cardWidth = card.offsetWidth;
                     const gap = parseInt(window.getComputedStyle(container).gap) || 35;
                     container.scrollBy({ left: cardWidth + gap, behavior: 'smooth' });
@@ -1788,8 +1804,16 @@
                     removeLoadingIndicator();
 
                     if (!response.ok) {
-                        const errorData = await response.json();
-                        throw new Error(errorData.erro || `Erro HTTP: ${response.status}`);
+                        // Tenta ler a resposta de erro como JSON
+                        let errorMsg = `Erro HTTP: ${response.status}`;
+                        try {
+                            const errorData = await response.json();
+                            errorMsg = errorData.error || errorMsg;
+                        } catch (jsonError) {
+                            // A resposta de erro não era JSON, usa o status text
+                            errorMsg = response.statusText;
+                        }
+                        throw new Error(errorMsg);
                     }
 
                     const data = await response.json();
@@ -1797,8 +1821,8 @@
                     // 4. Adiciona a resposta do bot à tela
                     if (data.reply) {
                         addMessageToUI(data.reply, 'bot');
-                    } else if (data.erro) {
-                        addMessageToUI(`Desculpe, ocorreu um erro: ${data.erro}`, 'bot');
+                    } else if (data.error) {
+                        addMessageToUI(`Desculpe, ocorreu um erro: ${data.error}`, 'bot');
                     }
 
                 } catch (error) {
@@ -1852,13 +1876,15 @@
             // FIM DA LÓGICA DO CHATBOT (JS)
             // ==================================
 
-            // Chama a função para abrir o  chat assim que a página carrega
-            toggleChatWindow(); 
+            // ############ ALTERAÇÃO DE UX (JS) ############
+            // Só abre o chat automaticamente se a tela for de desktop (maior que 768px).
+            // Em telas menores (mobile/tablet), o usuário precisa clicar no balão.
+            if (window.innerWidth > 768) {
+                toggleChatWindow(); 
+            }
 
         });
     </script>
 </body>
 </html>
-
-
 
