@@ -22,7 +22,6 @@ try:
     api_key = os.getenv('GEMINI_API_KEY')
     if not api_key:
         print("ERRO CRÍTICO: Variável de ambiente GEMINI_API_KEY não encontrada.")
-        # Mesmo com o erro, o app Flask continua, mas a rota /api/chat vai falhar.
     else:
         genai.configure(api_key=api_key)
         print("API Key do Gemini configurada com sucesso.")
@@ -37,7 +36,7 @@ app = Flask(__name__, static_folder='.', static_url_path='', template_folder='te
 CORS(app) # Habilita CORS para todas as rotas
 
 def get_db_connection():
-    """Cria e retorna uma conexão com o banco de dados PostgreSQL."""
+# ... (código existente sem alteração) ...
     conn = None
     try:
         # Pega a URL do banco de dados das variáveis de ambiente do Render
@@ -48,7 +47,7 @@ def get_db_connection():
         raise
 
 def format_db_data(data_dict):
-    """Formata datas, horas e decimais de um dicionário para exibição em JSON/HTML."""
+# ... (código existente sem alteração) ...
     if not isinstance(data_dict, dict):
         return data_dict
 
@@ -85,11 +84,11 @@ REGRAS ESTRITAS:
 
 # Inicializa o modelo
 try:
-    # ############ CORREÇÃO FINAL APLICADA AQUI ############
-    # O modelo 'gemini-1.5-flash-latest' não foi encontrado na API v1beta.
-    # Usando 'gemini-1.0-pro' que é o modelo estável mais compatível.
-    model = genai.GenerativeModel('gemini-1.0-pro')
-
+    # ############ ALTERAÇÃO APLICADA AQUI ############
+    # Trocando para o modelo PaLM 2 (chat-bison-001)
+    # que é compatível com a API v1beta de projetos mais antigos.
+    model = genai.GenerativeModel("models/chat-bison-001")
+    
     # Inicia um chat com o histórico (incluindo o prompt do sistema)
     chat_session = model.start_chat(
         history=[
@@ -103,19 +102,26 @@ try:
             }
         ]
     )
+    print("Modelo 'models/chat-bison-001' inicializado com sucesso.")
+
 except Exception as e:
     print(f"ERRO CRÍTICO: Não foi possível inicializar o GenerativeModel. {e}")
     model = None
     chat_session = None
 
+# --- ROTA DE DIAGNÓSTICO (REMOVIDA) ---
+# A rota /api/check_models foi removida.
+
 @app.route('/api/chat', methods=['POST'])
 def handle_chat():
     if not model or not chat_session:
+        # Se o modelo falhou ao iniciar, esta rota retorna erro.
         print("Erro: A sessão do chat com o Gemini não foi inicializada.")
         return jsonify({'error': 'Serviço de chat indisponível.'}), 503
 
     try:
         data = request.json
+# ... (código existente sem alteração) ...
         user_message = data.get('message')
 
         if not user_message:
@@ -140,6 +146,7 @@ def handle_chat():
 # --- NOVA ROTA PARA FEIRAS LIVRES ---
 @app.route('/api/feiras_livres')
 def get_api_feiras_livres():
+# ... (código existente sem alteração) ...
     """Retorna uma lista JSON de todas as feiras livres da tabela 'feiras_livres'."""
     conn = None
     try:
@@ -177,6 +184,7 @@ def get_api_feiras_livres():
 # --- ROTA PARA BUSCAR POSTS DO BLOG (API) ---
 @app.route('/api/blog')
 def get_api_blog():
+# ... (código existente sem alteração) ...
     """Retorna uma lista JSON de todos os posts da tabela 'blog'."""
     conn = None
     try:
@@ -210,6 +218,7 @@ def get_api_blog():
 # Ex: /blog/onde-encontrar-feiras-livres-em-santana (sem .html)
 @app.route('/blog/<slug>')
 def blog_post_detalhe(slug):
+# ... (código existente sem alteração) ...
     conn = None
     try:
         conn = get_db_connection()
@@ -238,6 +247,7 @@ def blog_post_detalhe(slug):
 # --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
 @app.route('/api/feiras/tipos')
 def get_tipos_feira():
+# ... (código existente sem alteração) ...
     """Retorna uma lista JSON com todos os valores únicos de 'tipo_feira'."""
     conn = None
     try:
@@ -259,6 +269,7 @@ def get_tipos_feira():
 # Ex: /feiras/feira-da-liberdade
 @app.route('/feiras/<slug>')
 def feira_detalhe(slug):
+# ... (código existente sem alteração) ...
     conn = None
     try:
         conn = get_db_connection()
@@ -285,6 +296,7 @@ def feira_detalhe(slug):
 # --- ROTA DE API PRINCIPAL PARA FEIRAS ---
 @app.route('/api/feiras')
 def get_api_feiras():
+# ... (código existente sem alteração) ...
     conn = None
     try:
         tipo_feira_filtro = request.args.get('tipo')
@@ -329,13 +341,16 @@ def get_api_feiras():
 # --- ROTAS DE COMPATIBILIDADE ---
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
+# ... (código existente sem alteração) ...
     return get_api_feiras_filtrado('Gastronômica')
 
 @app.route('/api/artesanais')
 def get_artesanais_compat():
+# ... (código existente sem alteração) ...
     return get_api_feiras_filtrado('Artesanal')
 
 def get_api_feiras_filtrado(tipo_feira):
+# ... (código existente sem alteração) ...
     # Esta função é para manter compatibilidade, a nova abordagem usa /api/feiras?tipo=...
     conn = None
     try:
@@ -358,12 +373,14 @@ def get_api_feiras_filtrado(tipo_feira):
 # Rota para a página principal
 @app.route('/')
 def index():
+# ... (código existente sem alteração) ...
     return send_from_directory('.', 'index.html')
 
 # Rota para servir arquivos estáticos de pastas (assets, etc.)
 # Esta rota lida com qualquer caminho que pareça um arquivo com extensão
-@app.route('/<path:path>')
+@app.route('/path:path')
 def serve_static_files(path):
+# ... (código existente sem alteração) ...
     # Impede que capture as rotas de slug como /feiras/feira-da-liberdade
     # Apenas serve o arquivo se ele tiver uma extensão (ex: .css, .js, .png, .html)
     if '.' in os.path.basename(path):
@@ -373,6 +390,7 @@ def serve_static_files(path):
 
 # Execução do App
 if __name__ == '__main__':
+# ... (código existente sem alteração) ...
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
 
