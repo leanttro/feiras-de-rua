@@ -7,6 +7,7 @@ from flask_cors import CORS
 import datetime
 import traceback
 import decimal
+import google.generativeai as genai # <-- ADICIONADO IMPORT DO GEMINI
 
 # Carrega variáveis de ambiente de um arquivo .env, se existir
 load_dotenv()
@@ -47,6 +48,77 @@ def format_db_data(data_dict):
         else:
             formatted_dict[key] = value
     return formatted_dict
+
+
+# --- INÍCIO DA SEÇÃO DO CHATBOT ---
+
+# 1. Configure a Chave de API a partir das variáveis de ambiente
+# No Render, defina uma "Environment Variable" chamada GEMINI_API_KEY
+try:
+    api_key = os.environ.get("GEMINI_API_KEY")
+    if not api_key:
+        print("Atenção: A variável de ambiente GEMINI_API_KEY não foi definida.")
+    else:
+        genai.configure(api_key=api_key)
+except Exception as e:
+    print(f"Erro ao configurar a API do Gemini: {e}")
+
+# 2. Defina o Prompt de Sistema (Contexto) para o "Guia Feirinha"
+SYSTEM_PROMPT = """
+Você é o "Guia Feirinha", o assistente virtual amigável do site feirasderua.com.br.
+Sua especialidade é TUDO sobre feiras de rua, feiras gastronômicas, feiras de artesanato e eventos de bairro na cidade de São Paulo.
+Sua missão é ajudar os usuários a encontrar as melhores feiras, dar dicas sobre o que encontrar nelas e informar sobre eventos no site.
+
+Regras Estritas:
+1.  Responda APENAS sobre feiras em São Paulo, eventos locais de SP, ou sobre o próprio site feirasderua.com.br.
+2.  Se perguntarem sobre qualquer outro tópico (ex: política, esportes, clima em outra cidade, outros países), recuse educadamente a resposta.
+3.  Exemplo de recusa: "Desculpe, eu sou o Guia Feirinha e minha especialidade são as feiras de São Paulo. Não consigo ajudar com [tópico perguntado]. Mas, se quiser saber onde rola um pastel de feira incrível, estou aqui!"
+4.  Seja sempre amigável, prestativo e use um tom leve e conversacional.
+5.  Mantenha as respostas relativamente curtas e diretas (ideal para um chat).
+"""
+
+# 3. Inicialize o Modelo Generativo com o prompt de sistema
+try:
+    model = genai.GenerativeModel(
+        model_name='gemini-pro',
+        system_instruction=SYSTEM_PROMPT
+    )
+    # Iniciamos um chat "vazio". Para este caso de uso simples,
+    # cada pergunta é independente, mas segue o System Prompt.
+    chat_session = model.start_chat(history=[])
+except Exception as e:
+    print(f"Erro ao inicializar o modelo Gemini: {e}")
+    model = None
+    chat_session = None
+
+# 4. Crie a nova rota da API
+@app.route('/api/chat', methods=['POST'])
+def api_chat():
+    # Verificações de segurança e inicialização
+    if not api_key:
+        return jsonify({"erro": "Chave de API do provedor de IA não configurada no servidor."}), 500
+        
+    if not model or not chat_session:
+        return jsonify({"erro": "O modelo de IA não foi inicializado corretamente."}), 500
+
+    # Obter a mensagem do usuário do JSON
+    data = request.json
+    user_message = data.get("message")
+
+    if not user_message:
+        return jsonify({"erro": "Nenhuma mensagem fornecida."}), 400
+
+    try:
+        # Enviar a mensagem para a API do Gemini
+        response = chat_session.send_message(user_message)
+        bot_reply = response.text
+        return jsonify({"reply": bot_reply})
+
+    except Exception as e:
+        print(f"Erro ao chamar a API do Gemini: {e}")
+        return jsonify({"erro": "Ocorreu um erro ao processar sua mensagem."}), 503
+
+# --- FIM DA SEÇÃO DO CHATBOT ---
 
 
 # --- NOVA ROTA PARA FEIRAS LIVRES ---
@@ -287,4 +359,3 @@ def serve_static_files(path):
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     app.run(host="0.0.0.0", port=port, debug=False)
-
