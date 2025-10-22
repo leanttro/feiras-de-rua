@@ -85,7 +85,6 @@ def get_all_data_for_bot():
         
         # 1. Buscar da tabela 'feiras' (artesanais, gastronomicas, etc)
         # Selecionamos colunas relevantes para o bot.
-        # Adicionado 'latitude', 'longitude' se existirem, para futuras melhorias
         cur.execute("""
             SELECT id, nome_feira, tipo_feira, dia_semana, horario_inicio, horario_fim, 
                    rua, regiao, bairro, descricao, latitude, longitude 
@@ -128,7 +127,7 @@ if bot_data:
     feiras_especiais_json = json.dumps(bot_data['feiras_especiais'], separators=(',', ':'))
     feiras_livres_json = json.dumps(bot_data['feiras_livres'], separators=(',', ':'))
     
-    # ############ PROMPT DO SISTEMA ATUALIZADO ############
+    # ############ PROMPT DO SISTEMA ATUALIZADO (com Sugestão 3) ############
     SYSTEM_PROMPT = f"""
 Você é o "Feirinha - Chatbot", o assistente virtual especialista do site feirasderua.com.br.
 Sua missão é ajudar os usuários a encontrar feiras em São Paulo USANDO APENAS A BASE DE DADOS FORNECIDA.
@@ -162,7 +161,6 @@ LISTA 2: Feiras Livres (Tradicionais. Tabela 'feiras_livres')
         model = genai.GenerativeModel('gemini-flash-latest') 
         
         # Inicia um chat com o histórico (incluindo o prompt do sistema GIGANTE)
-        # Adiciona uma configuração de segurança para ser menos restritivo (útil para testes)
         chat_session = model.start_chat(
             history=[
                 {
@@ -205,7 +203,6 @@ def handle_chat():
         # Envia a mensagem para o Gemini (o histórico é mantido no 'chat_session')
         # O bot agora responderá usando o contexto gigante que demos a ele.
         
-        # Adiciona configuração de segurança para evitar bloqueios excessivos
         response = chat_session.send_message(
             user_message,
             generation_config=genai.types.GenerationConfig(
@@ -225,7 +222,7 @@ def handle_chat():
         return jsonify({'reply': response.text})
 
     # Tratamento específico para quando a API bloqueia a resposta por segurança
-    except google.generativeai.types.generation_types.StopCandidateException as stop_ex:
+    except genai.types.generation_types.StopCandidateException as stop_ex:
         print(f"API BLOQUEOU a resposta por segurança: {stop_ex}")
         return jsonify({'reply': "Desculpe, não posso gerar uma resposta para essa solicitação específica. Posso ajudar com informações sobre feiras?"})
     
@@ -355,15 +352,16 @@ def get_tipos_feira():
 
 
 # --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
-@app.route('/feiras/<slug>')
+# Ex: /feiras/feira-da-liberdade (que agora é /feiras/123)
+@app.route('/feiras/<slug>') # Mantemos <slug> como nome da variável, mas ela contém o ID
 def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # Ajuste para buscar pelo slug na tabela 'feiras' (você precisa ter uma coluna slug)
-        # Se não tiver, ajuste a consulta para usar outro campo único como nome_feira
-        cur.execute('SELECT * FROM feiras WHERE slug = %s;', (slug,)) 
+        # ############ CORREÇÃO DO SLUG ############
+        # Busca pelo ID (convertido para texto) em vez de 'slug' ou 'url'
+        cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
 
@@ -371,7 +369,7 @@ def feira_detalhe(slug):
             feira_formatada = format_db_data(dict(feira))
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
-            print(f"AVISO: Feira com slug '{slug}' não encontrada.")
+            print(f"AVISO: Feira com slug/id '{slug}' não encontrada.")
             return "Feira não encontrada", 404
             
     except Exception as e:
@@ -392,7 +390,9 @@ def get_api_feiras():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        query = "SELECT *, COALESCE(slug, CAST(id AS VARCHAR)) as effective_slug FROM feiras" # Adiciona slug ou ID como effective_slug
+        # ############ CORREÇÃO DO SLUG ############
+        # Remove COALESCE(slug, ...) e usa apenas o ID
+        query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras"
         params = []
 
         if tipo_feira_filtro:
@@ -408,7 +408,7 @@ def get_api_feiras():
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            # Gera a URL baseada no slug efetivo (slug ou ID)
+            # Gera a URL baseada no 'effective_slug' (que agora é sempre o ID)
             feira_dict['url'] = f'/feiras/{feira_dict["effective_slug"]}' 
             feiras_processadas.append(feira_dict)
 
@@ -437,7 +437,8 @@ def get_api_feiras_filtrado(tipo_feira):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        query = "SELECT *, COALESCE(slug, CAST(id AS VARCHAR)) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
+        # ############ CORREÇÃO DO SLUG ############
+        query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
         cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
         cur.close()
