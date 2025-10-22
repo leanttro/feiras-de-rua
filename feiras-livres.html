@@ -277,6 +277,7 @@
             max-height: 200px;
             overflow-y: auto;
             text-align: left;
+            display: none; /* Começa escondido */
         }
 
         .suggestion-item {
@@ -450,6 +451,9 @@
             .busca-opcoes { flex-direction: column; }
             .busca-endereco { flex-direction: column; width: 100%; }
             #input-endereco { min-width: auto; width: 100%; }
+            .busca-endereco button { display: none; } /* Esconde o botão buscar no mobile */
+            #address-suggestions { top: 56px; } /* Ajuste de posição */
+
         }
 
         @media (max-width: 480px) {
@@ -640,6 +644,185 @@
             width: 20px;
             text-align: center;
         }
+
+        /* ================================== */
+        /* INÍCIO DOS ESTILOS DO CHATBOT      */
+        /* (Copiado do index.html)            */
+        /* ================================== */
+        .chat-bubble {
+            position: fixed;
+            bottom: 25px;
+            right: 25px;
+            /* width: 60px; (removido) */
+            /* height: 60px; (removido) */
+            background-color: var(--primary-green);
+            color: var(--white);
+            border-radius: 50px; /* Formato pílula */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px; /* Espaço entre ícone e texto */
+            padding: 12px 20px; /* Padding interno */
+            font-size: 18px; /* Tamanho do ícone */
+            font-weight: 600; /* Peso da fonte */
+            cursor: pointer;
+            box-shadow: var(--shadow-medium);
+            z-index: 998;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .chat-bubble-text {
+            font-size: 16px; /* Tamanho do texto */
+            line-height: 1;
+        }
+        .chat-bubble:hover {
+            transform: scale(1.05); /* Aumenta um pouco */
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+        }
+
+        .chat-window {
+            position: fixed;
+            bottom: 100px;
+            right: 25px;
+            width: 370px;
+            max-width: calc(100vw - 40px);
+            height: 500px;
+            max-height: calc(100vh - 120px);
+            background-color: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            z-index: 999;
+            
+            /* Começa oculto */
+            opacity: 0;
+            transform: scale(0.95) translateY(20px);
+            visibility: hidden;
+            transition: all 0.3s ease-out;
+        }
+
+        .chat-window.active {
+            opacity: 1;
+            transform: scale(1) translateY(0);
+            visibility: visible;
+        }
+
+        .chat-header {
+            background-color: var(--primary-green);
+            color: var(--white);
+            padding: 15px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-shrink: 0;
+        }
+        .chat-header-title {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-weight: 700;
+            font-size: 1.2em;
+        }
+        .chat-close-btn {
+            background: none;
+            border: none;
+            color: var(--white);
+            font-size: 28px;
+            font-weight: 300;
+            cursor: pointer;
+            line-height: 1;
+            padding: 0;
+        }
+
+        .chat-messages {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background-color: var(--light-gray);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .message { /* Classe genérica de mensagem */
+            padding: 12px 16px;
+            border-radius: 18px;
+            max-width: 80%;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+        .bot-message {
+            background-color: #e0e0e0; /* var(--medium-gray) */
+            color: var(--dark-gray);
+            align-self: flex-start;
+            border-top-left-radius: 4px;
+        }
+        .user-message {
+            background-color: var(--dark-green);
+            color: var(--white);
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .chat-loading {
+            align-self: flex-start;
+            padding: 12px 16px;
+        }
+        .chat-loading span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--text-color);
+            border-radius: 50%;
+            opacity: 0.6;
+            animation: bounce 1s infinite;
+        }
+        .chat-loading span:nth-child(2) { animation-delay: 0.15s; }
+        .chat-loading span:nth-child(3) { animation-delay: 0.3s; }
+
+        @keyframes bounce {
+          0%, 80%, 100% { transform: scale(0); }
+          40% { transform: scale(1.0); }
+        }
+
+        .chat-input-area {
+            display: flex;
+            padding: 15px;
+            border-top: 1px solid var(--medium-gray);
+            background-color: var(--white);
+            flex-shrink: 0;
+        }
+        #chat-input {
+            flex-grow: 1;
+            border: 1px solid var(--medium-gray);
+            border-radius: 20px;
+            padding: 10px 15px;
+            font-size: 1em;
+            font-family: 'Roboto', sans-serif;
+        }
+        #chat-input:focus {
+            outline: none;
+            border-color: var(--primary-green);
+            box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.2);
+        }
+        #chat-submit-btn {
+            background-color: var(--primary-green);
+            color: var(--white);
+            border: none;
+            border-radius: 50%;
+            width: 42px;
+            height: 42px;
+            margin-left: 10px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.2s ease;
+        }
+        #chat-submit-btn:hover {
+            background-color: var(--dark-green);
+        }
+        /* ================================== */
+        /* FIM DOS ESTILOS DO CHATBOT         */
+        /* ================================== */
+
     </style>
 </head>
 <body>
@@ -696,7 +879,8 @@
                     </button>
                     <div class="busca-endereco">
                         <input type="text" id="input-endereco" placeholder="Digite um endereço em São Paulo...">
-                        <button style="display: none;">Buscar</button> <div id="address-suggestions"></div>
+                        <button style="display: none;">Buscar</button> 
+                        <div id="address-suggestions"></div>
                     </div>
                 </div>
             </div>
@@ -734,6 +918,41 @@
 
     </main>
 
+    <!-- ================================== -->
+    <!-- INÍCIO DO CÓDIGO DO CHATBOT (HTML) -->
+    <!-- (Copiado do index.html)            -->
+    <!-- ================================== -->
+    <div id="chat-bubble" class="chat-bubble">
+        <i class="fas fa-robot"></i>
+        <span class="chat-bubble-text">Feirinha - Chatbot</span>
+    </div>
+
+    <div id="chat-window" class="chat-window">
+        <div class="chat-header">
+            <div class="chat-header-title">
+                <i class="fas fa-leaf"></i>
+                <span>Feirinha - Chatbot</span>
+            </div>
+            <button id="close-chat-btn" class="chat-close-btn">&times;</button>
+        </div>
+        <div id="chat-messages" class="chat-messages">
+            <!-- Mensagem inicial do Bot -->
+            <div class="message bot-message">
+                Olá! Eu sou o Feirinha - Chatbot. ☀️<br>Posso ajudar a encontrar feiras, eventos ou responder dúvidas sobre o site. O que você busca hoje?
+            </div>
+        </div>
+        <form id="chat-form" class="chat-input-area">
+            <input type="text" id="chat-input" placeholder="Digite sua mensagem..." autocomplete="off">
+            <button type="submit" id="chat-submit-btn">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+    <!-- ================================== -->
+    <!-- FIM DO CÓDIGO DO CHATBOT (HTML)    -->
+    <!-- ================================== -->
+
+
     <footer>
         <div class="container">
             <p>&copy; 2025 - FeirasDeRua.com - Todos os direitos reservados.</p>
@@ -768,13 +987,36 @@
             
             // --- Lógica dos Filtros e Busca ---
             // ALTERAÇÃO CRÍTICA: Puxando dados da nova tabela 'feiras_livres'
-            const API_URL = 'https://feiras-de-rua.onrender.com/api/feiras_livres'; 
+             const BASE_API_URL = 'https://feiras-de-rua.onrender.com'; 
+             const API_URL = `${BASE_API_URL}/api/feiras_livres`; 
+
             // API_FILTROS_URL removida, buscaremos os bairros diretamente da API principal
             const filtroBairroSelect = document.getElementById('filtro-bairro-select');
             const resultadosDiv = document.querySelector('#resultados-feiras .container');
             
             let todasAsFeiras = [];
             let feirasExibidas = [];
+
+            // --- FUNÇÃO DE BUSCA RESILIENTE ---
+            async function fetchWithRetry(url, options = {}, maxRetries = 5) {
+                const mergedOptions = { ...options, mode: 'cors' };
+                for (let i = 0; i < maxRetries; i++) {
+                    try {
+                        // ############ CORREÇÃO DA API ############
+                        // Assegura que a URL base seja usada se a URL não for absoluta
+                        const finalUrl = url.startsWith('http') ? url : BASE_API_URL + url;
+                        const response = await fetch(finalUrl, mergedOptions);
+                        if (!response.ok) throw new Error(`Erro HTTP: ${response.status}`);
+                        return response.json(); // Modificado para já retornar o JSON
+                    } catch (error) {
+                        console.error(`Tentativa ${i + 1} falhou para ${url}:`, error);
+                        if (i === maxRetries - 1) throw error;
+                        const delay = Math.pow(2, i) * 1000;
+                        await new Promise(resolve => setTimeout(resolve, delay));
+                    }
+                }
+            }
+
 
             // --- Lógica de Busca ---
             const btnMeuLocal = document.getElementById('btn-meu-local');
@@ -799,15 +1041,19 @@
                     const distancia = haversineDistance(userLocation, feiraLocation);
                     return { ...feira, distancia };
                 }).sort((a, b) => a.distancia - b.distancia);
-                feirasExibidas = feirasComDistancia;
+                
+                // Atualiza a lista exibida com base na distância
+                feirasExibidas = feirasComDistancia.filter(f => f.distancia !== Infinity); 
+                
                 if (feirasExibidas.length > 0) {
-                    filtroBairroSelect.value = 'todos';
+                    filtroBairroSelect.value = 'todos'; // Reseta o filtro de bairro
                 }
                 renderizarFeiras(feirasExibidas);
             }
 
             function solicitarLocalizacaoEOrdenar() {
                 resultadosDiv.innerHTML = `<p class="loading-message">Obtendo sua localização...</p>`;
+                btnMeuLocal.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Buscando...';
                 if ('geolocation' in navigator) {
                     navigator.geolocation.getCurrentPosition((position) => {
                         const userLocation = {
@@ -815,23 +1061,24 @@
                             longitude: position.coords.longitude
                         };
                         ordenarEExibirFeiras(userLocation);
+                         btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                     }, (error) => {
                         let userMessage;
                         switch(error.code) {
                             case error.PERMISSION_DENIED:
-                                userMessage = `<strong>Você negou o acesso à localização.</strong><br><br>Para usar esta função, você precisa autorizar no seu celular.<br>Tente ir em <strong>Ajustes > Privacidade > Serviços de Localização</strong> e reativar para o seu navegador.<br><br>Enquanto isso, use a busca manual para encontrar feiras.`;
+                                userMessage = `<strong>Você negou o acesso à localização.</strong><br><br>Para usar esta função, você precisa autorizar no seu celular.<br>Tente ir em <strong>Ajustes > Privacidade > Serviços de Localização</strong> e reativar para o seu navegador.<br><br>Enquanto isso, use a busca manual ou os filtros para encontrar feiras.`;
                                 break;
                             default:
-                                userMessage = "Não foi possível obter sua localização. Por favor, tente a busca manual.";
+                                userMessage = "Não foi possível obter sua localização. Por favor, tente a busca manual ou os filtros.";
                                 break;
                         }
                         resultadosDiv.innerHTML = `<p class="info-message" style="line-height: 1.8;">${userMessage}</p>`;
-                        setTimeout(() => {
-                           renderizarFeiras(todasAsFeiras);
-                        }, 5000);
+                        btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
+                        // Não renderiza todas as feiras aqui, deixa o usuário usar os filtros
                     });
                 } else {
                     resultadosDiv.innerHTML = `<p class="error-message">Geolocalização não é suportada por este navegador.</p>`;
+                    btnMeuLocal.innerHTML = '<i class="fas fa-map-marker-alt"></i> Usar Meu Local';
                 }
             }
             btnMeuLocal.addEventListener('click', solicitarLocalizacaoEOrdenar);
@@ -889,16 +1136,16 @@
             
             filtroBairroSelect.addEventListener('change', () => {
                 const bairroSelecionado = filtroBairroSelect.value;
-                // A lista base deve ser sempre todas as feiras no início, 
-                // para que o filtro funcione independente da ordem
-                const listaBase = todasAsFeiras; 
+                 // ############ CORREÇÃO ############
+                // Se feirasExibidas (baseado na localização) tiver algo *E* for diferente da lista completa,
+                // filtre a partir dela. Senão, filtre a partir de todasAsFeiras.
+                const listaBase = (feirasExibidas.length > 0 && feirasExibidas.length !== todasAsFeiras.length) ? feirasExibidas : todasAsFeiras;
                 
                 if (bairroSelecionado === 'todos') {
-                    // Se estiver ordenado por distância, exibe essa lista, se não, exibe todas
-                    const listaParaExibir = feirasExibidas.length > 0 && feirasExibidas !== todasAsFeiras ? feirasExibidas : todasAsFeiras;
-                    renderizarFeiras(listaParaExibir);
+                    // Se a base era a filtrada por distância, mantém ela. Senão, mostra todas.
+                    renderizarFeiras(listaBase);
                 } else {
-                    // Filtra na lista original
+                    // Filtra na lista base (seja a de distância ou a completa)
                     const feirasFiltradas = listaBase.filter(feira => feira.bairro === bairroSelecionado);
                     renderizarFeiras(feirasFiltradas);
                 }
@@ -939,13 +1186,20 @@
             });
             
             resultadosDiv.addEventListener('click', (event) => {
-                if (event.target.classList.contains('ver-mais-btn')) {
+                 // Verifica se o clique foi no botão ou dentro do botão
+                 const button = event.target.closest('.ver-mais-btn');
+                if (button) { 
                     event.preventDefault();
-                    const card = event.target.closest('.fair-card');
-                    const feiraId = card.dataset.feiraId;
-                    const feira = todasAsFeiras.find(f => String(f.id) === feiraId);
-                    if (feira) {
-                        abrirModal(feira);
+                    const card = button.closest('.fair-card'); // Pega o card pai
+                    if (card) {
+                        const feiraId = card.dataset.feiraId;
+                        // Busca na lista correta (todasAsFeiras contém todos os dados)
+                        const feira = todasAsFeiras.find(f => String(f.id) === feiraId); 
+                        if (feira) {
+                            abrirModal(feira);
+                        } else {
+                            console.error("Feira não encontrada com ID:", feiraId);
+                        }
                     }
                 }
             });
@@ -954,22 +1208,24 @@
             const viewCarouselBtn = document.getElementById('view-carousel-btn');
             const viewGridBtn = document.getElementById('view-grid-btn');
             
-            resultadosDiv.classList.add('results-carousel');
-            viewCarouselBtn.classList.add('active');
-            viewGridBtn.classList.remove('active');
+             // Inicializa com grade por padrão, como nas outras páginas
+            resultadosDiv.classList.remove('results-carousel');
+            viewCarouselBtn.classList.remove('active');
+            viewGridBtn.classList.add('active');
+
 
             viewCarouselBtn.addEventListener('click', () => {
                 resultadosDiv.classList.add('results-carousel');
                 viewCarouselBtn.classList.add('active');
                 viewGridBtn.classList.remove('active');
-                renderizarFeiras(feirasExibidas); // Re-renderizar para aplicar o modo correto
+                // Re-renderizar não é necessário, apenas muda a classe do container
             });
 
             viewGridBtn.addEventListener('click', () => {
                 resultadosDiv.classList.remove('results-carousel');
                 viewGridBtn.classList.add('active');
                 viewCarouselBtn.classList.remove('active');
-                renderizarFeiras(feirasExibidas); // Re-renderizar para aplicar o modo correto
+                // Re-renderizar não é necessário
             });
 
             // --- Funções de Renderização ---
@@ -997,11 +1253,22 @@
             }
 
             function renderizarFeiras(listaDeFeiras) {
+                 // Limpa apenas se houver o que limpar
+                 if (resultadosDiv.innerHTML.includes('<p class="initial-message">') || 
+                    resultadosDiv.innerHTML.includes('<p class="loading-message">') ||
+                    resultadosDiv.innerHTML.includes('<p class="error-message">') ||
+                    resultadosDiv.innerHTML.includes('<p class="info-message">')) {
+                        resultadosDiv.innerHTML = ''; // Limpa mensagens iniciais/erro
+                    } else if (listaDeFeiras.length > 0) {
+                         resultadosDiv.innerHTML = ''; // Limpa cards antigos se novos cards serão adicionados
+                    }
+
                 if (!listaDeFeiras || listaDeFeiras.length === 0) {
-                    resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira encontrada para os critérios selecionados.</p>';
+                    resultadosDiv.innerHTML = '<p class="info-message">Nenhuma feira livre encontrada para os critérios selecionados.</p>';
                     return;
                 }
-                feirasExibidas = listaDeFeiras;
+                
+                // Cria os novos cards
                 resultadosDiv.innerHTML = listaDeFeiras.map(criarCardFeira).join('');
             }
 
@@ -1009,13 +1276,8 @@
             async function carregarDadosIniciais() {
                 resultadosDiv.innerHTML = '<p class="loading-message">Buscando feiras e bairros...</p>';
                 try {
-                    const fetchOptions = { cache: 'no-cache' };
-                    // Apenas uma chamada para buscar todas as feiras
-                    const feirasResponse = await fetch(API_URL + '?limite=1000', fetchOptions);
-
-                    if (!feirasResponse.ok) throw new Error(`Erro na rede (feiras): ${feirasResponse.statusText}`);
-                    
-                    todasAsFeiras = await feirasResponse.json();
+                    // Usa a função de fetch que retorna JSON
+                    todasAsFeiras = await fetchWithRetry(API_URL); 
                     
                     // --- NOVA LÓGICA DE FILTRO DE BAIRROS ---
                     // 1. Coleta todos os bairros únicos da lista de feiras
@@ -1040,16 +1302,157 @@
                     
                     // --- FIM NOVA LÓGICA DE FILTRO DE BAIRROS ---
                     
-                    renderizarFeiras(todasAsFeiras);
+                    // Inicializa a exibição com todas as feiras ordenadas por nome
+                    todasAsFeiras.sort((a,b) => (a.nome_da_feira || '').localeCompare(b.nome_da_feira || ''));
+                    feirasExibidas = [...todasAsFeiras]; // Define a lista inicial para exibição
+                    renderizarFeiras(feirasExibidas);
+
 
                 } catch (error) {
                     console.error('Falha ao carregar dados iniciais:', error);
-                    // Use a mensagem de erro que você já tinha:
-                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados. Verifique a conexão com o servidor.</p>';
+                    resultadosDiv.innerHTML = '<p class="error-message">Não foi possível carregar os dados das feiras livres. Tente recarregar a página.</p>';
                 }
             }
             
             carregarDadosIniciais();
+
+            // ==================================
+            // INÍCIO DA LÓGICA DO CHATBOT (JS)
+            // (Copiado do index.html)
+            // ==================================
+            
+            // 1. Seleciona os elementos do DOM do Chat
+            const chatBubble = document.getElementById('chat-bubble');
+            const chatWindow = document.getElementById('chat-window');
+            const closeChatBtn = document.getElementById('close-chat-btn');
+            const chatForm = document.getElementById('chat-form');
+            const chatInput = document.getElementById('chat-input');
+            const chatMessages = document.getElementById('chat-messages');
+            const chatSubmitBtn = document.getElementById('chat-submit-btn');
+
+            const CHAT_API_URL = `${BASE_API_URL}/api/chat`; // A URL da sua rota Flask (com URL base)
+
+            // --- a. Controlar o "clique" para abrir e fechar a janelinha ---
+            
+            function toggleChatWindow() {
+                chatWindow.classList.toggle('active');
+                // Esconde o balão quando o chat está aberto e vice-versa
+                if (chatWindow.classList.contains('active')) {
+                    chatBubble.style.opacity = '0';
+                    chatBubble.style.visibility = 'hidden';
+                    chatInput.focus(); // Foca no input ao abrir
+                } else {
+                    chatBubble.style.opacity = '1';
+                    chatBubble.style.visibility = 'visible';
+                }
+            }
+
+            chatBubble.addEventListener('click', toggleChatWindow);
+            closeChatBtn.addEventListener('click', toggleChatWindow);
+
+            // --- b, c, d. Capturar, Enviar (fetch) e Receber Mensagens ---
+
+            chatForm.addEventListener('submit', async (e) => {
+                e.preventDefault(); 
+                
+                const message = chatInput.value.trim();
+                if (!message) return;
+
+                // 1. Adiciona a mensagem do usuário à tela
+                addMessageToUI(message, 'user');
+                chatInput.value = '';
+                chatInput.disabled = true;
+                chatSubmitBtn.disabled = true;
+
+                // 2. Mostra um indicador de "digitando..."
+                showLoadingIndicator();
+
+                try {
+                    // 3. Envia a mensagem para a API Flask
+                    const response = await fetch(CHAT_API_URL, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ message: message }),
+                    });
+
+                    removeLoadingIndicator();
+
+                    // Tenta pegar o JSON mesmo se a resposta não for 'ok' (para erros customizados)
+                    const data = await response.json();
+
+                    if (!response.ok) {
+                        // Usa o erro do JSON da API (ex: "Serviço indisponível")
+                        throw new Error(data.error || `Erro HTTP: ${response.status}`);
+                    }
+
+                    // 4. Adiciona a resposta do bot à tela
+                    if (data.reply) {
+                        addMessageToUI(data.reply, 'bot');
+                    } else if (data.error) { // Embora já tratado acima, é uma boa garantia
+                        addMessageToUI(`Desculpe, ocorreu um erro: ${data.error}`, 'bot');
+                    }
+
+                } catch (error) {
+                    console.error('Erro ao enviar mensagem:', error);
+                    removeLoadingIndicator();
+                    // Mostra o erro vindo da API ou um erro genérico
+                    addMessageToUI(`Desculpe, não consegui me conectar (${error.message}). Tente novamente.`, 'bot');
+                } finally {
+                    // 5. Reabilita o input
+                    chatInput.disabled = false;
+                    chatSubmitBtn.disabled = false;
+                    chatInput.focus();
+                }
+            });
+
+            // --- Funções Auxiliares do Chat ---
+
+            /**
+             * Adiciona uma mensagem à interface do chat.
+             * @param {string} text - O texto da mensagem.
+             * @param {'user' | 'bot'} sender - Quem enviou a mensagem.
+             */
+            function addMessageToUI(text, sender) {
+                const messageElement = document.createElement('div');
+                messageElement.classList.add('message', `${sender}-message`);
+                // Converte quebras de linha (do Markdown da IA) para <br>
+                messageElement.innerHTML = text.replace(/\n/g, '<br>'); 
+                chatMessages.appendChild(messageElement);
+                scrollToBottom();
+            }
+
+            function showLoadingIndicator() {
+                const loadingElement = document.createElement('div');
+                loadingElement.classList.add('message', 'chat-loading');
+                loadingElement.id = 'loading-indicator';
+                loadingElement.innerHTML = `<span></span><span></span><span></span>`;
+                chatMessages.appendChild(loadingElement);
+                scrollToBottom();
+            }
+
+            function removeLoadingIndicator() {
+                const loadingIndicator = document.getElementById('loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.remove();
+                }
+            }
+
+            function scrollToBottom() {
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            // ==================================
+            // FIM DA LÓGICA DO CHATBOT (JS)
+            // ==================================
+
+            // ############ ALTERAÇÃO DE UX ############
+            // Só abre o chat automaticamente se a tela for de desktop (maior que 768px).
+            // Em telas menores (mobile/tablet), o usuário precisa clicar no balão.
+            if (window.innerWidth > 768) {
+                toggleChatWindow(); 
+            }
+
         });
     </script>
 </body>
