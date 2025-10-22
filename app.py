@@ -303,7 +303,9 @@ def get_api_blog():
     finally:
         if conn: conn.close()
 
-# --- ROTA PARA RENDERIZAR UMA PÁGINA DE POST DO BLOG ---
+# --- ROTAS DE DETALHE DE CONTEÚDO (DEVE VIR ANTES DA ROTA ESTÁTICA) ---
+
+# ROTA PARA RENDERIZAR UMA PÁGINA DE POST DO BLOG
 @app.route('/blog/<slug>')
 def blog_post_detalhe(slug):
     conn = None
@@ -330,36 +332,14 @@ def blog_post_detalhe(slug):
     finally:
         if conn: conn.close()
         
-
-# --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
-@app.route('/api/feiras/tipos')
-def get_tipos_feira():
-    """Retorna uma lista JSON com todos os valores únicos de 'tipo_feira'."""
-    conn = None
-    try:
-        conn = get_db_connection()
-        cur = conn.cursor()
-        cur.execute("SELECT DISTINCT tipo_feira FROM feiras WHERE tipo_feira IS NOT NULL AND tipo_feira != '' ORDER BY tipo_feira;")
-        tipos = [row[0] for row in cur.fetchall()]
-        cur.close()
-        return jsonify(tipos)
-    except Exception as e:
-        print(f"ERRO em /api/feiras/tipos: {e}")
-        traceback.print_exc()
-        return jsonify({'error': 'Erro ao buscar tipos de feira'}), 500
-    finally:
-        if conn: conn.close()
-
-
-# --- ROTA DE DETALHE ÚNICA PARA FEIRAS ---
-# Ex: /feiras/feira-da-liberdade (que agora é /feiras/123)
+# ROTA DE DETALHE ÚNICA PARA FEIRAS
+# Ex: /feiras/123
 @app.route('/feiras/<slug>') # Mantemos <slug> como nome da variável, mas ela contém o ID
 def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # ############ CORREÇÃO DO SLUG ############
         # Busca pelo ID (convertido para texto) em vez de 'slug' ou 'url'
         cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
         feira = cur.fetchone()
@@ -380,6 +360,27 @@ def feira_detalhe(slug):
         if conn: conn.close()
 
 
+# --- ROTAS DE API (POUCO PROVÁVEL DE CONFLITO) ---
+# --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
+@app.route('/api/feiras/tipos')
+def get_tipos_feira():
+    """Retorna uma lista JSON com todos os valores únicos de 'tipo_feira'."""
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT DISTINCT tipo_feira FROM feiras WHERE tipo_feira IS NOT NULL AND tipo_feira != '' ORDER BY tipo_feira;")
+        tipos = [row[0] for row in cur.fetchall()]
+        cur.close()
+        return jsonify(tipos)
+    except Exception as e:
+        print(f"ERRO em /api/feiras/tipos: {e}")
+        traceback.print_exc()
+        return jsonify({'error': 'Erro ao buscar tipos de feira'}), 500
+    finally:
+        if conn: conn.close()
+
+
 # --- ROTA DE API PRINCIPAL PARA FEIRAS ---
 @app.route('/api/feiras')
 def get_api_feiras():
@@ -390,7 +391,6 @@ def get_api_feiras():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # ############ CORREÇÃO DO SLUG ############
         # Remove COALESCE(slug, ...) e usa apenas o ID
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras"
         params = []
@@ -437,7 +437,7 @@ def get_api_feiras_filtrado(tipo_feira):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # ############ CORREÇÃO DO SLUG ############
+        # Busca pelo ID (convertido para texto)
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
         cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
@@ -456,39 +456,40 @@ def get_api_feiras_filtrado(tipo_feira):
     finally:
         if conn: conn.close()
 
-# --- ROTAS PARA SERVIR ARQUIVOS ---
+
+# --- ROTAS PARA SERVIR ARQUIVOS (DEVE VIR POR ÚLTIMO) ---
 
 # Rota para a página principal
 @app.route('/')
 def index_route(): # Renomeado para evitar conflito com a função index()
     return send_from_directory('.', 'index.html')
 
-# Rota para servir arquivos estáticos de pastas (assets, etc.)
-# Esta rota lida com qualquer caminho que pareça um arquivo com extensão
+# Rota para servir arquivos estáticos de páginas (ex: gastronomicas.html) e assets.
+# Esta rota lida com qualquer caminho que pareça um arquivo com extensão.
 @app.route('/<path:path>')
 def serve_static_files(path):
-    # Impede que capture as rotas de slug como /feiras/feira-da-liberdade
-    # Apenas serve o arquivo se ele tiver uma extensão (ex: .css, .js, .png, .html)
-    # OU se for um diretório conhecido como 'assets'
-    basename = os.path.basename(path)
-    if '.' in basename or path.startswith('assets/'):
-         # Verifica se o arquivo realmente existe antes de tentar servir
-        if os.path.exists(os.path.join('.', path)):
-            return send_from_directory('.', path)
-        else:
-            print(f"AVISO: Arquivo estático não encontrado: {path}")
-            return "Not Found", 404
     
-    # Se não for um arquivo estático conhecido, assume que é uma rota de slug
-    # que já foi tratada pelas rotas @app.route('/feiras/<slug>') e @app.route('/blog/<slug>')
-    # Se chegou aqui, nenhuma rota de slug correspondeu.
-    print(f"AVISO: Rota não correspondida por arquivo estático ou slug: {path}")
-    return "Not Found", 404
-
+    # ############ CORREÇÃO PARA O PROBLEMA DO SLUG ############
+    # 1. Se o caminho NÃO CONTÉM um ponto, NÃO é um arquivo estático (ex: /feiras/8, /blog/post-x)
+    #    Neste caso, ele deve ser uma rota de detalhe (que deveria ter sido capturada antes).
+    #    Se chegou aqui, significa que a rota de detalhe não existia ou não foi resolvida,
+    #    mas a intenção era buscar um SLUG, não um arquivo.
+    basename = os.path.basename(path)
+    if '.' not in basename:
+        # Se não há ponto, provavelmente é um slug que não bateu com as rotas /feiras/<slug> ou /blog/<slug>
+        # Retorna Not Found em vez de tentar servir algo errado.
+        print(f"AVISO: Tentativa de acesso a um slug não encontrado (sem ponto no basename): {path}")
+        return "Not Found", 404
+        
+    # 2. Se o caminho CONTÉM um ponto, TENTA servir como arquivo estático (.html, .css, .png, etc.)
+    if os.path.exists(os.path.join('.', path)):
+        return send_from_directory('.', path)
+    else:
+        print(f"AVISO: Arquivo estático não encontrado: {path}")
+        return "Not Found", 404
 
 # Execução do App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
     # debug=True é útil localmente, mas deve ser False em produção (Render)
     app.run(host="0.0.0.0", port=port, debug=False)
-
