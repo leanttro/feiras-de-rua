@@ -14,8 +14,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     
     <!-- Título e Descrição Dinâmicos para SEO -->
-    <title>{{ feira.nome_feira }} | Feiras de Rua SP</title>
-    <meta name="description" content="{{ feira.descricao | truncate(155, True, '...') }}">
+    <title>{{ feira.nome_feira }} | {{ feira.bairro }} - Feiras de Rua SP</title>
+    <meta name="description" content="{{ feira.nome_feira }} no {{ feira.bairro }}, São Paulo. {{ feira.dia_semana }}, {{ feira.horario_inicio }} às {{ feira.horario_fim }}. {{ feira.descricao | truncate(100, True, '...') }}">
 
     <!-- Fontes e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
