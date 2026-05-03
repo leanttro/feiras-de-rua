@@ -507,6 +507,42 @@ def serve_static_files(path):
         print(f"AVISO: Arquivo estático não encontrado: {path}")
         return "Not Found", 404
 
+# --- ROTA DO SITEMAP ---
+@app.route('/sitemap.xml')
+def sitemap():
+    conn = None
+    urls = [
+        'https://www.feirasderua.com.br/',
+        'https://www.feirasderua.com.br/gastronomicas.html',
+        'https://www.feirasderua.com.br/artesanais.html',
+        'https://www.feirasderua.com.br/feiras-livres.html',
+        'https://www.feirasderua.com.br/contato.html',
+        'https://www.feirasderua.com.br/anuncie.html',
+    ]
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor()
+        cur.execute("SELECT COALESCE(url, CAST(id AS VARCHAR)) FROM feiras;")
+        for row in cur.fetchall():
+            urls.append(f'https://www.feirasderua.com.br/feiras/{row[0]}')
+        cur.execute("SELECT slug FROM blog WHERE slug IS NOT NULL;")
+        for row in cur.fetchall():
+            urls.append(f'https://www.feirasderua.com.br/blog/{row[0]}')
+        cur.close()
+    except Exception as e:
+        print(f"AVISO: Erro ao buscar URLs dinâmicas para o sitemap: {e}")
+    finally:
+        if conn: conn.close()
+
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    for url in urls:
+        xml += f'  <url><loc>{url}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n'
+    xml += '</urlset>'
+    return make_response(xml, 200, {'Content-Type': 'application/xml'})
+# --- FIM DA ROTA DO SITEMAP ---
+
+
 # Execução do App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
