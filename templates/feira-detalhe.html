@@ -17,6 +17,18 @@
     <title>{{ feira.nome_feira }} | {{ feira.bairro }} - Feiras de Rua SP</title>
     <meta name="description" content="{{ feira.nome_feira }} no {{ feira.bairro }}, São Paulo. {{ feira.dia_semana }}, {{ feira.horario_inicio }} às {{ feira.horario_fim }}. {{ feira.descricao | truncate(100, True, '...') }}">
 
+    <!-- ✅ CANONICAL: Evita conteúdo duplicado (ID numérico vs slug) -->
+    <link rel="canonical" href="https://www.feirasderua.com.br/feiras/{{ feira.url }}">
+
+    <!-- Open Graph (WhatsApp, Facebook, etc.) -->
+    <meta property="og:title" content="{{ feira.nome_feira }} | Feiras de Rua SP">
+    <meta property="og:description" content="{{ feira.nome_feira }} no {{ feira.bairro }}. {{ feira.dia_semana }}, {{ feira.horario_inicio }} às {{ feira.horario_fim }}.">
+    <meta property="og:url" content="https://www.feirasderua.com.br/feiras/{{ feira.url }}">
+    <meta property="og:type" content="website">
+    {% if feira.imagem_url %}
+    <meta property="og:image" content="{{ feira.imagem_url }}">
+    {% endif %}
+
     <!-- Fontes e Ícones -->
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
@@ -35,6 +47,11 @@
         .feira-info li i { color: #4CAF50; width: 30px; text-align: center; font-size: 1.2em; margin-top: 3px; }
         .map-button { display: inline-block; background-color: #4CAF50; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s; }
         .map-button:hover { background-color: #388E3C; }
+
+        @media (max-width: 768px) {
+            .container { margin: 10px; padding: 15px; }
+            .header-detalhe h1 { font-size: 1.8em; }
+        }
     </style>
 
     <!-- Schema.org JSON-LD para SEO avançado -->
@@ -78,7 +95,7 @@
 
     <div class="container">
         <div class="header-detalhe">
-            <!-- LÓGICA ATUALIZADA: Link de "Voltar" inteligente -->
+            <!-- Lógica de "Voltar" inteligente por tipo de feira -->
             {% set back_link = '/' %}
             {% if feira.tipo_feira and 'gastron' in feira.tipo_feira|lower %}
                 {% set back_link = '/gastronomicas.html' %}
@@ -108,12 +125,9 @@
             
             <li><i class="fas fa-clock"></i> <strong>Horário:</strong> {{ feira.horario_inicio or 'N/A' }} às {{ feira.horario_fim or 'N/A' }}</li>
             <li><i class="fas fa-map-marker-alt"></i> <strong>Local:</strong> {{ feira.rua or 'Não informado' }}, {{ feira.bairro or '' }} - {{ feira.regiao or '' }}</li>
-            
-            <!-- CAMPO ADICIONADO: Exibe o tipo da feira -->
             <li><i class="fas fa-tag"></i> <strong>Tipo:</strong> {{ feira.tipo_feira or 'Não informado' }}</li>
         </ul>
 
-        <!-- Botão "Ver no mapa" com link CORRIGIDO -->
         {% if feira.latitude and feira.longitude %}
             <a href="https://www.google.com/maps?q={{feira.latitude}},{{feira.longitude}}" 
                target="_blank" 
