@@ -1,13 +1,13 @@
 import os
 import psycopg2
 import psycopg2.extras
-from flask import Flask, jsonify, request, send_from_directory, render_template, make_response
+from flask import Flask, jsonify, request, send_from_directory, render_template, make_response, redirect
 from dotenv import load_dotenv
 from flask_cors import CORS
 import datetime
 import traceback
 import decimal
-import json # <--- IMPORTADO PARA O BOT
+import json
 
 # --- INÍCIO DA SEÇÃO DO CHATBOT ---
 import google.generativeai as genai
@@ -32,15 +32,13 @@ except Exception as e:
 
 
 # Inicializa o aplicativo Flask
-# static_folder='.' faz com que o Flask procure arquivos como CSS, JS e HTML na pasta raiz.
 app = Flask(__name__, static_folder='.', static_url_path='', template_folder='templates')
-CORS(app) # Habilita CORS para todas as rotas
+CORS(app)
 
 def get_db_connection():
     """Cria e retorna uma conexão com o banco de dados PostgreSQL."""
     conn = None
     try:
-        # Pega a URL do banco de dados das variáveis de ambiente do Render
         conn = psycopg2.connect(os.getenv('DATABASE_URL'))
         return conn
     except Exception as e:
@@ -59,7 +57,6 @@ def format_db_data(data_dict):
         elif isinstance(value, datetime.time):
             formatted_dict[key] = value.strftime('%H:%M') if value else None
         elif isinstance(value, decimal.Decimal):
-            # Converte Decimal para float para ser compatível com JSON, tratando None/NaN
             try:
                 formatted_dict[key] = float(value)
             except (TypeError, ValueError):
@@ -71,11 +68,9 @@ def format_db_data(data_dict):
 
 # --- INÍCIO DA SEÇÃO DO CHATBOT ---
 
-# --- NOVA FUNÇÃO HELPER ---
 def get_all_data_for_bot():
     """
     Busca dados das tabelas 'feiras' e 'feiras_livres' para alimentar o chatbot.
-    Isso garante que o bot responda APENAS com dados do seu banco.
     """
     all_data = {}
     conn = None
@@ -83,8 +78,6 @@ def get_all_data_for_bot():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # 1. Buscar da tabela 'feiras' (artesanais, gastronomicas, etc)
-        # Selecionamos colunas relevantes para o bot.
         cur.execute("""
             SELECT id, nome_feira, tipo_feira, dia_semana, horario_inicio, horario_fim, 
                    rua, regiao, bairro, descricao, latitude, longitude 
@@ -93,8 +86,6 @@ def get_all_data_for_bot():
         feiras_raw = cur.fetchall()
         all_data['feiras_especiais'] = [format_db_data(dict(f)) for f in feiras_raw]
         
-        # 2. Buscar da tabela 'feiras_livres' (do CSV que você mandou)
-        # Selecionamos colunas relevantes para o bot.
         cur.execute("""
             SELECT id, nome_da_feira, dia_da_feira, endereco, bairro, latitude, longitude
             FROM feiras_livres ORDER BY nome_da_feira
@@ -108,26 +99,21 @@ def get_all_data_for_bot():
     except Exception as e:
         print(f"ERRO CRÍTICO ao buscar dados para o bot: {e}")
         traceback.print_exc()
-        return None # Retorna None se falhar
+        return None
     finally:
         if conn: conn.close()
 
-# --- FIM DA FUNÇÃO HELPER ---
 
-
-# --- INICIALIZAÇÃO DO MODELO (MODIFICADA) ---
 print("Buscando dados das feiras no DB para inicializar o bot...")
-bot_data = get_all_data_for_bot() # Chama a nova função helper
+bot_data = get_all_data_for_bot()
 
 model = None
 chat_session = None
 
 if bot_data:
-    # Converte os dados para strings JSON compactas
     feiras_especiais_json = json.dumps(bot_data['feiras_especiais'], separators=(',', ':'))
     feiras_livres_json = json.dumps(bot_data['feiras_livres'], separators=(',', ':'))
     
-    # ############ PROMPT DO SISTEMA ATUALIZADO (com Sugestão 3) ############
     SYSTEM_PROMPT = f"""
 Você é o "Feirinha - Chatbot", o assistente virtual especialista do site feirasderua.com.br.
 Sua missão é ajudar os usuários a encontrar feiras em São Paulo USANDO APENAS A BASE DE DADOS FORNECIDA.
@@ -157,10 +143,8 @@ LISTA 2: Feiras Livres (Tradicionais. Tabela 'feiras_livres')
 """
     
     try:
-        # Usando o modelo que sabemos que funciona
         model = genai.GenerativeModel('gemini-flash-latest') 
         
-        # Inicia um chat com o histórico (incluindo o prompt do sistema GIGANTE)
         chat_session = model.start_chat(
             history=[
                 {
@@ -180,17 +164,14 @@ LISTA 2: Feiras Livres (Tradicionais. Tabela 'feiras_livres')
         traceback.print_exc()
 else:
     print("ERRO CRÍTICO: Não foi possível buscar dados do DB para o bot. O chat não vai funcionar.")
-    model = None # Garante que as variáveis fiquem None
+    model = None
     chat_session = None
-
-# --- FIM DA INICIALIZAÇÃO DO MODELO ---
 
 
 @app.route('/api/chat', methods=['POST'])
 def handle_chat():
     if not model or not chat_session:
-        # Se o modelo falhou ao iniciar, esta rota retorna erro.
-        print("Erro: A sessão do chat com o Gemini não foi inicializada (provavelmente falha ao buscar dados do DB).")
+        print("Erro: A sessão do chat com o Gemini não foi inicializada.")
         return jsonify({'error': 'Serviço de chat indisponível no momento.'}), 503
 
     try:
@@ -200,16 +181,11 @@ def handle_chat():
         if not user_message:
             return jsonify({'error': 'Mensagem não pode ser vazia.'}), 400
 
-        # Envia a mensagem para o Gemini (o histórico é mantido no 'chat_session')
-        # O bot agora responderá usando o contexto gigante que demos a ele.
-        
         response = chat_session.send_message(
             user_message,
             generation_config=genai.types.GenerationConfig(
-                 # Reduz a probabilidade de respostas repetitivas ou genéricas demais
                 temperature=0.7 
             ),
-             # Tenta reduzir bloqueios por segurança (HARASSMENT, HATE_SPEECH, etc.)
             safety_settings={
                  'HATE': 'BLOCK_NONE',
                  'HARASSMENT': 'BLOCK_NONE',
@@ -218,10 +194,8 @@ def handle_chat():
             }
         )
 
-        # Retorna a resposta do modelo para o front-end
         return jsonify({'reply': response.text})
 
-    # Tratamento específico para quando a API bloqueia a resposta por segurança
     except genai.types.generation_types.StopCandidateException as stop_ex:
         print(f"API BLOQUEOU a resposta por segurança: {stop_ex}")
         return jsonify({'reply': "Desculpe, não posso gerar uma resposta para essa solicitação específica. Posso ajudar com informações sobre feiras?"})
@@ -229,7 +203,6 @@ def handle_chat():
     except Exception as e:
         print(f"Erro ao chamar a API do Gemini: {e}")
         traceback.print_exc()
-        # Retorna um erro 503 (Serviço Indisponível) para o front-end
         return jsonify({'error': 'Ocorreu um erro ao processar sua mensagem.'}), 503
 
 # --- FIM DA SEÇÃO DO CHATBOT ---
@@ -244,7 +217,6 @@ def get_api_feiras_livres():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Seleciona todas as colunas
         query = """
         SELECT id, nome_da_feira, dia_da_feira, categoria, qnt_feirantes, 
                endereco, bairro, latitude, longitude
@@ -256,7 +228,6 @@ def get_api_feiras_livres():
         feiras_raw = cur.fetchall()
         cur.close()
 
-        # Processa os dados
         feiras_processadas = [format_db_data(dict(feira)) for feira in feiras_raw]
 
         return jsonify(feiras_processadas)
@@ -281,14 +252,12 @@ def get_api_blog():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
         
-        # Busca todos os campos da tabela 'blog'
         query = "SELECT * FROM blog ORDER BY data_publicacao DESC, id DESC;"
         
         cur.execute(query)
         posts_raw = cur.fetchall()
         cur.close()
 
-        # Processa os dados (formatação de datas, etc.)
         posts_processados = [format_db_data(dict(post)) for post in posts_raw]
 
         return jsonify(posts_processados)
@@ -313,7 +282,6 @@ def blog_post_detalhe(slug):
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
         
-        # Busca na tabela 'blog' pelo slug exato
         cur.execute('SELECT * FROM blog WHERE slug = %s;', (slug,))
         post = cur.fetchone()
         cur.close()
@@ -333,15 +301,36 @@ def blog_post_detalhe(slug):
         if conn: conn.close()
         
 # ROTA DE DETALHE ÚNICA PARA FEIRAS
-# Ex: /feiras/feira-da-praca-da-se
-# ALTERAÇÃO 1: Trocando <slug> por <path:slug>
 @app.route('/feiras/<path:slug>') 
 def feira_detalhe(slug):
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-        # ALTERAÇÃO 2: Busca pelo campo 'url' em vez de 'CAST(id AS VARCHAR)'
+
+        # ✅ SEO: Se o slug for numérico (ID antigo), redireciona 301 para a URL com slug correto
+        if slug.isdigit():
+            cur.execute('SELECT url FROM feiras WHERE CAST(id AS VARCHAR) = %s AND url IS NOT NULL AND url != \'\';', (slug,))
+            row = cur.fetchone()
+            cur.close()
+            if row and row['url']:
+                print(f"SEO 301: Redirecionando /feiras/{slug} → /feiras/{row['url']}")
+                return redirect(f"/feiras/{row['url']}", code=301)
+            else:
+                # ID sem slug cadastrado — renderiza normalmente pelo ID
+                conn2 = get_db_connection()
+                cur2 = conn2.cursor(cursor_factory=psycopg2.extras.DictCursor)
+                cur2.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
+                feira = cur2.fetchone()
+                cur2.close()
+                conn2.close()
+                if feira:
+                    feira_formatada = format_db_data(dict(feira))
+                    return render_template('feira-detalhe.html', feira=feira_formatada)
+                else:
+                    return "Feira não encontrada", 404
+
+        # Busca pelo campo 'url' (slug)
         cur.execute('SELECT * FROM feiras WHERE url = %s;', (slug,))
         feira = cur.fetchone()
         cur.close()
@@ -351,17 +340,6 @@ def feira_detalhe(slug):
             return render_template('feira-detalhe.html', feira=feira_formatada)
         else:
             print(f"AVISO: Feira com slug/url '{slug}' não encontrada.")
-            # Fallback: tentar pelo ID caso o slug seja o ID antigo
-            if slug.isdigit():
-                 conn = get_db_connection()
-                 cur = conn.cursor(cursor_factory=psycopg2.extras.DictCursor)
-                 cur.execute('SELECT * FROM feiras WHERE CAST(id AS VARCHAR) = %s;', (slug,))
-                 feira_fallback = cur.fetchone()
-                 cur.close()
-                 if feira_fallback:
-                     feira_formatada = format_db_data(dict(feira_fallback))
-                     return render_template('feira-detalhe.html', feira=feira_formatada)
-
             return "Feira não encontrada", 404
             
     except Exception as e:
@@ -372,8 +350,8 @@ def feira_detalhe(slug):
         if conn: conn.close()
 
 
-# --- ROTAS DE API (POUCO PROVÁVEL DE CONFLITO) ---
-# --- ROTA PARA BUSCAR OS TIPOS DE FEIRA DISTINTOS ---
+# --- ROTAS DE API ---
+
 @app.route('/api/feiras/tipos')
 def get_tipos_feira():
     """Retorna uma lista JSON com todos os valores únicos de 'tipo_feira'."""
@@ -393,7 +371,6 @@ def get_tipos_feira():
         if conn: conn.close()
 
 
-# --- ROTA DE API PRINCIPAL PARA FEIRAS ---
 @app.route('/api/feiras')
 def get_api_feiras():
     conn = None
@@ -403,7 +380,6 @@ def get_api_feiras():
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
 
-        # Seleciona 'url' e usa CAST(id AS VARCHAR) como fallback slug
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras"
         params = []
 
@@ -420,15 +396,10 @@ def get_api_feiras():
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            
-            # ALTERAÇÃO 3: Lógica para garantir a URL (prioriza 'url', fallback para 'id')
             feira_slug = feira_dict.get('url') if feira_dict.get('url') else feira_dict.get('id')
             feira_dict['url'] = f'/feiras/{feira_slug}'
-            # Mantém effective_slug como o ID para compatibilidade com a query (embora não mais usado para a url de fato)
-            feira_dict['effective_slug'] = feira_dict['id'] # Garante que effective_slug seja o ID se o banco estiver vazio
-            
+            feira_dict['effective_slug'] = feira_dict['id']
             feiras_processadas.append(feira_dict)
-
 
         return jsonify(feiras_processadas)
 
@@ -439,7 +410,7 @@ def get_api_feiras():
     finally:
         if conn: conn.close()
         
-# --- ROTAS DE COMPATIBILIDADE (Mantidas por segurança) ---
+# --- ROTAS DE COMPATIBILIDADE ---
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
     return get_api_feiras_filtrado('Gastronômica')
@@ -449,12 +420,10 @@ def get_artesanais_compat():
     return get_api_feiras_filtrado('Artesanal')
 
 def get_api_feiras_filtrado(tipo_feira):
-    # Esta função é para manter compatibilidade, a nova abordagem usa /api/feiras?tipo=...
     conn = None
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Seleciona 'url' e usa CAST(id AS VARCHAR) como effective_slug
         query = "SELECT *, CAST(id AS VARCHAR) as effective_slug FROM feiras WHERE tipo_feira ILIKE %s ORDER BY nome_feira;"
         cur.execute(query, (f"%{tipo_feira}%",))
         feiras_raw = cur.fetchall()
@@ -463,7 +432,6 @@ def get_api_feiras_filtrado(tipo_feira):
         feiras_processadas = []
         for feira in feiras_raw:
             feira_dict = format_db_data(dict(feira))
-            # Lógica de URL compatível com a nova API
             feira_slug = feira_dict.get('url') if feira_dict.get('url') else feira_dict.get('id')
             feira_dict['url'] = f'/feiras/{feira_slug}'
             feiras_processadas.append(feira_dict)
@@ -476,58 +444,57 @@ def get_api_feiras_filtrado(tipo_feira):
         if conn: conn.close()
 
 
-# --- ROTAS PARA SERVIR ARQUIVOS (DEVE VIR POR ÚLTIMO) ---
+# --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
 
-# Rota para a página principal
 @app.route('/')
-def index_route(): # Renomeado para evitar conflito com a função index()
+def index_route():
     return send_from_directory('.', 'index.html')
 
-# Rota para servir arquivos estáticos de páginas (ex: gastronomicas.html) e assets.
-# Esta rota lida com qualquer caminho que pareça um arquivo com extensão.
 @app.route('/<path:path>')
 def serve_static_files(path):
-    
-    # ############ CORREÇÃO PARA O PROBLEMA DO SLUG ############
-    # 1. Se o caminho NÃO CONTÉM um ponto, NÃO é um arquivo estático (ex: /feiras/8, /blog/post-x)
-    #    Neste caso, ele deve ser uma rota de detalhe (que deveria ter sido capturada antes).
-    #    Se chegou aqui, significa que a rota de detalhe não existia ou não foi resolvida,
-    #    mas a intenção era buscar um SLUG, não um arquivo.
     basename = os.path.basename(path)
     if '.' not in basename:
-        # Se não há ponto, provavelmente é um slug que não bateu com as rotas /feiras/<slug> ou /blog/<slug>
-        # Retorna Not Found em vez de tentar servir algo errado.
         print(f"AVISO: Tentativa de acesso a um slug não encontrado (sem ponto no basename): {path}")
         return "Not Found", 404
         
-    # 2. Se o caminho CONTÉM um ponto, TENTA servir como arquivo estático (.html, .css, .png, etc.)
     if os.path.exists(os.path.join('.', path)):
         return send_from_directory('.', path)
     else:
         print(f"AVISO: Arquivo estático não encontrado: {path}")
         return "Not Found", 404
 
+
 # --- ROTA DO SITEMAP ---
 @app.route('/sitemap.xml')
 def sitemap():
     conn = None
-    urls = [
-        'https://www.feirasderua.com.br/',
-        'https://www.feirasderua.com.br/gastronomicas.html',
-        'https://www.feirasderua.com.br/artesanais.html',
-        'https://www.feirasderua.com.br/feiras-livres.html',
-        'https://www.feirasderua.com.br/contato.html',
-        'https://www.feirasderua.com.br/anuncie.html',
+    hoje = datetime.date.today().isoformat()  # ✅ Data atual para o lastmod
+
+    # Páginas estáticas com prioridade alta
+    paginas_estaticas = [
+        ('https://www.feirasderua.com.br/', '1.0', 'daily'),
+        ('https://www.feirasderua.com.br/gastronomicas.html', '0.9', 'weekly'),
+        ('https://www.feirasderua.com.br/artesanais.html', '0.9', 'weekly'),
+        ('https://www.feirasderua.com.br/feiras-livres.html', '0.9', 'weekly'),
+        ('https://www.feirasderua.com.br/contato.html', '0.5', 'monthly'),
+        ('https://www.feirasderua.com.br/anuncie.html', '0.5', 'monthly'),
     ]
+
+    # Páginas dinâmicas (feiras e blog)
+    paginas_dinamicas = []
     try:
         conn = get_db_connection()
         cur = conn.cursor()
-        cur.execute("SELECT COALESCE(url, CAST(id AS VARCHAR)) FROM feiras;")
+
+        # ✅ SEO: Só inclui feiras que têm slug (url) preenchido — evita duplicatas com IDs
+        cur.execute("SELECT url FROM feiras WHERE url IS NOT NULL AND url != '';")
         for row in cur.fetchall():
-            urls.append(f'https://www.feirasderua.com.br/feiras/{row[0]}')
-        cur.execute("SELECT slug FROM blog WHERE slug IS NOT NULL;")
+            paginas_dinamicas.append((f'https://www.feirasderua.com.br/feiras/{row[0]}', '0.8', 'weekly'))
+
+        cur.execute("SELECT slug FROM blog WHERE slug IS NOT NULL AND slug != '';")
         for row in cur.fetchall():
-            urls.append(f'https://www.feirasderua.com.br/blog/{row[0]}')
+            paginas_dinamicas.append((f'https://www.feirasderua.com.br/blog/{row[0]}', '0.7', 'weekly'))
+
         cur.close()
     except Exception as e:
         print(f"AVISO: Erro ao buscar URLs dinâmicas para o sitemap: {e}")
@@ -536,8 +503,27 @@ def sitemap():
 
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
     xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
-    for url in urls:
-        xml += f'  <url><loc>{url}</loc><changefreq>weekly</changefreq><priority>0.8</priority></url>\n'
+
+    for url, priority, changefreq in paginas_estaticas:
+        xml += (
+            f'  <url>'
+            f'<loc>{url}</loc>'
+            f'<lastmod>{hoje}</lastmod>'          # ✅ lastmod adicionado
+            f'<changefreq>{changefreq}</changefreq>'
+            f'<priority>{priority}</priority>'
+            f'</url>\n'
+        )
+
+    for url, priority, changefreq in paginas_dinamicas:
+        xml += (
+            f'  <url>'
+            f'<loc>{url}</loc>'
+            f'<lastmod>{hoje}</lastmod>'          # ✅ lastmod adicionado
+            f'<changefreq>{changefreq}</changefreq>'
+            f'<priority>{priority}</priority>'
+            f'</url>\n'
+        )
+
     xml += '</urlset>'
     return make_response(xml, 200, {'Content-Type': 'application/xml'})
 # --- FIM DA ROTA DO SITEMAP ---
@@ -546,5 +532,4 @@ def sitemap():
 # Execução do App
 if __name__ == '__main__':
     port = int(os.environ.get("PORT", 10000))
-    # debug=True é útil localmente, mas deve ser False em produção (Render)
     app.run(host="0.0.0.0", port=port, debug=False)
