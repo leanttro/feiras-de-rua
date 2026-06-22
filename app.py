@@ -464,6 +464,13 @@ def serve_static_files(path):
         return "Not Found", 404
 
 
+# --- ROTA DO ADS.TXT ---
+@app.route('/ads.txt')
+def ads_txt():
+    return "google.com, pub-7617881885143728, DIRECT, f08c47fec0942fa0", 200, {'Content-Type': 'text/plain'}
+# --- FIM DA ROTA DO ADS.TXT ---
+
+
 # --- ROTA DO SITEMAP ---
 @app.route('/sitemap.xml')
 def sitemap():
