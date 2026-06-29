@@ -53,6 +53,12 @@
             .container { margin: 10px; padding: 15px; }
             .header-detalhe h1 { font-size: 1.8em; }
         }
+        .banner-topo { background:#fff; border-bottom:1px solid #e0e0e0; padding:10px 20px; text-align:center; }
+        .banner-meio { background:#f1f8f1; border-top:1px solid #c8e6c9; border-bottom:1px solid #c8e6c9; padding:24px 20px; text-align:center; margin-top:24px; border-radius:8px; }
+        .banner-topo img { max-height:90px; max-width:100%; border-radius:8px; }
+        .banner-meio img { max-height:120px; max-width:100%; border-radius:8px; }
+        .banner-placeholder { display:inline-block; background:#f5f5f5; border:2px dashed #ccc; border-radius:8px; padding:12px 36px; color:#aaa; font-size:0.9em; text-decoration:none; }
+        .banner-placeholder:hover { border-color:#4CAF50; color:#4CAF50; }
     </style>
 
     <!-- Schema.org JSON-LD para SEO avançado -->
@@ -93,6 +99,17 @@
     </script>
 </head>
 <body>
+
+    <!-- BANNER TOPO -->
+    <div class="banner-topo">
+        {% if anuncio_topo %}
+            <a href="{{ anuncio_topo.link }}" target="_blank" rel="noopener sponsored">
+                <img src="{{ anuncio_topo.foto_url }}" alt="{{ anuncio_topo.titulo }}">
+            </a>
+        {% else %}
+            <a href="https://api.whatsapp.com/send/?phone=5511913324827&text=Quero+anunciar+no+Feiras+de+Rua" target="_blank" class="banner-placeholder">📣 Anuncie aqui</a>
+        {% endif %}
+    </div>
 
     <div class="container">
         <div class="header-detalhe">
@@ -136,6 +153,18 @@
                <i class="fas fa-map-marked-alt"></i> Ver no mapa
             </a>
         {% endif %}
+
+        <!-- BANNER MEIO -->
+        <div class="banner-meio">
+            {% if anuncio_meio %}
+                <a href="{{ anuncio_meio.link }}" target="_blank" rel="noopener sponsored">
+                    <img src="{{ anuncio_meio.foto_url }}" alt="{{ anuncio_meio.titulo }}">
+                </a>
+            {% else %}
+                <a href="https://api.whatsapp.com/send/?phone=5511913324827&text=Quero+anunciar+no+Feiras+de+Rua" target="_blank" class="banner-placeholder">📣 Anuncie aqui</a>
+            {% endif %}
+        </div>
+
     </div>
 
 </body>
