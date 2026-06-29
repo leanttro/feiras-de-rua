@@ -424,21 +424,36 @@ def feira_livre_detalhe(slug):
     try:
         conn = get_db_connection()
         cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
-        # Busca pelo slug gerado a partir do bairro (ex: "aclimacao")
-        cur.execute("""
-            SELECT * FROM feiras_livres
-            WHERE LOWER(REGEXP_REPLACE(UNACCENT(bairro), '[^a-z0-9]+', '-', 'g')) = %s
-            LIMIT 1
-        """, (slug,))
-        feira = cur.fetchone()
-        if not feira:
-            # fallback por id
-            cur.execute("SELECT * FROM feiras_livres WHERE CAST(id AS VARCHAR) = %s", (slug,))
-            feira = cur.fetchone()
+        # Busca todas e filtra pelo slug em Python (sem UNACCENT)
+        cur.execute("SELECT * FROM feiras_livres")
+        todas = cur.fetchall()
         cur.close()
+
+        import re, unicodedata
+        def to_slug(s):
+            if not s: return ''
+            s = unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode()
+            return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
+
+        feira = None
+        for row in todas:
+            row = dict(row)
+            if to_slug(row.get('bairro', '')) == slug:
+                feira = row
+                break
+
+        # fallback por id
+        if not feira:
+            for row in todas:
+                row = dict(row)
+                if str(row.get('id', '')) == slug:
+                    feira = row
+                    break
+
         if not feira:
             return "Feira não encontrada", 404
-        return render_template('feira-livre-detalhe.html', feira=dict(feira),
+
+        return render_template('feira-livre-detalhe.html', feira=feira,
                                anuncio_topo=None, anuncio_meio=None)
     except Exception as e:
         print(f"ERRO em /feira-livre/{slug}: {e}")
@@ -479,6 +494,11 @@ def get_api_feiras_filtrado(tipo_feira):
         return jsonify({'error': 'Erro interno.'}), 500
     finally:
         if conn: conn.close()
+
+
+@app.route('/feiras-livres.html')
+def feiras_livres_page():
+    return render_template('feiras-livres.html', anuncio_topo=None, anuncio_meio=None)
 
 
 # --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
