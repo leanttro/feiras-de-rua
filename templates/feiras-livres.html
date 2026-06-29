@@ -1336,6 +1336,14 @@
                     <p><i class="fas fa-calendar-day"></i><strong>Dia da Feira:</strong> ${feira.dia_da_feira || 'Não informado'}</p>
                     <p><i class="fas fa-clock"></i><strong>Horário:</strong> 8:00h - 14:00h</p>
                     <p><i class="fas fa-users"></i><strong>Feirantes:</strong> ${feira.qnt_feirantes || 'Não informado'}</p>
+                    <div style="text-align:center;margin-top:16px;padding-top:16px;border-top:1px solid #eee;">
+                        ${document.querySelector('.banner-topo img')
+                            ? `<a href="${document.querySelector('.banner-topo a').href}" target="_blank" rel="noopener sponsored">
+                                <img src="${document.querySelector('.banner-topo img').src}" style="max-height:90px;max-width:100%;border-radius:8px;">
+                               </a>`
+                            : `<a href="https://api.whatsapp.com/send/?phone=5511913324827&text=Quero+anunciar+no+Feiras+de+Rua" target="_blank" style="display:inline-block;background:#f5f5f5;border:2px dashed #ccc;border-radius:8px;padding:10px 30px;color:#aaa;font-size:0.85em;text-decoration:none;">📣 Anuncie aqui</a>`
+                        }
+                    </div>
                 `;
                 modal.style.display = 'flex';
                 document.body.style.overflow = 'hidden';
