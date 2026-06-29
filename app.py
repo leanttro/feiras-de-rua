@@ -505,7 +505,7 @@ def feiras_livres_page():
 
 @app.route('/')
 def index_route():
-    return send_from_directory('.', 'index.html')
+    return render_template('index.html', anuncio_topo=None, anuncio_meio=None)
 
 @app.route('/<path:path>')
 def serve_static_files(path):
