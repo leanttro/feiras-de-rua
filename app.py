@@ -230,6 +230,14 @@ def get_api_feiras_livres():
 
         feiras_processadas = [format_db_data(dict(feira)) for feira in feiras_raw]
 
+        import re, unicodedata
+        def to_slug(s):
+            if not s: return ''
+            s = unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode()
+            return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
+        for f in feiras_processadas:
+            f['slug'] = to_slug(f.get('bairro', '')) or str(f.get('id', ''))
+
         return jsonify(feiras_processadas)
         
     except psycopg2.errors.UndefinedTable:
@@ -410,6 +418,35 @@ def get_api_feiras():
     finally:
         if conn: conn.close()
         
+@app.route('/feira-livre/<slug>')
+def feira_livre_detalhe(slug):
+    conn = None
+    try:
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        # Busca pelo slug gerado a partir do bairro (ex: "aclimacao")
+        cur.execute("""
+            SELECT * FROM feiras_livres
+            WHERE LOWER(REGEXP_REPLACE(UNACCENT(bairro), '[^a-z0-9]+', '-', 'g')) = %s
+            LIMIT 1
+        """, (slug,))
+        feira = cur.fetchone()
+        if not feira:
+            # fallback por id
+            cur.execute("SELECT * FROM feiras_livres WHERE CAST(id AS VARCHAR) = %s", (slug,))
+            feira = cur.fetchone()
+        cur.close()
+        if not feira:
+            return "Feira não encontrada", 404
+        return render_template('feira-livre-detalhe.html', feira=dict(feira),
+                               anuncio_topo=None, anuncio_meio=None)
+    except Exception as e:
+        print(f"ERRO em /feira-livre/{slug}: {e}")
+        return "Erro interno", 500
+    finally:
+        if conn: conn.close()
+
+
 # --- ROTAS DE COMPATIBILIDADE ---
 @app.route('/api/gastronomicas')
 def get_gastronomicas_compat():
