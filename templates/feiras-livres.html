@@ -741,29 +741,31 @@
             position: fixed;
             bottom: 25px;
             right: 25px;
-            /* width: 60px; (removido) */
-            /* height: 60px; (removido) */
             background-color: var(--primary-green);
             color: var(--white);
-            border-radius: 50px; /* Formato pílula */
+            border-radius: 50px;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 10px; /* Espaço entre ícone e texto */
-            padding: 12px 20px; /* Padding interno */
-            font-size: 18px; /* Tamanho do ícone */
-            font-weight: 600; /* Peso da fonte */
+            gap: 10px;
+            padding: 12px 20px;
+            font-size: 18px;
+            font-weight: 600;
             cursor: pointer;
             box-shadow: var(--shadow-medium);
             z-index: 998;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.3s ease, visibility 0.3s ease, bottom 0.3s ease;
+        }
+        /* Sobe o balão quando o banner estiver visível */
+        body.banner-visible .chat-bubble {
+            bottom: 80px;
         }
         .chat-bubble-text {
-            font-size: 16px; /* Tamanho do texto */
+            font-size: 16px;
             line-height: 1;
         }
         .chat-bubble:hover {
-            transform: scale(1.05); /* Aumenta um pouco */
+            transform: scale(1.05);
             box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
         }
 
@@ -787,7 +789,11 @@
             opacity: 0;
             transform: scale(0.95) translateY(20px);
             visibility: hidden;
-            transition: all 0.3s ease-out;
+            transition: all 0.3s ease-out, bottom 0.3s ease;
+        }
+        /* Sobe a janela do chat quando o banner estiver visível */
+        body.banner-visible .chat-window {
+            bottom: 155px;
         }
 
         .chat-window.active {
@@ -1095,9 +1101,18 @@
         </a>
       </div>
 
-      <button class="b-close" onclick="document.getElementById('leanttro-banner').style.display='none'" aria-label="Fechar">×</button>
+      <button class="b-close" onclick="fecharBanner()" aria-label="Fechar">×</button>
 
     </div>
+
+    <script>
+      function fecharBanner() {
+        document.getElementById('leanttro-banner').style.display = 'none';
+        document.body.classList.remove('banner-visible');
+      }
+      // Marca o body como banner-visible enquanto o banner estiver aberto
+      document.body.classList.add('banner-visible');
+    </script>
 
 
 
