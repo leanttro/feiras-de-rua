@@ -211,11 +211,19 @@ def handle_chat():
 # ─────────────────────────────────────────
 #  HELPER: BUSCAR ANÚNCIO ATIVO
 # ─────────────────────────────────────────
-def _get_anuncio_feiras(posicao):
+def _get_anuncio_feiras(posicao, bairro=None):
     """
-    Busca um anúncio ativo da tabela 'anuncios' para a posição 'topo' ou 'meio'.
-    Respeita data_inicio e data_fim.
-    Retorna dict com o anúncio ou None.
+    Busca um anúncio ativo da tabela 'anuncios' com rotação por RANDOM().
+
+    Args:
+        posicao: 'topo' ou 'meio'
+        bairro: nome do bairro (opcional) - prioriza anúncios do bairro
+
+    Lógica:
+    1. Se bairro é informado: primeiro busca anúncios específicos do bairro
+    2. Se não achou ou bairro é None: busca anúncios "Global" (bairro=None)
+    3. Usa RANDOM() para rotação de anúncios
+    4. Respeita data_inicio e data_fim
     """
     conn = None
     try:
@@ -225,15 +233,37 @@ def _get_anuncio_feiras(posicao):
         
         hoje = date.today()
         
-        # Busca anúncio ativo, na posição correta, e dentro do período válido
+        # Primeiro: tenta buscar anúncio específico do bairro
+        if bairro:
+            cur.execute("""
+                SELECT id, titulo, foto_url, link, posicao, data_inicio, data_fim, ativo, bairro
+                FROM anuncios
+                WHERE 
+                    posicao = %s 
+                    AND ativo = true
+                    AND LOWER(bairro) = LOWER(%s)
+                    AND (data_inicio IS NULL OR data_inicio <= %s)
+                    AND (data_fim IS NULL OR data_fim >= %s)
+                ORDER BY RANDOM()
+                LIMIT 1
+            """, (posicao, bairro, hoje, hoje))
+            
+            row = cur.fetchone()
+            if row:
+                cur.close()
+                return format_db_data(dict(row))
+        
+        # Se não achou bairro-específico, busca anúncios "Global" com rotação
         cur.execute("""
-            SELECT id, titulo, foto_url, link, posicao, data_inicio, data_fim, ativo
+            SELECT id, titulo, foto_url, link, posicao, data_inicio, data_fim, ativo, bairro
             FROM anuncios
             WHERE 
                 posicao = %s 
                 AND ativo = true
+                AND (bairro IS NULL OR bairro = '')
                 AND (data_inicio IS NULL OR data_inicio <= %s)
                 AND (data_fim IS NULL OR data_fim >= %s)
+            ORDER BY RANDOM()
             LIMIT 1
         """, (posicao, hoje, hoje))
         
@@ -245,16 +275,17 @@ def _get_anuncio_feiras(posicao):
         return None
         
     except Exception as e:
-        print(f"ERRO em _get_anuncio_feiras('{posicao}'): {e}")
+        print(f"ERRO em _get_anuncio_feiras('{posicao}', bairro='{bairro}'): {e}")
         return None
     finally:
         if conn: conn.close()
 
 @app.route('/index.html')
 def index_html_route():
+    # Rota explícita para /index.html — necessária pois o arquivo está em /templates/
     return render_template('index.html', 
-                          anuncio_topo=_get_anuncio_feiras('topo', bairro=None), 
-                          anuncio_meio=_get_anuncio_feiras('meio', bairro=None))
+                          anuncio_topo=_get_anuncio_feiras('topo'),
+                          anuncio_meio=_get_anuncio_feiras('meio'))
 # --- NOVA ROTA PARA FEIRAS LIVRES ---
 @app.route('/api/feiras_livres')
 def get_api_feiras_livres():
@@ -500,10 +531,13 @@ def feira_livre_detalhe(slug):
         if not feira:
             return "Feira não encontrada", 404
 
+        # Passa bairro para priorizar anúncios desse bairro
+        bairro = feira.get('bairro')
+
         return render_template('feira-livre-detalhe.html', 
                               feira=feira,
-                              anuncio_topo=_get_anuncio_feiras('topo'), 
-                              anuncio_meio=_get_anuncio_feiras('meio'))
+                              anuncio_topo=_get_anuncio_feiras('topo', bairro=bairro), 
+                              anuncio_meio=_get_anuncio_feiras('meio', bairro=bairro))
     except Exception as e:
         print(f"ERRO em /feira-livre/{slug}: {e}")
         return "Erro interno", 500
@@ -611,6 +645,19 @@ def sitemap():
         cur.execute("SELECT slug FROM blog WHERE slug IS NOT NULL AND slug != '';")
         for row in cur.fetchall():
             paginas_dinamicas.append((f'https://www.feirasderua.com.br/blog/{row[0]}', '0.7', 'weekly'))
+
+        # Páginas de detalhe de feiras livres
+        import re, unicodedata
+        def to_slug(s):
+            if not s: return ''
+            s = unicodedata.normalize('NFD', s).encode('ascii', 'ignore').decode()
+            return re.sub(r'[^a-z0-9]+', '-', s.lower()).strip('-')
+
+        cur.execute("SELECT bairro FROM feiras_livres WHERE bairro IS NOT NULL AND bairro != '';")
+        for row in cur.fetchall():
+            slug = to_slug(row[0])
+            if slug:
+                paginas_dinamicas.append((f'https://www.feirasderua.com.br/feira-livre/{slug}', '0.7', 'weekly'))
 
         cur.close()
     except Exception as e:
