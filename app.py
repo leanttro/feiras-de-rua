@@ -208,6 +208,49 @@ def handle_chat():
 # --- FIM DA SEÇÃO DO CHATBOT ---
 
 
+# ─────────────────────────────────────────
+#  HELPER: BUSCAR ANÚNCIO ATIVO
+# ─────────────────────────────────────────
+def _get_anuncio_feiras(posicao):
+    """
+    Busca um anúncio ativo da tabela 'anuncios' para a posição 'topo' ou 'meio'.
+    Respeita data_inicio e data_fim.
+    Retorna dict com o anúncio ou None.
+    """
+    conn = None
+    try:
+        from datetime import date
+        conn = get_db_connection()
+        cur = conn.cursor(cursor_factory=psycopg2.extras.RealDictCursor)
+        
+        hoje = date.today()
+        
+        # Busca anúncio ativo, na posição correta, e dentro do período válido
+        cur.execute("""
+            SELECT id, titulo, foto_url, link, posicao, data_inicio, data_fim, ativo
+            FROM anuncios
+            WHERE 
+                posicao = %s 
+                AND ativo = true
+                AND (data_inicio IS NULL OR data_inicio <= %s)
+                AND (data_fim IS NULL OR data_fim >= %s)
+            LIMIT 1
+        """, (posicao, hoje, hoje))
+        
+        row = cur.fetchone()
+        cur.close()
+        
+        if row:
+            return format_db_data(dict(row))
+        return None
+        
+    except Exception as e:
+        print(f"ERRO em _get_anuncio_feiras('{posicao}'): {e}")
+        return None
+    finally:
+        if conn: conn.close()
+
+
 # --- NOVA ROTA PARA FEIRAS LIVRES ---
 @app.route('/api/feiras_livres')
 def get_api_feiras_livres():
@@ -453,8 +496,10 @@ def feira_livre_detalhe(slug):
         if not feira:
             return "Feira não encontrada", 404
 
-        return render_template('feira-livre-detalhe.html', feira=feira,
-                               anuncio_topo=None, anuncio_meio=None)
+        return render_template('feira-livre-detalhe.html', 
+                              feira=feira,
+                              anuncio_topo=_get_anuncio_feiras('topo'), 
+                              anuncio_meio=_get_anuncio_feiras('meio'))
     except Exception as e:
         print(f"ERRO em /feira-livre/{slug}: {e}")
         return "Erro interno", 500
@@ -498,14 +543,18 @@ def get_api_feiras_filtrado(tipo_feira):
 
 @app.route('/feiras-livres.html')
 def feiras_livres_page():
-    return render_template('feiras-livres.html', anuncio_topo=None, anuncio_meio=None)
+    return render_template('feiras-livres.html', 
+                          anuncio_topo=_get_anuncio_feiras('topo'), 
+                          anuncio_meio=_get_anuncio_feiras('meio'))
 
 
 # --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
 
 @app.route('/')
 def index_route():
-    return render_template('index.html', anuncio_topo=None, anuncio_meio=None)
+    return render_template('index.html', 
+                          anuncio_topo=_get_anuncio_feiras('topo'), 
+                          anuncio_meio=_get_anuncio_feiras('meio'))
 
 @app.route('/<path:path>')
 def serve_static_files(path):
