@@ -1072,66 +1072,34 @@
          (adsbygoogle = window.adsbygoogle || []).push({});
     </script>
 
-    <!-- BANNER GUIA DO RODÍZIO -->
+    <!-- BANNER ONDE TEM PERTO -->
     <div id="leanttro-banner">
 
       <img
-        src="https://res.cloudinary.com/dhu1cqvrb/image/upload/v1779050268/logoguia_guu4j5.png"
-        alt="Guia do Rodízio"
+        src="https://res.cloudinary.com/dhu1cqvrb/image/upload/v1782512370/Logo_for_a_Brazilian_local_directory_website_called_Onde_Tem_Perto._Modern_clean_minimalist_style._Use_orange_f4a740_as_the_primary_color._Include_a_location_pin_or_map_marker_icon_integrated_1_rgh092.png"
+        alt="Onde Tem Perto"
         class="b-logo"
       />
 
       <div class="b-divider"></div>
 
       <p class="b-text">
-        <strong>Tudo sobre rodízios em São Paulo</strong><br>
-        Aprenda o que pedir, conheça os preços e encontre o mais perto de você!
+        <strong>Onde Tem Perto de Mim?</strong><br>
+        Farmácias, mercados, academias, igrejas, metrô e muito mais perto de você!
       </p>
 
       <div class="b-actions">
-
-        <a href="https://www.guiadorodizio.com.br/" target="_blank" class="b-btn b-btn-site" aria-label="Visitar Guia do Rodízio">
+        <a href="https://ondetemperto.com.br/" target="_blank" class="b-btn b-btn-site" aria-label="Visitar Onde Tem Perto">
           Conhecer agora
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
         </a>
-
       </div>
 
       <button class="b-close" onclick="document.getElementById('leanttro-banner').style.display='none'" aria-label="Fechar">×</button>
 
     </div>
 
-    <!-- POPUP GUIA DO RODÍZIO -->
-    <div id="leanttro-popup-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:99999;align-items:center;justify-content:center;">
-      <div id="leanttro-popup" style="background:#0d0d0d;border:1px solid #2a2a2a;border-radius:12px;padding:32px 28px 24px;max-width:420px;width:90%;position:relative;font-family:'Segoe UI',sans-serif;animation:popIn 0.3s ease;">
-        <button onclick="fecharPopup()" aria-label="Fechar" style="position:absolute;top:12px;right:14px;background:none;border:none;color:#555;font-size:22px;cursor:pointer;line-height:1;transition:color 0.2s;" onmouseover="this.style.color='#fff'" onmouseout="this.style.color='#555'">×</button>
 
-        <img src="https://res.cloudinary.com/dhu1cqvrb/image/upload/v1779050268/logoguia_guu4j5.png" alt="Guia do Rodízio" style="height:60px;width:auto;display:block;margin:0 auto 20px;">
-
-        <p style="color:#fff;font-size:17px;font-weight:700;text-align:center;margin:0 0 8px;line-height:1.4;">Tudo sobre rodízios em São Paulo</p>
-        <p style="color:#888;font-size:13px;text-align:center;margin:0 0 24px;line-height:1.5;">Aprenda o que pedir, conheça os preços e encontre o mais perto de você!</p>
-
-        <div style="display:flex;flex-direction:column;gap:10px;">
-          <a href="https://www.guiadorodizio.com.br/" target="_blank" style="display:flex;align-items:center;justify-content:center;gap:8px;background:#fff;color:#0d0d0d;font-size:14px;font-weight:700;text-decoration:none;padding:11px 16px;border-radius:7px;transition:opacity 0.2s;" onmouseover="this.style.opacity='0.85'" onmouseout="this.style.opacity='1'">
-            Conhecer agora
-            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg>
-          </a>
-        </div>
-      </div>
-    </div>
-
-    <script>
-      function fecharPopup() {
-        document.getElementById('leanttro-popup-overlay').style.display = 'none';
-      }
-      document.getElementById('leanttro-popup-overlay').addEventListener('click', function(e) {
-        if (e.target === this) fecharPopup();
-      });
-      setTimeout(function() {
-        var overlay = document.getElementById('leanttro-popup-overlay');
-        overlay.style.display = 'flex';
-      }, 15000);
-    </script>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -1633,13 +1601,7 @@
             // FIM DA LÓGICA DO CHATBOT (JS)
             // ==================================
 
-            // ############ ALTERAÇÃO DE UX ############
-            // Só abre o chat automaticamente se a tela for de desktop (maior que 768px).
-            // Em telas menores (mobile/tablet), o usuário precisa clicar no balão.
-            if (window.innerWidth > 768) {
-                toggleChatWindow(); 
-            }
-
+            // Chatbot começa fechado — usuário clica no balão para abrir
         });
     </script>
 </body>
