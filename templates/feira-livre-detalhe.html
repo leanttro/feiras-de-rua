@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7617881885143728" crossorigin="anonymous"></script>
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-5SDJYV66KE"></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-5SDJYV66KE');
+    </script>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <!-- Título e Descrição Dinâmicos para SEO -->
+    <title>Feira Livre {{ feira.bairro }} | Feiras de Rua SP</title>
+    <meta name="description" content="Feira Livre do {{ feira.bairro }}, São Paulo. {{ feira.dia_da_feira }}, 8h às 14h. Encontre produtos frescos, orgânicos e artesanais perto de você.">
+    <link rel="canonical" href="https://www.feirasderua.com.br/feira-livre/{{ feira.bairro|lower|replace(' ','-') }}">
+
+    <!-- Open Graph (WhatsApp, Facebook, etc.) -->
+    <meta property="og:title" content="{{ feira.nome_feira }} | Feiras de Rua SP">
+    <meta property="og:description" content="{{ feira.nome_feira }} no {{ feira.bairro }}. {{ feira.dia_semana }}, {{ feira.horario_inicio }} às {{ feira.horario_fim }}.">
+    <meta property="og:url" content="https://www.feirasderua.com.br/feiras/{{ feira.url }}">
+    <meta property="og:type" content="website">
+    {% if feira.imagem_url %}
+    <meta property="og:image" content="{{ feira.imagem_url }}">
+    {% endif %}
+
+    <!-- Fontes e Ícones -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    
+    <style>
+        body { font-family: 'Roboto', sans-serif; margin: 0; background-color: #f8f9fa; color: #343a40; }
+        .container { max-width: 800px; margin: 20px auto; padding: 20px; background: #fff; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .header-detalhe { text-align: center; }
+        .header-detalhe .voltar-link { display: inline-block; margin-bottom: 20px; color: #4CAF50; text-decoration: none; font-weight: 500; font-size: 1.1em; }
+        .header-detalhe .voltar-link:hover { text-decoration: underline; }
+        .header-detalhe h1 { font-size: 2.5em; margin: 0 0 20px 0; }
+        .feira-imagem { width: 100%; max-height: 400px; object-fit: cover; border-radius: 8px; margin-bottom: 25px; }
+        .feira-descricao { font-size: 1.1em; line-height: 1.7; white-space: pre-wrap; margin-bottom: 30px; }
+        .feira-info { list-style: none; padding: 0; }
+        .feira-info li { display: flex; align-items: flex-start; font-size: 1.1em; margin-bottom: 15px; }
+        .feira-info li i { color: #4CAF50; width: 30px; text-align: center; font-size: 1.2em; margin-top: 3px; }
+        .map-button { display: inline-block; background-color: #4CAF50; color: white; padding: 12px 25px; border-radius: 8px; text-decoration: none; font-weight: 700; transition: background-color 0.3s; }
+        .map-button:hover { background-color: #388E3C; }
+
+        @media (max-width: 768px) {
+            .container { margin: 10px; padding: 15px; }
+            .header-detalhe h1 { font-size: 1.8em; }
+        }
+    </style>
+
+    <!-- Schema.org JSON-LD para SEO avançado -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "Event",
+      "name": "{{ feira.nome_feira }}",
+      {% if feira.data_inicio %}
+      "startDate": "{{ feira.data_inicio }}",
+      {% endif %}
+      {% if feira.data_fim %}
+      "endDate": "{{ feira.data_fim }}",
+      {% endif %}
+      "eventAttendanceMode": "https://schema.org/OfflineEventAttendanceMode",
+      "eventStatus": "https://schema.org/EventScheduled",
+      "location": {
+        "@type": "Place",
+        "name": "{{ feira.rua }}",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "{{ feira.rua }}",
+          "addressLocality": "{{ feira.bairro }}",
+          "addressRegion": "SP",
+          "addressCountry": "BR"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": "{{ feira.latitude }}",
+          "longitude": "{{ feira.longitude }}"
+        }
+      },
+      "image": [
+        "{{ feira.imagem_url }}"
+       ],
+      "description": "{{ feira.descricao | truncate(250, True, '...') }}"
+    }
+    </script>
+</head>
+<body>
+
+    <!-- BANNER TOPO -->
+    <div style="background:#fff;border-bottom:1px solid #e0e0e0;padding:10px 20px;text-align:center;">
+        {% if anuncio_topo %}
+            <a href="{{ anuncio_topo.link }}" target="_blank" rel="noopener sponsored">
+                <img src="{{ anuncio_topo.foto_url }}" alt="{{ anuncio_topo.titulo }}" style="max-height:90px;max-width:100%;border-radius:8px;">
+            </a>
+        {% else %}
+            <a href="https://api.whatsapp.com/send/?phone=5511913324827&text=Quero+anunciar+no+Feiras+de+Rua" target="_blank" style="display:inline-block;background:#f5f5f5;border:2px dashed #ccc;border-radius:8px;padding:12px 36px;color:#aaa;font-size:0.9em;text-decoration:none;">📣 Anuncie aqui</a>
+        {% endif %}
+    </div>
+
+    <div class="container">
+        <div class="header-detalhe">
+            <a href="/feiras-livres.html" class="voltar-link">❮ Voltar para Feiras Livres</a>
+            <h1>Feira Livre — {{ feira.bairro }}</h1>
+        </div>
+
+        <ul class="feira-info">
+            <li><i class="fas fa-map-pin"></i> <strong>Bairro:</strong> {{ feira.bairro or 'Não informado' }}</li>
+            <li><i class="fas fa-calendar-day"></i> <strong>Dia:</strong> {{ feira.dia_da_feira or 'Não informado' }}</li>
+            <li><i class="fas fa-clock"></i> <strong>Horário:</strong> 8:00h às 14:00h</li>
+            <li><i class="fas fa-map-marker-alt"></i> <strong>Endereço:</strong> {{ feira.endereco or 'Não informado' }}</li>
+            <li><i class="fas fa-users"></i> <strong>Feirantes:</strong> {{ feira.qnt_feirantes or 'Não informado' }}</li>
+        </ul>
+
+        {% if feira.latitude and feira.longitude %}
+            <a href="https://www.google.com/maps?q={{ feira.latitude }},{{ feira.longitude }}" target="_blank" class="map-button">
+                <i class="fas fa-map-marked-alt"></i> Ver no mapa
+            </a>
+        {% endif %}
+
+        <!-- BANNER MEIO / PATROCINADOR -->
+        <div style="margin:30px 0;background:#f1f8f1;border-top:1px solid #c8e6c9;border-bottom:1px solid #c8e6c9;padding:24px 20px;text-align:center;border-radius:8px;">
+            {% if anuncio_meio %}
+                <p style="font-size:0.75em;color:#888;margin:0 0 8px;">Patrocinado</p>
+                <a href="{{ anuncio_meio.link }}" target="_blank" rel="noopener sponsored">
+                    <img src="{{ anuncio_meio.foto_url }}" alt="{{ anuncio_meio.titulo }}" style="max-height:120px;max-width:100%;border-radius:8px;">
+                </a>
+            {% else %}
+                <p style="margin:0 0 8px;font-size:0.85em;color:#666;">Seu negócio aparece aqui para quem busca feiras no {{ feira.bairro }}</p>
+                <a href="https://api.whatsapp.com/send/?phone=5511913324827&text=Quero+anunciar+na+feira+do+{{ feira.bairro }}" target="_blank" style="display:inline-block;background:#f5f5f5;border:2px dashed #ccc;border-radius:8px;padding:12px 36px;color:#aaa;font-size:0.9em;text-decoration:none;">📣 Anuncie aqui</a>
+            {% endif %}
+        </div>
+
+    </div>
+
+</body>
+</html>
