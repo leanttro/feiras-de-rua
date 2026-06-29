@@ -250,7 +250,11 @@ def _get_anuncio_feiras(posicao):
     finally:
         if conn: conn.close()
 
-
+@app.route('/index.html')
+def index_html_route():
+    return render_template('index.html', 
+                          anuncio_topo=_get_anuncio_feiras('topo', bairro=None), 
+                          anuncio_meio=_get_anuncio_feiras('meio', bairro=None))
 # --- NOVA ROTA PARA FEIRAS LIVRES ---
 @app.route('/api/feiras_livres')
 def get_api_feiras_livres():
