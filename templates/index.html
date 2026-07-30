@@ -31,6 +31,12 @@
     <!-- TÍTULO OTIMIZADO -->
     <title>Feiras de Rua SP | Feira Livre Perto de Mim Hoje | FeirasDeRua</title>
     <meta name="description" content="Guia completo de feiras livres, gastronômicas e artesanais em São Paulo. Encontre a feira perto de você hoje com horário, endereço e mapa atualizado.">
+    <!-- FAVICON (logo no navegador e no Google) -->
+    <link rel="icon" type="image/png" href="https://res.cloudinary.com/dzcaxmbjn/image/upload/v1777819162/logo_feiras_ynhomo.png">
+    <link rel="shortcut icon" type="image/png" href="https://res.cloudinary.com/dzcaxmbjn/image/upload/v1777819162/logo_feiras_ynhomo.png">
+    <link rel="apple-touch-icon" href="https://res.cloudinary.com/dzcaxmbjn/image/upload/v1777819162/logo_feiras_ynhomo.png">
+    <!-- Preload da imagem da hero (primeiro slide) para carregar mais rápido -->
+    <link rel="preload" as="image" href="hero-background-1.png" fetchpriority="high">
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
     <style>
@@ -251,8 +257,7 @@
         }
 
         #slide-1 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-1.png'); }
-        #slide-2 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-2.png'); }
-        #slide-3 { background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-3.png'); }
+        /* slide-2 e slide-3 recebem o background via JS após o carregamento inicial, para não competir com a imagem principal */
 
 
         .hero-banner {
@@ -898,6 +903,27 @@
             }
             .carousel-btn.prev { left: 5px; }
             .carousel-btn.next { right: 5px; }
+
+            /* Somente no carrossel do Blog (mobile): setas embaixo do card, não sobrepostas */
+            .blog-section .carousel-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: center;
+                align-items: center;
+                gap: 15px;
+            }
+            .blog-section .carousel-wrapper .carousel-container {
+                order: 1;
+                width: 100%;
+            }
+            .blog-section .carousel-btn {
+                position: static;
+                order: 2;
+                transform: none;
+            }
+            .blog-section .carousel-btn:hover {
+                transform: scale(1.1);
+            }
             
             .view-toggle-container {
                 text-align: center;
@@ -1652,6 +1678,15 @@
             });
              
              // --- Hero Slider Functionality ---
+            // Carrega os backgrounds dos slides 2 e 3 somente depois que a página termina de carregar,
+            // para que o slide 1 (o primeiro que o usuário vê) não dispute banda com eles.
+            window.addEventListener('load', () => {
+                const slide2 = document.getElementById('slide-2');
+                const slide3 = document.getElementById('slide-3');
+                if (slide2) slide2.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-2.png')";
+                if (slide3) slide3.style.backgroundImage = "linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)), url('hero-background-3.png')";
+            });
+
             const slides = document.querySelectorAll('.slide');
             const dots = document.querySelectorAll('.dot');
             const prev = document.querySelector('.prev-slide');
