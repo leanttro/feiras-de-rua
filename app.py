@@ -591,6 +591,11 @@ def pagina_rio():
     return render_template('rio.html')
 
 
+@app.route('/sao-bernardo-do-campo')
+def pagina_sao_bernardo():
+    return render_template('sao_bernardo.html')
+
+
 # --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
 
 @app.route('/')
