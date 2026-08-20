@@ -586,6 +586,11 @@ def feiras_livres_page():
                           anuncio_meio=_get_anuncio_feiras('meio'))
 
 
+@app.route('/rio')
+def pagina_rio():
+    return render_template('rio.html')
+
+
 # --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
 
 @app.route('/')
