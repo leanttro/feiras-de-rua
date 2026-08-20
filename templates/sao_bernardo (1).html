@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Feira Livre Perto de Mim em São Bernardo do Campo — Feiras de Rua</title>
+  <meta name="description" content="Encontre a feira livre mais perto de você em São Bernardo do Campo agora mesmo. 46 feiras em 45 bairros, com dias e horários atualizados. Busque por bairro, use sua localização e veja a feira mais próxima hoje.">
+  <link rel="canonical" href="https://www.feirasderua.com.br/sao-bernardo-do-campo">
+  <link rel="icon" type="image/png" href="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png">
+
+  <meta property="og:title" content="Feira Livre Perto de Mim em São Bernardo do Campo — Feiras de Rua">
+  <meta property="og:description" content="Encontre a feira livre mais perto de você em São Bernardo do Campo agora mesmo. 46 feiras em 45 bairros, com dias e horários atualizados.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://www.feirasderua.com.br/sao-bernardo-do-campo">
+  <meta property="og:locale" content="pt_BR">
+  <meta property="og:image" content="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png">
+
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Feira Livre Perto de Mim em São Bernardo do Campo">
+  <meta name="twitter:description" content="46 feiras em 45 bairros de São Bernardo do Campo. Dias, horários e endereços atualizados.">
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    "itemListElement": [
+      {"@type":"ListItem","position":1,"name":"Feiras de Rua","item":"https://www.feirasderua.com.br/"},
+      {"@type":"ListItem","position":2,"name":"São Bernardo do Campo","item":"https://www.feirasderua.com.br/sao-bernardo-do-campo"}
+    ]
+  }
+  </script>
+
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    "mainEntity": [
+      {
+        "@type": "Question",
+        "name": "Quantas feiras livres tem em São Bernardo do Campo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "São Bernardo do Campo tem 46 feiras livres cadastradas, distribuídas em 45 bairros, funcionando de terça-feira a domingo."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual o horário das feiras livres em São Bernardo do Campo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A maioria das feiras diurnas funciona das 07:00 às 13:00. São Bernardo do Campo também conta com feiras noturnas, com horários diferenciados para quem só pode ir depois do expediente."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Como encontrar a feira livre mais perto de mim em São Bernardo do Campo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Use o botão \"Usar minha localização\" nesta página para ordenar automaticamente as feiras de São Bernardo do Campo pela distância até você, ou digite o nome do seu bairro na busca."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Existe feira livre todos os dias em São Bernardo do Campo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim. Há feiras livres de terça-feira a domingo em diferentes bairros de São Bernardo do Campo, incluindo opções aos sábados e domingos."
+        }
+      }
+    ]
+  }
+  </script>
+</head>
+<body>
+  <img src="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png" alt="Feiras de Rua" style="display:block; max-width:180px; margin:20px auto 0;">
+  <h1 style="font-family:'Montserrat',sans-serif; text-align:center; max-width:960px; margin:24px auto 0; padding:0 16px; font-size:1.6em; font-weight:800; color:#222;">
+    Feira Livre Perto de Mim em São Bernardo do Campo
+  </h1>
+  <p style="font-family:'Montserrat',sans-serif; text-align:center; max-width:720px; margin:8px auto 0; padding:0 16px; font-size:.95em; color:#666;">
+    46 feiras livres em 45 bairros — de terça-feira a domingo, diurnas e noturnas.
+  </p>
+
+<!-- BUSCA GEOLOCALIZAÇÃO — Feira Livre Perto de Mim Hoje em São Bernardo do Campo -->
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700;800;900&display=swap');
+  .otp-busca-wrap {
+    font-family: 'Montserrat', sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px 40px;
+  }
+  .otp-busca-hero {
+    background: #0fae63;
+    color: #fff;
+    border-radius: 16px;
+    padding: 40px 28px;
+    text-align: center;
+    margin-bottom: 24px;
+  }
+  .otp-busca-hero h2 { font-size: 1.8em; font-weight: 900; margin: 0 0 8px; }
+  .otp-busca-hero p  { font-size: 1em; opacity: .9; margin: 0 0 20px; }
+  .otp-btn-geo {
+    background: #fff;
+    color: #0fae63;
+    border: none;
+    border-radius: 50px;
+    padding: 13px 32px;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    box-shadow: 0 4px 16px rgba(0,0,0,.15);
+    transition: transform .15s, box-shadow .15s;
+  }
+  .otp-btn-geo:hover { transform: translateY(-2px); box-shadow: 0 6px 22px rgba(0,0,0,.2); }
+  .otp-busca-barra {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+  }
+  .otp-busca-barra input, .otp-busca-barra select {
+    flex: 1;
+    min-width: 200px;
+    border: 2px solid #e0e0e0;
+    border-radius: 10px;
+    padding: 12px 16px;
+    font-size: .95em;
+    outline: none;
+    transition: border-color .2s;
+    font-family: 'Montserrat', sans-serif;
+    background: #fff;
+  }
+  .otp-busca-barra input:focus, .otp-busca-barra select:focus { border-color: #0fae63; }
+  .otp-status {
+    color: #888;
+    font-size: .88em;
+    margin-bottom: 16px;
+    min-height: 20px;
+  }
+  .otp-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 16px;
+  }
+  .otp-card {
+    background: #98efcd;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 10px rgba(0,0,0,.07);
+    border: 1px solid #f0f0f0;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .otp-card:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,.12); }
+  .otp-card-nome { font-weight: 700; font-size: 1em; color: #222; margin-bottom: 6px; line-height: 1.3; }
+  .otp-card-end  { font-size: .82em; color: #666; margin-bottom: 4px; }
+  .otp-card-dist { font-size: .8em; font-weight: 700; color: #0fae63; margin-bottom: 10px; }
+  .otp-card-horario { font-size: .8em; font-weight: 600; color: #0fae63; margin-bottom: 8px; }
+  .otp-card-desc {
+    font-size: .84em;
+    line-height: 1.5;
+    color: #555;
+    background: #f7faf8;
+    border-radius: 8px;
+    padding: 10px 12px;
+    margin-bottom: 10px;
+  }
+  .otp-card-desc p { margin: 0; }
+  .otp-btn-desc {
+    font-size: .78em; font-weight: 600; padding: 5px 12px;
+    border-radius: 6px; text-decoration: none; border: 1.5px solid;
+    transition: background .15s, color .15s;
+    background: #fff; color: #0fae63; border-color: #0fae63; cursor: pointer;
+  }
+  .otp-btn-desc:hover { background: #0fae63; color: #fff; }
+  .otp-btn-desc.otp-aberto { background: #0fae63; color: #fff; }
+  .otp-card-acoes { display: flex; gap: 8px; flex-wrap: wrap; }
+  .otp-card-acoes a {
+    font-size: .78em; font-weight: 600; padding: 5px 12px;
+    border-radius: 6px; text-decoration: none; border: 1.5px solid;
+    transition: background .15s, color .15s;
+  }
+  .otp-btn-maps  { color: #0fae63; border-color: #0fae63; }
+  .otp-btn-maps:hover  { background: #0fae63; color: #fff; }
+  .otp-vazio { text-align: center; color: #aaa; padding: 40px 0; font-size: 1em; }
+  .otp-seo {
+    font-family: 'Montserrat', sans-serif;
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 0 16px 48px;
+    color: #444;
+    line-height: 1.7;
+  }
+  .otp-seo h2 { font-size: 1.3em; font-weight: 800; color: #222; margin: 36px 0 12px; }
+  .otp-seo h3 { font-size: 1.05em; font-weight: 700; color: #222; margin: 22px 0 8px; }
+  .otp-seo p  { font-size: .95em; margin: 0 0 14px; }
+  .otp-resumo-table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: .88em; }
+  .otp-resumo-table th, .otp-resumo-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
+  .otp-resumo-table th { color: #0fae63; font-weight: 700; }
+  .otp-bairros-lista { font-size: .88em; color: #555; line-height: 1.9; }
+  .otp-bairros-lista span { display: inline-block; background: #f0f9f4; border-radius: 6px; padding: 4px 10px; margin: 3px 4px 3px 0; }
+  details.otp-faq { border-bottom: 1px solid #eee; padding: 12px 0; }
+  details.otp-faq summary { font-weight: 700; color: #222; cursor: pointer; font-size: .96em; }
+  details.otp-faq p { margin: 10px 0 0; font-size: .9em; color: #555; }
+  @media (max-width: 600px) {
+    .otp-busca-hero { padding: 28px 16px; }
+    .otp-busca-hero h2 { font-size: 1.4em; }
+  }
+</style>
+
+<div class="otp-busca-wrap">
+  <div class="otp-busca-hero">
+    <h2>Feira Livre Perto de Mim Hoje em São Bernardo do Campo</h2>
+    <p>Encontre a feira livre mais próxima de você, em qualquer bairro de São Bernardo do Campo</p>
+    <button class="otp-btn-geo" onclick="otpGeoLocalizar()">
+      📍 Usar minha localização
+    </button>
+  </div>
+
+  <div class="otp-busca-barra">
+    <input type="text" id="otp-q" placeholder="Buscar por nome, bairro ou endereço…" oninput="otpFiltrar()">
+    <select id="otp-dia" onchange="otpFiltrar()">
+      <option value="">Todos os dias</option>
+      <option value="terça-feira">Terça-feira</option>
+      <option value="quarta-feira">Quarta-feira</option>
+      <option value="quinta-feira">Quinta-feira</option>
+      <option value="sexta-feira">Sexta-feira</option>
+      <option value="sábado">Sábado</option>
+      <option value="domingo">Domingo</option>
+    </select>
+  </div>
+
+  <div class="otp-status" id="otp-status">46 feiras encontradas.</div>
+
+  <div class="otp-grid" id="otp-grid">
+  <div class="otp-card" id="otp-card-0"
+     data-busca="feira centro centro rua santos dumont são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.7157515" data-lng="-46.5467172">
+      <div class="otp-card-nome">Feira Centro</div>
+      <div class="otp-card-end">Rua Santos Dumont, Centro, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-0-desc" style="display:none"><p>Descubra a Feira Centro, localizada na Rua Santos Dumont, no bairro de CENTRO. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Centro e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Santos%20Dumont%2C%20Centro%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-1"
+     data-busca="feira jordanópolis jordanópolis av. são paulo são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.6813228" data-lng="-46.5758344">
+      <div class="otp-card-nome">Feira Jordanópolis</div>
+      <div class="otp-card-end">Av. São Paulo, Jordanópolis, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-1-desc" style="display:none"><p>Descubra a Feira Jordanópolis, localizada na Av. São Paulo, no bairro de JORDANÓPOLIS. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jordanópolis e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Av.%20S%C3%A3o%20Paulo%2C%20Jordan%C3%B3polis%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-2"
+     data-busca="feira vila rosa vila rosa rua issac aizemberg são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.7006703" data-lng="-46.5862668">
+      <div class="otp-card-nome">Feira Vila Rosa</div>
+      <div class="otp-card-end">Rua Issac Aizemberg, Vila Rosa, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-2-desc" style="display:none"><p>Descubra a Feira Vila Rosa, localizada na Rua Issac Aizemberg, no bairro de VILA ROSA. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Rosa e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Issac%20Aizemberg%2C%20Vila%20Rosa%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-3"
+     data-busca="feira jardim hollywood jardim hollywood rua urca são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.6732953" data-lng="-46.5627092">
+      <div class="otp-card-nome">Feira Jardim Hollywood</div>
+      <div class="otp-card-end">Rua Urca, Jardim Hollywood, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-3-desc" style="display:none"><p>Descubra a Feira Jardim Hollywood, localizada na Rua Urca, no bairro de JARDIM HOLLYWOOD. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Hollywood e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Urca%2C%20Jardim%20Hollywood%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-4"
+     data-busca="feira bairro paulicéia bairro paulicéia rua 17 de março são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.6636013" data-lng="-46.5916281">
+      <div class="otp-card-nome">Feira Bairro Paulicéia</div>
+      <div class="otp-card-end">Rua 17 de Março, Bairro Paulicéia, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-4-desc" style="display:none"><p>Descubra a Feira Bairro Paulicéia, localizada na Rua 17 de Março, no bairro de BAIRRO PAULICÉIA. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Bairro Paulicéia e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%2017%20de%20Mar%C3%A7o%2C%20Bairro%20Paulic%C3%A9ia%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-5"
+     data-busca="feira jardim das orquídeas jardim das orquídeas estrada poney club são bernardo do campo terça-feira" data-dia="terça-feira" data-lat="-23.7506786" data-lng="-46.5988236">
+      <div class="otp-card-nome">Feira Jardim das Orquídeas</div>
+      <div class="otp-card-end">Estrada Poney Club, Jardim das Orquídeas, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Terça-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-5-desc" style="display:none"><p>Descubra a Feira Jardim das Orquídeas, localizada na Estrada Poney Club, no bairro de JARDIM DAS ORQUÍDEAS. Funciona todas as Terça-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim das Orquídeas e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Estrada%20Poney%20Club%2C%20Jardim%20das%20Orqu%C3%ADdeas%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-6"
+     data-busca="feira taboão taboão rua paraná são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.6665583" data-lng="-46.609768">
+      <div class="otp-card-nome">Feira Taboão</div>
+      <div class="otp-card-end">Rua Paraná, Taboão, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-6-desc" style="display:none"><p>Descubra a Feira Taboão, localizada na Rua Paraná, no bairro de TABOÃO. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Taboão e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Paran%C3%A1%2C%20Tabo%C3%A3o%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-7"
+     data-busca="feira terra nova ii terra nova ii rua josé d'angelo são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.7470198" data-lng="-46.5536396">
+      <div class="otp-card-nome">Feira Terra Nova II</div>
+      <div class="otp-card-end">Rua José D'Angelo, Terra Nova II, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-7-desc" style="display:none"><p>Descubra a Feira Terra Nova II, localizada na Rua José D'Angelo, no bairro de TERRA NOVA II. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Terra Nova II e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Jos%C3%A9%20D%27Angelo%2C%20Terra%20Nova%20II%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-8"
+     data-busca="feira jardim beatriz jardim beatriz rua benedito conrado filho são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.7024086" data-lng="-46.5723684">
+      <div class="otp-card-nome">Feira Jardim Beatriz</div>
+      <div class="otp-card-end">Rua Benedito Conrado Filho, Jardim Beatriz, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-8-desc" style="display:none"><p>Descubra a Feira Jardim Beatriz, localizada na Rua Benedito Conrado Filho, no bairro de JARDIM BEATRIZ. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Beatriz e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Benedito%20Conrado%20Filho%2C%20Jardim%20Beatriz%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-9"
+     data-busca="feira jardim ipê jardim ipê rua das seringueiras e rua dos pinheiros são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.7419278" data-lng="-46.5762446">
+      <div class="otp-card-nome">Feira Jardim Ipê</div>
+      <div class="otp-card-end">Rua das Seringueiras e Rua dos Pinheiros, Jardim Ipê, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-9-desc" style="display:none"><p>Descubra a Feira Jardim Ipê, localizada na Rua das Seringueiras e Rua dos Pinheiros, no bairro de JARDIM IPÊ. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Ipê e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20das%20Seringueiras%20e%20Rua%20dos%20Pinheiros%2C%20Jardim%20Ip%C3%AA%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-10"
+     data-busca="feira jardim da represa jardim da represa rua bela vista e rua pablo neruda são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.7752627" data-lng="-46.5982772">
+      <div class="otp-card-nome">Feira Jardim da Represa</div>
+      <div class="otp-card-end">Rua Bela Vista e Rua Pablo Neruda, Jardim da Represa, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-10-desc" style="display:none"><p>Descubra a Feira Jardim da Represa, localizada na Rua Bela Vista e Rua Pablo Neruda, no bairro de JARDIM DA REPRESA. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim da Represa e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Bela%20Vista%20e%20Rua%20Pablo%20Neruda%2C%20Jardim%20da%20Represa%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-11"
+     data-busca="feira baeta neves baeta neves rua aparecida e rua liberdade são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.6909846" data-lng="-46.5406792">
+      <div class="otp-card-nome">Feira Baeta Neves</div>
+      <div class="otp-card-end">Rua Aparecida e Rua Liberdade, Baeta Neves, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-11-desc" style="display:none"><p>Descubra a Feira Baeta Neves, localizada na Rua Aparecida e Rua Liberdade, no bairro de BAETA NEVES. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Baeta Neves e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Aparecida%20e%20Rua%20Liberdade%2C%20Baeta%20Neves%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-12"
+     data-busca="feira vila mussolini vila mussolini rua luiz tamagnini são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.6631677" data-lng="-46.5666804">
+      <div class="otp-card-nome">Feira Vila Mussolini</div>
+      <div class="otp-card-end">Rua Luiz Tamagnini, Vila Mussolini, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-12-desc" style="display:none"><p>Descubra a Feira Vila Mussolini, localizada na Rua Luiz Tamagnini, no bairro de VILA MUSSOLINI. Funciona todas as Quarta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Mussolini e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Luiz%20Tamagnini%2C%20Vila%20Mussolini%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-13"
+     data-busca="feira jardim santo inácio jardim santo inácio rua méxico são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.7038712" data-lng="-46.5858752">
+      <div class="otp-card-nome">Feira Jardim Santo Inácio</div>
+      <div class="otp-card-end">Rua México, Jardim Santo Inácio, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-13-desc" style="display:none"><p>Descubra a Feira Jardim Santo Inácio, localizada na Rua México, no bairro de JARDIM SANTO INÁCIO. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Santo Inácio e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20M%C3%A9xico%2C%20Jardim%20Santo%20In%C3%A1cio%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-14"
+     data-busca="feira vila gonçalves vila gonçalves rua leila gonçalves são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.7119606" data-lng="-46.5563417">
+      <div class="otp-card-nome">Feira Vila Gonçalves</div>
+      <div class="otp-card-end">Rua Leila Gonçalves, Vila Gonçalves, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-14-desc" style="display:none"><p>Descubra a Feira Vila Gonçalves, localizada na Rua Leila Gonçalves, no bairro de VILA GONÇALVES. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Gonçalves e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Leila%20Gon%C3%A7alves%2C%20Vila%20Gon%C3%A7alves%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-15"
+     data-busca="feira vila euclides vila euclides rua senador flaquer são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.6971544" data-lng="-46.5598742">
+      <div class="otp-card-nome">Feira Vila Euclides</div>
+      <div class="otp-card-end">Rua Senador Flaquer, Vila Euclides, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-15-desc" style="display:none"><p>Descubra a Feira Vila Euclides, localizada na Rua Senador Flaquer, no bairro de VILA EUCLIDES. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Euclides e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Senador%20Flaquer%2C%20Vila%20Euclides%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-16"
+     data-busca="feira paulicéia paulicéia rua gino amadei e rua líbero badaró são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.6666703" data-lng="-46.5857703">
+      <div class="otp-card-nome">Feira Paulicéia</div>
+      <div class="otp-card-end">Rua Gino Amadei e Rua Líbero Badaró, Paulicéia, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-16-desc" style="display:none"><p>Descubra a Feira Paulicéia, localizada na Rua Gino Amadei e Rua Líbero Badaró, no bairro de PAULICÉIA. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Paulicéia e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Gino%20Amadei%20e%20Rua%20L%C3%ADbero%20Badar%C3%B3%2C%20Paulic%C3%A9ia%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-17"
+     data-busca="feira parque selecta parque selecta rua pedro mendes são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.7429419" data-lng="-46.5710053">
+      <div class="otp-card-nome">Feira Parque Selecta</div>
+      <div class="otp-card-end">Rua Pedro Mendes, Parque Selecta, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-17-desc" style="display:none"><p>Descubra a Feira Parque Selecta, localizada na Rua Pedro Mendes, no bairro de PARQUE SELECTA. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Parque Selecta e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Pedro%20Mendes%2C%20Parque%20Selecta%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-18"
+     data-busca="feira jardim laura jardim laura rua alfredo caputo são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.7409996" data-lng="-46.6055054">
+      <div class="otp-card-nome">Feira Jardim Laura</div>
+      <div class="otp-card-end">Rua Alfredo Caputo, Jardim Laura, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-18-desc" style="display:none"><p>Descubra a Feira Jardim Laura, localizada na Rua Alfredo Caputo, no bairro de JARDIM LAURA. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Laura e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Alfredo%20Caputo%2C%20Jardim%20Laura%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-19"
+     data-busca="feira jardim irajá jardim irajá rua papa paulo vi são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.7203347" data-lng="-46.5320281">
+      <div class="otp-card-nome">Feira Jardim Irajá</div>
+      <div class="otp-card-end">Rua Papa Paulo VI, Jardim Irajá, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-19-desc" style="display:none"><p>Descubra a Feira Jardim Irajá, localizada na Rua Papa Paulo VI, no bairro de JARDIM IRAJÁ. Funciona todas as Quinta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Irajá e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Papa%20Paulo%20VI%2C%20Jardim%20Iraj%C3%A1%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-20"
+     data-busca="feira jardim três marias jardim três marias rua luiz nelo rossi são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.6845493" data-lng="-46.5558551">
+      <div class="otp-card-nome">Feira Jardim Três Marias</div>
+      <div class="otp-card-end">Rua Luiz Nelo Rossi, Jardim Três Marias, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-20-desc" style="display:none"><p>Descubra a Feira Jardim Três Marias, localizada na Rua Luiz Nelo Rossi, no bairro de JARDIM TRÊS MARIAS. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Três Marias e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Luiz%20Nelo%20Rossi%2C%20Jardim%20Tr%C3%AAs%20Marias%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-21"
+     data-busca="feira vila vivaldi vila vivaldi rua itaguassu são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.6605098" data-lng="-46.5624912">
+      <div class="otp-card-nome">Feira Vila Vivaldi</div>
+      <div class="otp-card-end">Rua Itaguassu, Vila Vivaldi, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-21-desc" style="display:none"><p>Descubra a Feira Vila Vivaldi, localizada na Rua Itaguassu, no bairro de VILA VIVALDI. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Vivaldi e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Itaguassu%2C%20Vila%20Vivaldi%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-22"
+     data-busca="feira nova petrópolis nova petrópolis rua princesa antônia são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.7063704" data-lng="-46.5415183">
+      <div class="otp-card-nome">Feira Nova Petrópolis</div>
+      <div class="otp-card-end">Rua Princesa Antônia, Nova Petrópolis, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-22-desc" style="display:none"><p>Descubra a Feira Nova Petrópolis, localizada na Rua Princesa Antônia, no bairro de NOVA PETRÓPOLIS. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Nova Petrópolis e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Princesa%20Ant%C3%B4nia%2C%20Nova%20Petr%C3%B3polis%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-23"
+     data-busca="feira jardim lavínia jardim lavínia rua rolando gambini são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.7254674" data-lng="-46.5660362">
+      <div class="otp-card-nome">Feira Jardim Lavínia</div>
+      <div class="otp-card-end">Rua Rolando Gambini, Jardim Lavínia, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-23-desc" style="display:none"><p>Descubra a Feira Jardim Lavínia, localizada na Rua Rolando Gambini, no bairro de JARDIM LAVÍNIA. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Lavínia e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Rolando%20Gambini%2C%20Jardim%20Lav%C3%ADnia%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-24"
+     data-busca="feira vila alvinópolis vila alvinópolis rua haydee são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.6838927" data-lng="-46.5705457">
+      <div class="otp-card-nome">Feira Vila Alvinópolis</div>
+      <div class="otp-card-end">Rua Haydee, Vila Alvinópolis, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-24-desc" style="display:none"><p>Descubra a Feira Vila Alvinópolis, localizada na Rua Haydee, no bairro de VILA ALVINÓPOLIS. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Alvinópolis e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Haydee%2C%20Vila%20Alvin%C3%B3polis%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-25"
+     data-busca="feira vila do sol vila do sol rua santiago são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.7179585" data-lng="-46.5793471">
+      <div class="otp-card-nome">Feira Vila do Sol</div>
+      <div class="otp-card-end">Rua Santiago, Vila do Sol, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-25-desc" style="display:none"><p>Descubra a Feira Vila do Sol, localizada na Rua Santiago, no bairro de VILA DO SOL. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila do Sol e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Santiago%2C%20Vila%20do%20Sol%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-26"
+     data-busca="feira jardim nazareth jardim nazareth av. juscelino kubitschek são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.7150653" data-lng="-46.5924141">
+      <div class="otp-card-nome">Feira Jardim Nazareth</div>
+      <div class="otp-card-end">Av. Juscelino Kubitschek, Jardim Nazareth, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-26-desc" style="display:none"><p>Descubra a Feira Jardim Nazareth, localizada na Av. Juscelino Kubitschek, no bairro de JARDIM NAZARETH. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Nazareth e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Av.%20Juscelino%20Kubitschek%2C%20Jardim%20Nazareth%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-27"
+     data-busca="feira jardim são silvério jardim são silvério rua antenore grotte são bernardo do campo sexta-feira" data-dia="sexta-feira" data-lat="-23.7027308" data-lng="-46.5645854">
+      <div class="otp-card-nome">Feira Jardim São Silvério</div>
+      <div class="otp-card-end">Rua Antenore Grotte, Jardim São Silvério, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sexta-feira • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-27-desc" style="display:none"><p>Descubra a Feira Jardim São Silvério, localizada na Rua Antenore Grotte, no bairro de JARDIM SÃO SILVÉRIO. Funciona todas as Sexta-feira das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim São Silvério e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Antenore%20Grotte%2C%20Jardim%20S%C3%A3o%20Silv%C3%A9rio%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-28"
+     data-busca="feira rudge ramos rudge ramos rua ida leone cleto são bernardo do campo sábado" data-dia="sábado" data-lat="-23.6590824" data-lng="-46.5682591">
+      <div class="otp-card-nome">Feira Rudge Ramos</div>
+      <div class="otp-card-end">Rua Ida Leone Cleto, Rudge Ramos, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-28-desc" style="display:none"><p>Descubra a Feira Rudge Ramos, localizada na Rua Ida Leone Cleto, no bairro de RUDGE RAMOS. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Rudge Ramos e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Ida%20Leone%20Cleto%2C%20Rudge%20Ramos%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-29"
+     data-busca="feira vilas unidas vilas unidas av. francisco prestes maia são bernardo do campo sábado" data-dia="sábado" data-lat="-23.7089569" data-lng="-46.5459612">
+      <div class="otp-card-nome">Feira Vilas Unidas</div>
+      <div class="otp-card-end">Av. Francisco Prestes Maia, Vilas Unidas, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-29-desc" style="display:none"><p>Descubra a Feira Vilas Unidas, localizada na Av. Francisco Prestes Maia, no bairro de VILAS UNIDAS. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vilas Unidas e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Av.%20Francisco%20Prestes%20Maia%2C%20Vilas%20Unidas%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-30"
+     data-busca="feira vila marlene vila marlene alameda da universidade são bernardo do campo sábado" data-dia="sábado" data-lat="-23.6790523" data-lng="-46.560368">
+      <div class="otp-card-nome">Feira Vila Marlene</div>
+      <div class="otp-card-end">Alameda da Universidade, Vila Marlene, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-30-desc" style="display:none"><p>Descubra a Feira Vila Marlene, localizada na Alameda da Universidade, no bairro de VILA MARLENE. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Marlene e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Alameda%20da%20Universidade%2C%20Vila%20Marlene%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-31"
+     data-busca="feira jardim trieste jardim trieste rua hortência van de kamp são bernardo do campo sábado" data-dia="sábado" data-lat="NÃO ENCONTRADO" data-lng="NÃO ENCONTRADO">
+      <div class="otp-card-nome">Feira Jardim Trieste</div>
+      <div class="otp-card-end">Rua Hortência Van De Kamp, Jardim Trieste, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-31-desc" style="display:none"><p>Descubra a Feira Jardim Trieste, localizada na Rua Hortência Van De Kamp, no bairro de JARDIM TRIESTE. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Trieste e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Hort%C3%AAncia%20Van%20De%20Kamp%2C%20Jardim%20Trieste%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-32"
+     data-busca="feira jardim borborema jardim borborema rua otacílio celestino gallo são bernardo do campo sábado" data-dia="sábado" data-lat="-23.6607579" data-lng="-46.5951968">
+      <div class="otp-card-nome">Feira Jardim Borborema</div>
+      <div class="otp-card-end">Rua Otacílio Celestino Gallo, Jardim Borborema, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-32-desc" style="display:none"><p>Descubra a Feira Jardim Borborema, localizada na Rua Otacílio Celestino Gallo, no bairro de JARDIM BORBOREMA. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Borborema e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Otac%C3%ADlio%20Celestino%20Gallo%2C%20Jardim%20Borborema%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-33"
+     data-busca="feira jd. thelma jd. thelma rua paraguaçu são bernardo do campo sábado" data-dia="sábado" data-lat="-23.7333827" data-lng="-46.5907659">
+      <div class="otp-card-nome">Feira Jd. Thelma</div>
+      <div class="otp-card-end">Rua Paraguaçu, Jd. Thelma, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-33-desc" style="display:none"><p>Descubra a Feira Jd. Thelma, localizada na Rua Paraguaçu, no bairro de JD. THELMA. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jd. Thelma e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Paragua%C3%A7u%2C%20Jd.%20Thelma%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-34"
+     data-busca="feira vila alves dias vila alves dias av. osvaldo fregonesi são bernardo do campo sábado" data-dia="sábado" data-lat="-23.7155698" data-lng="-46.5866053">
+      <div class="otp-card-nome">Feira Vila Alves Dias</div>
+      <div class="otp-card-end">Av. Osvaldo Fregonesi, Vila Alves Dias, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-34-desc" style="display:none"><p>Descubra a Feira Vila Alves Dias, localizada na Av. Osvaldo Fregonesi, no bairro de VILA ALVES DIAS. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Alves Dias e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Av.%20Osvaldo%20Fregonesi%2C%20Vila%20Alves%20Dias%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-35"
+     data-busca="feira jardim vera cruz jardim vera cruz rua josé campi são bernardo do campo sábado" data-dia="sábado" data-lat="-23.700342" data-lng="-46.5797082">
+      <div class="otp-card-nome">Feira Jardim Vera Cruz</div>
+      <div class="otp-card-end">Rua José Campi, Jardim Vera Cruz, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Sábado • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-35-desc" style="display:none"><p>Descubra a Feira Jardim Vera Cruz, localizada na Rua José Campi, no bairro de JARDIM VERA CRUZ. Funciona todas as Sábado das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Vera Cruz e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Jos%C3%A9%20Campi%2C%20Jardim%20Vera%20Cruz%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-36"
+     data-busca="feira bairro assunção bairro assunção av. robert kennedy são bernardo do campo domingo" data-dia="domingo" data-lat="-23.691598" data-lng="-46.5795955">
+      <div class="otp-card-nome">Feira Bairro Assunção</div>
+      <div class="otp-card-end">Av. Robert Kennedy, Bairro Assunção, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-36-desc" style="display:none"><p>Descubra a Feira Bairro Assunção, localizada na Av. Robert Kennedy, no bairro de BAIRRO ASSUNÇÃO. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Bairro Assunção e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Av.%20Robert%20Kennedy%2C%20Bairro%20Assun%C3%A7%C3%A3o%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-37"
+     data-busca="feira vila planalto vila planalto rua dr. josé oriá são bernardo do campo domingo" data-dia="domingo" data-lat="-23.6948594" data-lng="-46.5684769">
+      <div class="otp-card-nome">Feira Vila Planalto</div>
+      <div class="otp-card-end">Rua Dr. José Oriá, Vila Planalto, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-37-desc" style="display:none"><p>Descubra a Feira Vila Planalto, localizada na Rua Dr. José Oriá, no bairro de VILA PLANALTO. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Planalto e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Dr.%20Jos%C3%A9%20Ori%C3%A1%2C%20Vila%20Planalto%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-38"
+     data-busca="feira jardim do lago jardim do lago rua ministro edgar costa são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7390866" data-lng="-46.5783446">
+      <div class="otp-card-nome">Feira Jardim do Lago</div>
+      <div class="otp-card-end">Rua Ministro Edgar Costa, Jardim do Lago, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-38-desc" style="display:none"><p>Descubra a Feira Jardim do Lago, localizada na Rua Ministro Edgar Costa, no bairro de JARDIM DO LAGO. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim do Lago e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Ministro%20Edgar%20Costa%2C%20Jardim%20do%20Lago%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-39"
+     data-busca="feira bairro demarchi bairro demarchi rua das laranjeiras são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7420066" data-lng="-46.5524211">
+      <div class="otp-card-nome">Feira Bairro Demarchi</div>
+      <div class="otp-card-end">Rua das Laranjeiras, Bairro Demarchi, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-39-desc" style="display:none"><p>Descubra a Feira Bairro Demarchi, localizada na Rua das Laranjeiras, no bairro de BAIRRO DEMARCHI. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Bairro Demarchi e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20das%20Laranjeiras%2C%20Bairro%20Demarchi%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-40"
+     data-busca="feira vila baeta neves vila baeta neves rua cubatão e rua cruzeiro são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7046476" data-lng="-46.5372804">
+      <div class="otp-card-nome">Feira Vila Baeta Neves</div>
+      <div class="otp-card-end">Rua Cubatão e Rua Cruzeiro, Vila Baeta Neves, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-40-desc" style="display:none"><p>Descubra a Feira Vila Baeta Neves, localizada na Rua Cubatão e Rua Cruzeiro, no bairro de VILA BAETA NEVES. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Baeta Neves e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Cubat%C3%A3o%20e%20Rua%20Cruzeiro%2C%20Vila%20Baeta%20Neves%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-41"
+     data-busca="feira riacho grande riacho grande rua sofia d'angelo caputo são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7812155" data-lng="-46.5286911">
+      <div class="otp-card-nome">Feira Riacho Grande</div>
+      <div class="otp-card-end">Rua Sofia D'Angelo Caputo, Riacho Grande, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-41-desc" style="display:none"><p>Descubra a Feira Riacho Grande, localizada na Rua Sofia D'Angelo Caputo, no bairro de RIACHO GRANDE. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Riacho Grande e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Sofia%20D%27Angelo%20Caputo%2C%20Riacho%20Grande%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-42"
+     data-busca="feira jardim silvina jardim silvina rua dom vasco mascarenhas são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7374946" data-lng="-46.5367417">
+      <div class="otp-card-nome">Feira Jardim Silvina</div>
+      <div class="otp-card-end">Rua Dom Vasco Mascarenhas, Jardim Silvina, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-42-desc" style="display:none"><p>Descubra a Feira Jardim Silvina, localizada na Rua Dom Vasco Mascarenhas, no bairro de JARDIM SILVINA. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Jardim Silvina e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Dom%20Vasco%20Mascarenhas%2C%20Jardim%20Silvina%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-43"
+     data-busca="feira vila ferrazópolis vila ferrazópolis rua minas gerais são bernardo do campo domingo" data-dia="domingo" data-lat="-23.7261194" data-lng="-46.5423479">
+      <div class="otp-card-nome">Feira Vila Ferrazópolis</div>
+      <div class="otp-card-end">Rua Minas Gerais, Vila Ferrazópolis, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Domingo • 07:00 às 13:00 &nbsp;·&nbsp; ☀️ Diurna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-43-desc" style="display:none"><p>Descubra a Feira Vila Ferrazópolis, localizada na Rua Minas Gerais, no bairro de VILA FERRAZÓPOLIS. Funciona todas as Domingo das 07:00 ÀS 13:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Vila Ferrazópolis e encontre os melhores produtos da região Feiras Diurnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Rua%20Minas%20Gerais%2C%20Vila%20Ferraz%C3%B3polis%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-44"
+     data-busca="feira parque são diogo parque são diogo alameda da universidade são bernardo do campo quarta-feira" data-dia="quarta-feira" data-lat="-23.6790523" data-lng="-46.560368">
+      <div class="otp-card-nome">Feira Parque São Diogo</div>
+      <div class="otp-card-end">Alameda da Universidade, Parque São Diogo, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quarta-feira • 16:00 às 21:00 &nbsp;·&nbsp; 🌙 Noturna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-44-desc" style="display:none"><p>Descubra a Feira Parque São Diogo, localizada na Alameda da Universidade, no bairro de PARQUE SÃO DIOGO. Funciona todas as Quarta-feira das 16:00 ÀS 21:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Parque São Diogo e encontre os melhores produtos da região Feiras Noturnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Alameda%20da%20Universidade%2C%20Parque%20S%C3%A3o%20Diogo%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>
+  <div class="otp-card" id="otp-card-45"
+     data-busca="feira rudge ramos rudge ramos praça dos meninos - av. caminho do mar são bernardo do campo quinta-feira" data-dia="quinta-feira" data-lat="-23.6590824" data-lng="-46.5682591">
+      <div class="otp-card-nome">Feira Rudge Ramos</div>
+      <div class="otp-card-end">Praça dos Meninos - Av. Caminho do Mar, Rudge Ramos, São Bernardo do Campo</div>
+      <div class="otp-card-horario">🕐 Quinta-feira • 16:00 às 21:00 &nbsp;·&nbsp; 🌙 Noturna</div>
+      <div class="otp-card-dist" style="display:none"></div>
+      <div class="otp-card-desc" id="otp-card-45-desc" style="display:none"><p>Descubra a Feira Rudge Ramos, localizada na Praça dos Meninos - Av. Caminho do Mar, no bairro de RUDGE RAMOS. Funciona todas as Quinta-feira das 16:00 ÀS 21:00, trazendo o melhor em produtos frescos, frutas, verduras e artesanato local para a comunidade. Uma experiência única de compra com qualidade garantida e preços acessíveis. Venha conhecer a Feira Rudge Ramos e encontre os melhores produtos da região Feiras Noturnas. Produtos selecionados, atendimento atencioso e ambiente acolhedor esperando por você em cada visita.</p></div>
+      <div class="otp-card-acoes"><a class="otp-btn-maps" href="https://www.google.com/maps/search/?api=1&query=Pra%C3%A7a%20dos%20Meninos%20-%20Av.%20Caminho%20do%20Mar%2C%20Rudge%20Ramos%2C%20S%C3%A3o%20Bernardo%20do%20Campo" target="_blank" rel="noopener">🗺️ Maps</a><button type="button" class="otp-btn-desc" onclick="otpToggleDesc(this)" aria-expanded="false">📋 Ver detalhes</button></div>
+    </div>  </div>
+  <div class="otp-vazio" id="otp-vazio" style="display:none">😕 Nenhum resultado encontrado.</div>
+</div>
+
+<div class="otp-seo">
+  <h2>Feira Livre em São Bernardo do Campo: guia completo</h2>
+  <p>São Bernardo do Campo tem uma das redes de feiras livres mais completas do Grande ABC, com <strong>46 feiras espalhadas por 45 bairros</strong>, do Centro a Riacho Grande, passando por Rudge Ramos, Baeta Neves, Jardim do Lago e Vila Euclides. Se você procura por "feira livre perto de mim" no bairro onde mora ou trabalha, essa lista reúne endereço, dia da semana e horário de funcionamento de cada uma delas, com busca por nome, bairro ou proximidade.</p>
+  <p>As feiras de São Bernardo do Campo funcionam de <strong>terça-feira a domingo</strong>, sempre com opções de produtos frescos, frutas, verduras, legumes e artesanato local. A maior parte funciona no período da manhã, geralmente das 07:00 às 13:00, mas a cidade também conta com feiras noturnas para quem só consegue ir depois do trabalho.</p>
+
+  <h3>Feiras por dia da semana em São Bernardo do Campo</h3>
+  <table class="otp-resumo-table">
+    <thead><tr><th>Dia</th><th>Feiras</th><th>Alguns bairros atendidos</th></tr></thead>
+    <tbody>
+      <tr><td>Terça-feira</td><td>6</td><td>Centro, Jordanópolis, Vila Rosa, Jardim Hollywood</td></tr>
+      <tr><td>Quarta-feira</td><td>8</td><td>Baeta Neves, Taboão, Jardim Ipê, Vila Mussolini</td></tr>
+      <tr><td>Quinta-feira</td><td>8</td><td>Rudge Ramos, Vila Euclides, Jardim Irajá, Paulicéia</td></tr>
+      <tr><td>Sexta-feira</td><td>8</td><td>Nova Petrópolis, Jardim Lavínia, Vila do Sol, Vila Vivaldi</td></tr>
+      <tr><td>Sábado</td><td>8</td><td>Jardim Trieste, Jardim Vera Cruz, Rudge Ramos, Vila Marlene</td></tr>
+      <tr><td>Domingo</td><td>8</td><td>Riacho Grande, Bairro Assunção, Bairro Demarchi, Vila Planalto</td></tr>
+    </tbody>
+  </table>
+
+  <h3>Bairros com feira livre em São Bernardo do Campo</h3>
+  <p class="otp-bairros-lista">
+    <span>Baeta Neves</span><span>Bairro Assunção</span><span>Bairro Demarchi</span><span>Bairro Paulicéia</span><span>Centro</span><span>Jardim Beatriz</span><span>Jardim Borborema</span><span>Jardim Hollywood</span><span>Jardim Ipê</span><span>Jardim Irajá</span><span>Jardim Laura</span><span>Jardim Lavínia</span><span>Jardim Nazareth</span><span>Jardim Santo Inácio</span><span>Jardim Silvina</span><span>Jardim São Silvério</span><span>Jardim Trieste</span><span>Jardim Três Marias</span><span>Jardim Vera Cruz</span><span>Jardim da Represa</span><span>Jardim das Orquídeas</span><span>Jardim do Lago</span><span>Jd. Thelma</span><span>Jordanópolis</span><span>Nova Petrópolis</span><span>Parque Selecta</span><span>Parque São Diogo</span><span>Paulicéia</span><span>Riacho Grande</span><span>Rudge Ramos</span><span>Taboão</span><span>Terra Nova II</span><span>Vila Alves Dias</span><span>Vila Alvinópolis</span><span>Vila Baeta Neves</span><span>Vila Euclides</span><span>Vila Ferrazópolis</span><span>Vila Gonçalves</span><span>Vila Marlene</span><span>Vila Mussolini</span><span>Vila Planalto</span><span>Vila Rosa</span><span>Vila Vivaldi</span><span>Vila do Sol</span><span>Vilas Unidas</span>
+  </p>
+
+  <h2>Perguntas frequentes sobre as feiras de São Bernardo do Campo</h2>
+
+  <details class="otp-faq">
+    <summary>Quantas feiras livres tem em São Bernardo do Campo?</summary>
+    <p>São Bernardo do Campo conta com 46 feiras livres cadastradas, distribuídas em 45 bairros da cidade, funcionando de terça-feira a domingo.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Qual o horário das feiras livres em São Bernardo do Campo?</summary>
+    <p>A maioria das feiras diurnas funciona das 07:00 às 13:00. A cidade também tem feiras noturnas, com horários voltados para quem só pode ir depois do expediente. Confira o horário de cada feira diretamente no card acima.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Como encontro a feira livre mais perto de mim em São Bernardo do Campo?</summary>
+    <p>Clique em "Usar minha localização" no topo desta página para ordenar automaticamente todas as feiras pela distância até você, ou use a busca e o filtro de dia da semana para encontrar a feira do seu bairro.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Tem feira livre todos os dias em São Bernardo do Campo?</summary>
+    <p>Sim, exceto às segundas-feiras. Há feiras livres de terça-feira a domingo em diferentes bairros, incluindo boas opções para quem só pode ir no fim de semana.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Quais bairros de São Bernardo do Campo têm feira livre?</summary>
+    <p>Praticamente toda a cidade é atendida, do Centro a Riacho Grande, passando por Rudge Ramos, Vila Euclides, Baeta Neves, Jardim do Lago, Taboão e dezenas de outros bairros. Veja a lista completa de bairros logo acima.</p>
+  </details>
+</div>
+
+<script>
+(function(){
+  var userLat = null, userLng = null;
+
+  function haversine(la1, lo1, la2, lo2) {
+    var R = 6371, dLat = (la2-la1)*Math.PI/180, dLon = (lo2-lo1)*Math.PI/180;
+    var a = Math.sin(dLat/2)*Math.sin(dLat/2) +
+            Math.cos(la1*Math.PI/180)*Math.cos(la2*Math.PI/180)*
+            Math.sin(dLon/2)*Math.sin(dLon/2);
+    return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+  }
+
+  function fmtDist(d) {
+    return d < 1 ? Math.round(d*1000)+'m' : d.toFixed(1)+'km';
+  }
+
+  function getCards() {
+    return Array.prototype.slice.call(document.querySelectorAll('#otp-grid .otp-card'));
+  }
+
+  function atualizarStatus(visiveis) {
+    var status = document.getElementById('otp-status');
+    var vazio = document.getElementById('otp-vazio');
+    status.textContent = visiveis + ' feira' + (visiveis !== 1 ? 's' : '') + ' encontrada' + (visiveis !== 1 ? 's' : '') + '.';
+    vazio.style.display = visiveis === 0 ? 'block' : 'none';
+  }
+
+  window.otpToggleDesc = function(btn) {
+    var card = btn.closest('.otp-card');
+    var desc = card.querySelector('.otp-card-desc');
+    if (!desc) return;
+    var aberto = desc.style.display !== 'none';
+    desc.style.display = aberto ? 'none' : 'block';
+    btn.setAttribute('aria-expanded', aberto ? 'false' : 'true');
+    btn.classList.toggle('otp-aberto', !aberto);
+    btn.textContent = aberto ? '📋 Ver detalhes' : '✕ Fechar detalhes';
+  };
+
+  window.otpFiltrar = function() {
+    var q = (document.getElementById('otp-q').value||'').toLowerCase().trim();
+    var dia = document.getElementById('otp-dia').value;
+    var cards = getCards();
+    var visiveis = 0;
+    cards.forEach(function(card) {
+      var okQ = !q || card.getAttribute('data-busca').indexOf(q) !== -1;
+      var okDia = !dia || card.getAttribute('data-dia') === dia;
+      var ok = okQ && okDia;
+      card.style.display = ok ? '' : 'none';
+      if (ok) visiveis++;
+    });
+    atualizarStatus(visiveis);
+  };
+
+  window.otpGeoLocalizar = function() {
+    var status = document.getElementById('otp-status');
+    if (!navigator.geolocation) {
+      status.textContent = '⚠️ Geolocalização não suportada neste navegador.';
+      return;
+    }
+    status.textContent = '📡 Buscando sua localização…';
+    navigator.geolocation.getCurrentPosition(
+      function(pos) {
+        userLat = pos.coords.latitude;
+        userLng = pos.coords.longitude;
+        var grid = document.getElementById('otp-grid');
+        var cards = getCards();
+        cards.forEach(function(card) {
+          var lt = parseFloat(card.getAttribute('data-lat'));
+          var lg = parseFloat(card.getAttribute('data-lng'));
+          var d = haversine(userLat, userLng, lt, lg);
+          card._dist = d;
+          var distEl = card.querySelector('.otp-card-dist');
+          distEl.textContent = '📍 ' + fmtDist(d) + ' de você';
+          distEl.style.display = 'block';
+        });
+        cards.sort(function(a,b) { return a._dist - b._dist; });
+        cards.forEach(function(card) { grid.appendChild(card); });
+        window.otpFiltrar();
+      },
+      function() { status.textContent = '⚠️ Não foi possível obter sua localização.'; }
+    );
+  };
+})();
+</script>
+</body>
+</html>
