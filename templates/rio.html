@@ -21,13 +21,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feira Livre Perto de Mim no Rio de Janeiro — Feiras de Rua</title>
   <meta name="description" content="Encontre a feira livre mais perto de você no Rio de Janeiro agora mesmo. 158 feiras em 53 bairros, com dias e horários atualizados. Busque por bairro, use sua localização e veja a feira mais próxima hoje.">
-  <link rel="canonical" href="https://www.feirasderua.com.br/rio">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://www.feirasderua.com.br/rio-de-janeiro">
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png">
 
   <meta property="og:title" content="Feira Livre Perto de Mim no Rio de Janeiro — Feiras de Rua">
   <meta property="og:description" content="Encontre a feira livre mais perto de você no Rio de Janeiro agora mesmo. 158 feiras em 53 bairros, com dias e horários atualizados.">
   <meta property="og:type" content="website">
-  <meta property="og:url" content="https://www.feirasderua.com.br/rio">
+  <meta property="og:url" content="https://www.feirasderua.com.br/rio-de-janeiro">
   <meta property="og:locale" content="pt_BR">
   <meta property="og:image" content="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png">
 
@@ -41,7 +42,7 @@
     "@type": "BreadcrumbList",
     "itemListElement": [
       {"@type":"ListItem","position":1,"name":"Feiras de Rua","item":"https://www.feirasderua.com.br/"},
-      {"@type":"ListItem","position":2,"name":"Rio de Janeiro","item":"https://www.feirasderua.com.br/rio"}
+      {"@type":"ListItem","position":2,"name":"Rio de Janeiro","item":"https://www.feirasderua.com.br/rio-de-janeiro"}
     ]
   }
   </script>
@@ -56,7 +57,7 @@
         "name": "Quantas feiras livres tem no Rio de Janeiro?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "O Rio de Janeiro tem 158 feiras livres cadastradas, distribuídas em 53 bairros, funcionando de segunda-feira a domingo."
+          "text": "O Rio de Janeiro tem 158 feiras livres cadastradas, distribuídas em 53 bairros, funcionando de segunda-feira a domingo em praticamente todas as zonas da cidade."
         }
       },
       {
@@ -64,7 +65,7 @@
         "name": "Qual o horário das feiras livres no Rio de Janeiro?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "A maioria das feiras diurnas funciona a partir das 07:00. O Rio de Janeiro também conta com feiras em diferentes horários, dependendo do bairro."
+          "text": "A maioria das feiras do Rio funciona das 07:00 às 13:00 ou até às 14:30, dependendo do bairro e do dia. O horário exato de cada feira aparece no card correspondente nesta página."
         }
       },
       {
@@ -81,6 +82,46 @@
         "acceptedAnswer": {
           "@type": "Answer",
           "text": "Sim. Há feiras livres de segunda-feira a domingo em diferentes bairros do Rio de Janeiro, incluindo diversas opções aos sábados e domingos."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual é a feira livre mais famosa do Rio de Janeiro?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "O Rio tem feiras tradicionais em quase todas as zonas, mas algumas ganharam fama própria pelo volume de gente e produtos, como as feiras da Zona Norte (Méier, Cachambi, Engenho de Dentro) e da Zona Oeste (Campo Grande, Realengo, Jacarepaguá)."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre feira livre e feira orgânica no Rio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "A feira livre tradicional vende de tudo: frutas, verduras, peixe, ovos, temperos, roupas e utilidades, com preços populares. Já a feira orgânica é especializada em produtos certificados sem agrotóxicos, geralmente com preços mais altos e formato menor."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "É seguro ir à feira livre sozinho no Rio de Janeiro?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As feiras livres do Rio costumam ter bastante movimento durante o horário de funcionamento, o que ajuda na segurança. Como em qualquer lugar público, vale evitar exibir objetos de valor e ficar atento aos pertences, principalmente perto das entradas e saídas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "As feiras livres do Rio funcionam em dia de chuva?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim, a maioria das feiras livres funciona normalmente em dias de chuva, já que os feirantes contam com lonas e coberturas. Em casos de temporal ou alerta da Defesa Civil, o funcionamento pode ser reduzido ou suspenso pela prefeitura."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Posso pagar com cartão ou Pix nas feiras livres do Rio?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cada vez mais feirantes aceitam Pix e cartão, mas o dinheiro em espécie ainda é o meio de pagamento mais aceito nas feiras livres do Rio de Janeiro. O ideal é sempre ter um pouco de dinheiro trocado."
         }
       }
     ]
@@ -223,9 +264,75 @@
   .otp-btn-tel   { color: #555; border-color: #ccc; }
   .otp-btn-tel:hover   { background: #555; color: #fff; }
   .otp-vazio { text-align: center; color: #aaa; padding: 40px 0; font-size: 1em; }
+
+  .otp-faixa-cachambi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, #ffe082, #ffca28);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .otp-faixa-cachambi-texto { flex: 1; min-width: 220px; }
+  .otp-faixa-cachambi-tag {
+    display: inline-block;
+    background: #7a5b00;
+    color: #fff;
+    font-size: .68em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 3px 10px;
+    border-radius: 50px;
+    margin-bottom: 6px;
+  }
+  .otp-faixa-cachambi-titulo { font-weight: 800; font-size: 1.05em; color: #3a2a00; margin: 0 0 2px; }
+  .otp-faixa-cachambi-sub { font-size: .86em; color: #5c4400; margin: 0; }
+  .otp-faixa-cachambi-btn {
+    background: #171717;
+    color: #fff;
+    font-weight: 700;
+    font-size: .92em;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 50px;
+    white-space: nowrap;
+    transition: transform .15s;
+  }
+  .otp-faixa-cachambi-btn:hover { transform: translateY(-2px); }
+
+  .otp-seo { font-family: 'Montserrat', sans-serif; max-width: 960px; margin: 0 auto; padding: 0 16px 40px; color: #333; }
+  .otp-seo h2 { font-size: 1.4em; font-weight: 800; color: #171717; margin: 34px 0 12px; }
+  .otp-seo h3 { font-size: 1.15em; font-weight: 800; color: #171717; margin: 28px 0 10px; }
+  .otp-seo p { font-size: 1em; line-height: 1.7; margin: 0 0 14px; }
+  .otp-resumo-table { width: 100%; border-collapse: collapse; margin-bottom: 16px; font-size: .92em; }
+  .otp-resumo-table th, .otp-resumo-table td { text-align: left; padding: 10px 12px; border-bottom: 1px solid #eee; }
+  .otp-resumo-table th { background: #eafff3; color: #0b8a4f; font-weight: 800; }
+  .otp-bairros-lista span {
+    display: inline-block;
+    background: #eafff3;
+    color: #0b8a4f;
+    font-size: .85em;
+    font-weight: 600;
+    padding: 5px 12px;
+    border-radius: 50px;
+    margin: 0 6px 8px 0;
+  }
+  .otp-faq { background: #f7faf8; border-radius: 10px; padding: 14px 18px; margin-bottom: 10px; }
+  .otp-faq summary { font-weight: 700; cursor: pointer; color: #171717; }
+  .otp-faq p { margin: 10px 0 0; color: #444; }
+  .otp-links-cidades { text-align: center; font-size: .92em; color: #666; border-top: 1px solid #eee; padding-top: 20px; margin-top: 30px; }
+  .otp-links-cidades a { color: #0b8a4f; font-weight: 700; text-decoration: none; }
+  .otp-links-cidades a:hover { text-decoration: underline; }
+
   @media (max-width: 600px) {
     .otp-busca-hero { padding: 28px 16px; }
     .otp-busca-hero h2 { font-size: 1.4em; }
+    .otp-faixa-cachambi { flex-direction: column; align-items: flex-start; text-align: left; }
+    .otp-faixa-cachambi-btn { width: 100%; text-align: center; }
   }
 </style>
 
@@ -241,6 +348,16 @@
   <div class="otp-banner-patrocinado">
     <img src="https://res.cloudinary.com/dturwhclq/image/upload/v1787245843/A_SUA_FEIRA_DO_RIO_1000_x_450_px_f4iewv.png" alt="A Sua Feira do Rio - encontre a feira livre mais perto de você no Rio de Janeiro" width="1000" height="450" loading="lazy">
   </div>
+
+  <div class="otp-faixa-cachambi">
+    <div class="otp-faixa-cachambi-texto">
+      <span class="otp-faixa-cachambi-tag">🔥 Bairro em alta</span>
+      <p class="otp-faixa-cachambi-titulo">Feira Livre do Cachambi: dia, horário e o que encontrar</p>
+      <p class="otp-faixa-cachambi-sub">Domingo, das 07h às 13h, na Rua Basílio de Brito, Zona Norte do Rio.</p>
+    </div>
+    <a class="otp-faixa-cachambi-btn" href="https://www.feirasderua.com.br/blog/cachambi">Ver guia completo →</a>
+  </div>
+
   <div class="otp-busca-barra">
     <input type="text" id="otp-q" placeholder="Buscar por nome, bairro ou endereço…" oninput="otpFiltrar()">
   </div>
@@ -1672,6 +1789,61 @@
     </div>
   </div>
   <div class="otp-vazio" id="otp-vazio" style="display:none">😕 Nenhum resultado encontrado.</div>
+</div>
+
+<div class="otp-seo">
+  <h2>Feira Livre no Rio de Janeiro: guia completo</h2>
+  <p>O Rio de Janeiro tem uma das redes de feiras livres mais extensas do Brasil, com <strong>158 feiras espalhadas por 53 bairros</strong>, da Zona Sul à Zona Oeste, passando pela Zona Norte e pelo Centro. Se você procura por "feira livre perto de mim" no bairro onde mora ou trabalha, essa lista reúne endereço, bairro, dia da semana e horário de funcionamento de cada uma delas, com busca por nome, bairro ou proximidade.</p>
+  <p>As feiras do Rio funcionam de <strong>segunda-feira a domingo</strong>, sempre com opções de produtos frescos, frutas, verduras, legumes, peixe e artesanato local. A maioria das feiras diurnas abre por volta das <strong>07:00</strong> e funciona até por volta das <strong>13:00 ou 14:30</strong>, variando conforme o bairro e a subprefeitura responsável. Bairros como Cachambi, Méier, Campo Grande, Realengo e Jacarepaguá concentram algumas das feiras mais tradicionais e movimentadas da cidade.</p>
+
+  <h3>Feira livre em alta: Cachambi</h3>
+  <p>Uma das feiras que mais tem gerado buscas nas últimas semanas é a <strong>feira livre do Cachambi</strong>, na Rua Basílio de Brito, Zona Norte do Rio. Ela funciona todo <strong>domingo, das 07h às 13h</strong>, com frutas, verduras, peixaria, ovos e petiscos típicos de feira de bairro. <a href="https://www.feirasderua.com.br/blog/cachambi">Confira o guia completo da feira do Cachambi</a>, com endereço, dicas e como chegar.</p>
+
+  <h3>Bairros com feira livre no Rio de Janeiro</h3>
+  <p class="otp-bairros-lista">
+    <span>Cachambi</span><span>Engenho de Dentro</span><span>Maria da Graça</span><span>Méier</span><span>Vaz Lobo</span><span>Vicente de Carvalho</span><span>Quintino Bocaiúva</span><span>Vista Alegre</span><span>Cidade Nova</span><span>Rio Comprido</span><span>Santa Cruz</span><span>Realengo</span><span>Campo Grande</span><span>Jacarepaguá</span><span>Inhaúma</span><span>Madureira</span><span>Irajá</span><span>Zona Sul</span><span>Zona Norte</span><span>Zona Oeste</span><span>Centro</span>
+  </p>
+
+  <h2>Perguntas frequentes sobre as feiras do Rio de Janeiro</h2>
+
+  <details class="otp-faq">
+    <summary>Quantas feiras livres tem no Rio de Janeiro?</summary>
+    <p>O Rio de Janeiro tem 158 feiras livres cadastradas, distribuídas em 53 bairros, funcionando de segunda-feira a domingo em praticamente todas as zonas da cidade.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Qual o horário das feiras livres no Rio de Janeiro?</summary>
+    <p>A maioria das feiras do Rio funciona das 07:00 às 13:00 ou até às 14:30, dependendo do bairro e do dia. O horário exato de cada feira aparece no card correspondente nesta página.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Como encontrar a feira livre mais perto de mim no Rio de Janeiro?</summary>
+    <p>Use o botão "Usar minha localização" nesta página para ordenar automaticamente as feiras do Rio de Janeiro pela distância até você, ou digite o nome do seu bairro na busca.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Existe feira livre todos os dias no Rio de Janeiro?</summary>
+    <p>Sim. Há feiras livres de segunda-feira a domingo em diferentes bairros do Rio de Janeiro, incluindo diversas opções aos sábados e domingos.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Qual é a feira livre mais famosa do Rio de Janeiro?</summary>
+    <p>O Rio tem feiras tradicionais em quase todas as zonas, mas algumas ganharam fama própria pelo volume de gente e produtos, como as feiras da Zona Norte (Méier, Cachambi, Engenho de Dentro) e da Zona Oeste (Campo Grande, Realengo, Jacarepaguá).</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Qual a diferença entre feira livre e feira orgânica no Rio?</summary>
+    <p>A feira livre tradicional vende de tudo: frutas, verduras, peixe, ovos, temperos, roupas e utilidades, com preços populares. Já a feira orgânica é especializada em produtos certificados sem agrotóxicos, geralmente com preços mais altos e formato menor.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>É seguro ir à feira livre sozinho no Rio de Janeiro?</summary>
+    <p>As feiras livres do Rio costumam ter bastante movimento durante o horário de funcionamento, o que ajuda na segurança. Como em qualquer lugar público, vale evitar exibir objetos de valor e ficar atento aos pertences, principalmente perto das entradas e saídas.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>As feiras livres do Rio funcionam em dia de chuva?</summary>
+    <p>Sim, a maioria das feiras livres funciona normalmente em dias de chuva, já que os feirantes contam com lonas e coberturas. Em casos de temporal ou alerta da Defesa Civil, o funcionamento pode ser reduzido ou suspenso pela prefeitura.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Posso pagar com cartão ou Pix nas feiras livres do Rio?</summary>
+    <p>Cada vez mais feirantes aceitam Pix e cartão, mas o dinheiro em espécie ainda é o meio de pagamento mais aceito nas feiras livres do Rio de Janeiro. O ideal é sempre ter um pouco de dinheiro trocado.</p>
+  </details>
+
+  <p class="otp-links-cidades">Veja também: <a href="https://www.feirasderua.com.br/blog/cachambi">feira do Cachambi</a> · <a href="https://www.feirasderua.com.br/sao-bernardo-do-campo">feira livre em São Bernardo do Campo</a> · <a href="https://www.feirasderua.com.br/uberlandia">feira livre em Uberlândia</a> · <a href="https://www.feirasderua.com.br/">todas as cidades com feira livre</a></p>
 </div>
 
 <script>
