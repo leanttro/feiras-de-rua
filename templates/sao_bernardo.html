@@ -21,6 +21,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Feira Livre Perto de Mim em São Bernardo do Campo — Feiras de Rua</title>
   <meta name="description" content="Encontre a feira livre mais perto de você em São Bernardo do Campo agora mesmo. 46 feiras em 45 bairros, com dias e horários atualizados. Busque por bairro, use sua localização e veja a feira mais próxima hoje.">
+  <meta name="robots" content="index, follow">
   <link rel="canonical" href="https://www.feirasderua.com.br/sao-bernardo-do-campo">
   <link rel="icon" type="image/png" href="https://res.cloudinary.com/dturwhclq/image/upload/v1787250603/feiralogo_gh9s8s.png">
 
@@ -80,7 +81,47 @@
         "name": "Existe feira livre todos os dias em São Bernardo do Campo?",
         "acceptedAnswer": {
           "@type": "Answer",
-          "text": "Sim. Há feiras livres de terça-feira a domingo em diferentes bairros de São Bernardo do Campo, incluindo opções aos sábados e domingos."
+          "text": "Sim, exceto às segundas-feiras. Há feiras livres de terça-feira a domingo em diferentes bairros de São Bernardo do Campo, incluindo opções aos sábados e domingos."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Quais bairros de São Bernardo do Campo têm feira livre?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Praticamente toda a cidade é atendida, do Centro a Riacho Grande, passando por Rudge Ramos, Vila Euclides, Baeta Neves, Jardim do Lago, Taboão e dezenas de outros bairros."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Qual a diferença entre feira diurna e feira noturna em São Bernardo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As feiras diurnas funcionam pela manhã, geralmente das 07:00 às 13:00, com o público que compra antes do trabalho ou nos fins de semana. As feiras noturnas abrem no fim da tarde, por volta das 16:00 às 21:00, voltadas para quem só consegue ir depois do expediente."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "É seguro ir à feira livre sozinho em São Bernardo do Campo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "As feiras livres de São Bernardo costumam ter bom movimento durante o funcionamento, o que ajuda na segurança. Como em qualquer lugar público, vale evitar exibir objetos de valor e ficar atento aos pertences perto das entradas e saídas."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "As feiras livres de São Bernardo do Campo funcionam em dia de chuva?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Sim, a maioria funciona normalmente em dias de chuva, já que os feirantes contam com lonas e coberturas. Em casos de temporal ou alerta da Defesa Civil, o funcionamento pode ser reduzido ou suspenso pela prefeitura."
+        }
+      },
+      {
+        "@type": "Question",
+        "name": "Posso pagar com cartão ou Pix nas feiras livres de São Bernardo?",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": "Cada vez mais feirantes aceitam Pix e cartão, mas o dinheiro em espécie ainda é o meio de pagamento mais aceito nas feiras livres de São Bernardo do Campo. O ideal é sempre ter um pouco de dinheiro trocado."
         }
       }
     ]
@@ -220,9 +261,54 @@
   details.otp-faq { border-bottom: 1px solid #eee; padding: 12px 0; }
   details.otp-faq summary { font-weight: 700; color: #222; cursor: pointer; font-size: .96em; }
   details.otp-faq p { margin: 10px 0 0; font-size: .9em; color: #555; }
+  .otp-links-cidades { text-align: center; font-size: .9em; color: #666; border-top: 1px solid #eee; padding-top: 18px; margin-top: 8px; }
+  .otp-links-cidades a { color: #0fae63; font-weight: 700; text-decoration: none; }
+  .otp-links-cidades a:hover { text-decoration: underline; }
+
+  .otp-faixa-cachambi {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+    background: linear-gradient(135deg, #ffe082, #ffca28);
+    border-radius: 14px;
+    padding: 18px 22px;
+    margin-bottom: 20px;
+  }
+  .otp-faixa-cachambi-texto { flex: 1; min-width: 220px; }
+  .otp-faixa-cachambi-tag {
+    display: inline-block;
+    background: #7a5b00;
+    color: #fff;
+    font-size: .68em;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+    padding: 3px 10px;
+    border-radius: 50px;
+    margin-bottom: 6px;
+  }
+  .otp-faixa-cachambi-titulo { font-weight: 800; font-size: 1.05em; color: #3a2a00; margin: 0 0 2px; }
+  .otp-faixa-cachambi-sub { font-size: .86em; color: #5c4400; margin: 0; }
+  .otp-faixa-cachambi-btn {
+    background: #171717;
+    color: #fff;
+    font-weight: 700;
+    font-size: .92em;
+    text-decoration: none;
+    padding: 12px 22px;
+    border-radius: 50px;
+    white-space: nowrap;
+    transition: transform .15s;
+  }
+  .otp-faixa-cachambi-btn:hover { transform: translateY(-2px); }
+
   @media (max-width: 600px) {
     .otp-busca-hero { padding: 28px 16px; }
     .otp-busca-hero h2 { font-size: 1.4em; }
+    .otp-faixa-cachambi { flex-direction: column; align-items: flex-start; text-align: left; }
+    .otp-faixa-cachambi-btn { width: 100%; text-align: center; }
   }
 </style>
 
@@ -233,6 +319,15 @@
     <button class="otp-btn-geo" onclick="otpGeoLocalizar()">
       📍 Usar minha localização
     </button>
+  </div>
+
+  <div class="otp-faixa-cachambi">
+    <div class="otp-faixa-cachambi-texto">
+      <span class="otp-faixa-cachambi-tag">🔥 Bairro em alta</span>
+      <p class="otp-faixa-cachambi-titulo">Feira Livre do Cachambi (RJ): dia, horário e o que encontrar</p>
+      <p class="otp-faixa-cachambi-sub">Domingo, das 07h às 13h, na Rua Basílio de Brito, Zona Norte do Rio.</p>
+    </div>
+    <a class="otp-faixa-cachambi-btn" href="https://www.feirasderua.com.br/blog/cachambi">Ver guia completo →</a>
   </div>
 
   <div class="otp-busca-barra">
@@ -713,6 +808,24 @@
     <summary>Quais bairros de São Bernardo do Campo têm feira livre?</summary>
     <p>Praticamente toda a cidade é atendida, do Centro a Riacho Grande, passando por Rudge Ramos, Vila Euclides, Baeta Neves, Jardim do Lago, Taboão e dezenas de outros bairros. Veja a lista completa de bairros logo acima.</p>
   </details>
+  <details class="otp-faq">
+    <summary>Qual a diferença entre feira diurna e feira noturna em São Bernardo?</summary>
+    <p>As feiras diurnas funcionam pela manhã, geralmente das 07:00 às 13:00, com o público que compra antes do trabalho ou nos fins de semana. As feiras noturnas abrem no fim da tarde, por volta das 16:00 às 21:00, voltadas para quem só consegue ir depois do expediente.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>É seguro ir à feira livre sozinho em São Bernardo do Campo?</summary>
+    <p>As feiras livres de São Bernardo costumam ter bom movimento durante o funcionamento, o que ajuda na segurança. Como em qualquer lugar público, vale evitar exibir objetos de valor e ficar atento aos pertences perto das entradas e saídas.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>As feiras livres de São Bernardo do Campo funcionam em dia de chuva?</summary>
+    <p>Sim, a maioria funciona normalmente em dias de chuva, já que os feirantes contam com lonas e coberturas. Em casos de temporal ou alerta da Defesa Civil, o funcionamento pode ser reduzido ou suspenso pela prefeitura.</p>
+  </details>
+  <details class="otp-faq">
+    <summary>Posso pagar com cartão ou Pix nas feiras livres de São Bernardo?</summary>
+    <p>Cada vez mais feirantes aceitam Pix e cartão, mas o dinheiro em espécie ainda é o meio de pagamento mais aceito nas feiras livres de São Bernardo do Campo. O ideal é sempre ter um pouco de dinheiro trocado.</p>
+  </details>
+
+  <p class="otp-links-cidades">Veja também: <a href="https://www.feirasderua.com.br/rio-de-janeiro">feira livre no Rio de Janeiro</a> · <a href="https://www.feirasderua.com.br/uberlandia">feira livre em Uberlândia</a> · <a href="https://www.feirasderua.com.br/blog/cachambi">feira do Cachambi</a> · <a href="https://www.feirasderua.com.br/">todas as cidades com feira livre</a></p>
 </div>
 
 <script>
