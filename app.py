@@ -601,6 +601,11 @@ def pagina_uberlandia():
     return render_template('uberlandia.html')
 
 
+@app.route('/cachambi')
+def pagina_cachambi():
+    return render_template('cachambi.html')
+
+
 # --- ROTAS PARA SERVIR ARQUIVOS ESTÁTICOS ---
 
 @app.route('/')
